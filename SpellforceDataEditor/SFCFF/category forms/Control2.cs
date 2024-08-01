@@ -95,13 +95,13 @@ namespace SpellforceDataEditor.SFCFF.category_forms
         public override string get_element_string(int index)
         {
             Category2054Item item = c2054.Items[index];
-            return $"{item.SpellLineID} {SFCategoryManager.GetTextByLanguage(item.TextID, 1)}";
+            return $"{item.SpellLineID} {SFCategoryManager.GetTextByLanguage(item.TextID, SFEngine.Settings.LanguageID)}";
         }
 
         public override string get_description_string(int index)
         {
             Category2054Item item = c2054.Items[index];
-            return $"{SFCategoryManager.GetTextByLanguage(item.TextID, 1)}\r\n{SFCategoryManager.GetDescriptionName(item.DescriptionID)}";
+            return $"{SFCategoryManager.GetTextByLanguage(item.TextID, SFEngine.Settings.LanguageID)}\r\n{SFCategoryManager.GetDescriptionName(item.DescriptionID)}";
         }
 
 

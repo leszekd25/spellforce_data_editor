@@ -341,7 +341,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             bool spellline_found = SFCategoryManager.gamedata.c2054.GetItemIndex(type_id, out int spellline_index);
             if (spellline_found)
             {
-                return $"{c2002[index].SpellID} {SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2054[spellline_index].TextID, 1)} level {c2002[index].GetSpellLevel()}";
+                return $"{c2002[index].SpellID} {SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2054[spellline_index].TextID, SFEngine.Settings.LanguageID)} level {c2002[index].GetSpellLevel()}";
             }
             else
             {

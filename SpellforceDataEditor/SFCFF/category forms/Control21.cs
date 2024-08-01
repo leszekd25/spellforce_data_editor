@@ -33,7 +33,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             Category2044 c2044 = SFCategoryManager.gamedata.c2044;
             for (int i = 0; i < c2044.GetNumOfItems(); i++)
             {
-                comboRes.Items.Add($"{SFCategoryManager.GetTextByLanguage(c2044[i].TextID, 1)}");
+                comboRes.Items.Add($"{SFCategoryManager.GetTextByLanguage(c2044[i].TextID, SFEngine.Settings.LanguageID)}");
                 combo_values.Add(c2044[i].ResourceID);
             }
         }

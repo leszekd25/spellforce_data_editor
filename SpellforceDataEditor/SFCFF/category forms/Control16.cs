@@ -174,7 +174,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            return $"{c2022[index].RaceID} {SFCategoryManager.GetTextByLanguage(c2022[index].TextID, 1)}";
+            return $"{c2022[index].RaceID} {SFCategoryManager.GetTextByLanguage(c2022[index].TextID, SFEngine.Settings.LanguageID)}";
         }
 
         public override string get_description_string(int index)

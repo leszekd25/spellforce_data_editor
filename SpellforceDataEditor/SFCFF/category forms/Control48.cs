@@ -117,7 +117,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            return $"{c2036[index].ButtonID} {SFCategoryManager.GetTextByLanguage(c2036[index].ButtonNameID, 1)}";
+            return $"{c2036[index].ButtonID} {SFCategoryManager.GetTextByLanguage(c2036[index].ButtonNameID, SFEngine.Settings.LanguageID)}";
         }
 
         public override string get_description_string(int index)

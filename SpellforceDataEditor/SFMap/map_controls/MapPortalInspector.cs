@@ -40,7 +40,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 int portal_id = portal.game_id;
                 if (SFCategoryManager.gamedata.c2053.GetItemIndex(portal_id, out int portal_index))
                 {
-                    ret += SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2053[portal_index].NameID, 1);
+                    ret += SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2053[portal_index].NameID, SFEngine.Settings.LanguageID);
                 }
             }
             ret += portal.grid_position.ToString();

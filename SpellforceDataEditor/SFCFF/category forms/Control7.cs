@@ -155,7 +155,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            return $"{c2003[index].ItemID} {SFCategoryManager.GetTextByLanguage(c2003[index].NameID, 1)}";
+            return $"{c2003[index].ItemID} {SFCategoryManager.GetTextByLanguage(c2003[index].NameID, SFEngine.Settings.LanguageID)}";
         }
 
         public override string get_description_string(int index)
@@ -202,7 +202,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
                 bool set_found = SFCategoryManager.gamedata.c2072.GetItemIndex(item.ItemSetID, out int set_index);
                 if (set_found)
                 {
-                    sw.WriteLine($"Part of set: {SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2072[set_index].DescriptionID, 1)}");
+                    sw.WriteLine($"Part of set: {SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2072[set_index].DescriptionID, SFEngine.Settings.LanguageID)}");
                 }
                 else
                 {

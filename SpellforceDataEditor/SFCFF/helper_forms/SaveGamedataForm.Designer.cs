@@ -67,7 +67,6 @@
             ButtonMainGD.TabIndex = 3;
             ButtonMainGD.Text = "Select gamedata";
             ButtonMainGD.UseVisualStyleBackColor = true;
-            ButtonMainGD.Visible = false;
             ButtonMainGD.Click += ButtonMainGD_Click;
             // 
             // LabelGDMain
@@ -78,7 +77,6 @@
             LabelGDMain.Name = "LabelGDMain";
             LabelGDMain.Size = new System.Drawing.Size(0, 15);
             LabelGDMain.TabIndex = 4;
-            LabelGDMain.Visible = false;
             // 
             // SaveGD
             // 

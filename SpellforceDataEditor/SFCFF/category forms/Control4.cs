@@ -222,7 +222,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             {
                 if (SFCategoryManager.gamedata.c2024[i].StatsID == item.StatsID)
                 {
-                    return $"{item.StatsID} {SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2024[i].NameID, 1)} (lvl {item.UnitLevel})";
+                    return $"{item.StatsID} {SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2024[i].NameID, SFEngine.Settings.LanguageID)} (lvl {item.UnitLevel})";
                 }
             }
 

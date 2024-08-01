@@ -47,7 +47,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            return $"{c2063[index].WeaponTypeID} {SFCategoryManager.GetTextByLanguage(c2063[index].NameID, 1)}";
+            return $"{c2063[index].WeaponTypeID} {SFCategoryManager.GetTextByLanguage(c2063[index].NameID, SFEngine.Settings.LanguageID)}";
         }
 
         private void textBox1_MouseDown(object sender, MouseEventArgs e)

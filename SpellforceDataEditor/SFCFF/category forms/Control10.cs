@@ -117,8 +117,8 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             bool wpnmat_found = SFCategoryManager.gamedata.c2064.GetItemIndex(item.WeaponMaterial, out int wpnmat_index);
 
             StringWriter sw = new StringWriter();
-            sw.WriteLine($"Weapon type: {(wpntype_found ? SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2063[wpntype_index].NameID, 1) : SFEngine.Utility.S_ITEM_MISSING)}");
-            sw.WriteLine($"Weapon material: {(wpnmat_found ? SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2064[wpnmat_index].NameID, 1) : SFEngine.Utility.S_ITEM_MISSING)}");
+            sw.WriteLine($"Weapon type: {(wpntype_found ? SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2063[wpntype_index].NameID, SFEngine.Settings.LanguageID) : SFEngine.Utility.S_ITEM_MISSING)}");
+            sw.WriteLine($"Weapon material: {(wpnmat_found ? SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2064[wpnmat_index].NameID, SFEngine.Settings.LanguageID) : SFEngine.Utility.S_ITEM_MISSING)}");
             sw.WriteLine($"Damage per second: {get_dmg(item.MinDamage, item.MaxRange, item.WeaponSpeed)}");
 
             return sw.ToString();

@@ -34,7 +34,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             for (int i = 0; i < c2039.GetItemSubItemNum(current_element); i++)
             {
-                string txt = SFCategoryManager.GetTextByLanguage(c2039[current_element, i].TextID, 1);
+                string txt = SFCategoryManager.GetTextByLanguage(c2039[current_element, i].TextID, SFEngine.Settings.LanguageID);
                 ListSkills.Items.Add(txt);
             }
 
@@ -89,12 +89,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            return $"{c2039[index, 0].SkillMajorID} {SFCategoryManager.GetTextByLanguage(c2039[index, 0].TextID, 1)}";
+            return $"{c2039[index, 0].SkillMajorID} {SFCategoryManager.GetTextByLanguage(c2039[index, 0].TextID, SFEngine.Settings.LanguageID)}";
         }
 
         public override void on_add_subelement(int subelem_index)
         {
-            ListSkills.Items.Add(SFCategoryManager.GetTextByLanguage(c2039[current_element, subelem_index].TextID, 1));
+            ListSkills.Items.Add(SFCategoryManager.GetTextByLanguage(c2039[current_element, subelem_index].TextID, SFEngine.Settings.LanguageID));
         }
 
         public override void on_remove_subelement(int subelem_index)

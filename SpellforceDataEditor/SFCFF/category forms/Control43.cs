@@ -68,18 +68,18 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            return $"{c2061[index].QuestID} {SFCategoryManager.GetTextByLanguage(c2061[index].NameID, 1)}";
+            return $"{c2061[index].QuestID} {SFCategoryManager.GetTextByLanguage(c2061[index].NameID, SFEngine.Settings.LanguageID)}";
         }
 
         public override string get_description_string(int index)
         {
             if (c2061.GetItemIndex((int)c2061[index].ParentQuestID, out int pqindex))
             {
-                return $"{SFCategoryManager.GetTextByLanguage(c2061[index].DescriptionID, 1)}\r\n\r\nPart of quest {SFCategoryManager.GetTextByLanguage(c2061[pqindex].NameID, 1)}";
+                return $"{SFCategoryManager.GetTextByLanguage(c2061[index].DescriptionID, SFEngine.Settings.LanguageID)}\r\n\r\nPart of quest {SFCategoryManager.GetTextByLanguage(c2061[pqindex].NameID, SFEngine.Settings.LanguageID)}";
             }
             else
             {
-                return $"{SFCategoryManager.GetTextByLanguage(c2061[index].DescriptionID, 1)}";
+                return $"{SFCategoryManager.GetTextByLanguage(c2061[index].DescriptionID, SFEngine.Settings.LanguageID)}";
             }
         }
 

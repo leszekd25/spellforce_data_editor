@@ -32,7 +32,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
             for (int i = 0; i < SFCategoryManager.gamedata.c2044.GetNumOfItems(); i++)
             {
-                comboRes.Items.Add(SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2044[i].TextID, 1));
+                comboRes.Items.Add(SFCategoryManager.GetTextByLanguage(SFCategoryManager.gamedata.c2044[i].TextID, SFEngine.Settings.LanguageID));
                 combo_values.Add(SFCategoryManager.gamedata.c2044[i].ResourceID);
             }
         }

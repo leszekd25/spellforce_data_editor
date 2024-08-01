@@ -130,7 +130,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            return $"{c2024[index].GetID()} {SFCategoryManager.GetTextByLanguage(c2024[index].NameID, 1)}";
+            return $"{c2024[index].GetID()} {SFCategoryManager.GetTextByLanguage(c2024[index].NameID, SFEngine.Settings.LanguageID)}";
         }
 
         public override string get_description_string(int index)

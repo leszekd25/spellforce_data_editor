@@ -92,7 +92,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            return $"{c2050[index].ObjectID} {c2050[index].GetHandleString()}/{SFCategoryManager.GetTextByLanguage(c2050[index].NameID, 1)}";
+            return $"{c2050[index].ObjectID} {c2050[index].GetHandleString()}/{SFCategoryManager.GetTextByLanguage(c2050[index].NameID, SFEngine.Settings.LanguageID)}";
         }
 
         public override string get_description_string(int elem_key)

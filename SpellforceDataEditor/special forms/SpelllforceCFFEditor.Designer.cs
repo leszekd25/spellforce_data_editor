@@ -43,7 +43,6 @@
             specialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             findAllReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             clipboardTooldebugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            patchGamedataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             eXPERIMENTALLoadDiffFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             CategorySelect = new System.Windows.Forms.ComboBox();
             ElementSelect = new SFCFF.helper_forms.ListBoxNoFlicker();
@@ -165,7 +164,7 @@
             // 
             // specialToolStripMenuItem
             // 
-            specialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { findAllReferencesToolStripMenuItem, clipboardTooldebugToolStripMenuItem, patchGamedataToolStripMenuItem });
+            specialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { findAllReferencesToolStripMenuItem, clipboardTooldebugToolStripMenuItem });
             specialToolStripMenuItem.Name = "specialToolStripMenuItem";
             specialToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             specialToolStripMenuItem.Text = "Special";
@@ -185,12 +184,6 @@
             clipboardTooldebugToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             clipboardTooldebugToolStripMenuItem.Text = "ClipboardTool (debug)";
             clipboardTooldebugToolStripMenuItem.Visible = false;
-            // 
-            // patchGamedataToolStripMenuItem
-            // 
-            patchGamedataToolStripMenuItem.Name = "patchGamedataToolStripMenuItem";
-            patchGamedataToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            patchGamedataToolStripMenuItem.Text = "Patch gamedata...";
             // 
             // eXPERIMENTALLoadDiffFileToolStripMenuItem
             // 
@@ -592,6 +585,5 @@
         private SFCFF.helper_forms.ListBoxNoFlicker ElementSelect;
         private System.Windows.Forms.ToolStripMenuItem clipboardTooldebugToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem operationHistoryToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem patchGamedataToolStripMenuItem;
     }
 }

@@ -3369,7 +3369,7 @@ namespace SpellforceDataEditor.special_forms
                 }
 
                 ushort race_name_index = SFCategoryManager.gamedata.c2022[race_index].TextID;
-                string race_name = SFCategoryManager.GetTextByLanguage(race_name_index, 1);
+                string race_name = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
 
                 race_name = unit_race_id.ToString() + ". " + race_name;
                 if (unit_tree.ContainsKey(race_name))
@@ -3443,7 +3443,7 @@ namespace SpellforceDataEditor.special_forms
                 }
 
                 ushort race_name_index = SFCategoryManager.gamedata.c2022[race_index].TextID;
-                string race_name = SFCategoryManager.GetTextByLanguage(race_name_index, 1);
+                string race_name = SFCategoryManager.GetTextByLanguage(race_name_index, SFEngine.Settings.LanguageID);
 
                 race_name = unit_race_id.ToString() + ". " + race_name;
 

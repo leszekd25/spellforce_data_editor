@@ -47,12 +47,12 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 
         public override string get_element_string(int index)
         {
-            return $"{c2059[index].ExtDescriptionID} {SFCategoryManager.GetTextByLanguage(c2059[index].ExtTextID, 1)}";
+            return $"{c2059[index].ExtDescriptionID} {SFCategoryManager.GetTextByLanguage(c2059[index].ExtTextID, SFEngine.Settings.LanguageID)}";
         }
 
         public override string get_description_string(int index)
         {
-            return $"Text ID: {SFCategoryManager.GetTextByLanguage(c2059[index].TextID, 1)}";
+            return $"Text ID: {SFCategoryManager.GetTextByLanguage(c2059[index].TextID, SFEngine.Settings.LanguageID)}";
         }
 
         private void tb_sd4_MouseDown(object sender, MouseEventArgs e)
