@@ -47,6 +47,9 @@ namespace SpellforceDataEditor.special_forms
         // search
         CategorySearchForm search_form = null;
 
+        // references
+        ReferencesForm ref_form = null;
+
         //constructor
         public SpelllforceCFFEditor()
         {
@@ -435,6 +438,10 @@ namespace SpellforceDataEditor.special_forms
             trace_clear();
             selected_element_index = ElementSelect.SelectedIndex;
             set_displayed_element(selected_category_id, ElementSelect.SelectedIndex);
+            if (ref_form != null)
+            {
+                ref_form.FindElementReferences(selected_category_id, ElementSelect.SelectedIndex);
+            }
         }
 
         //start loading all elements from a category
@@ -628,6 +635,10 @@ namespace SpellforceDataEditor.special_forms
             if (search_form != null)
             {
                 search_form.Close();
+            }
+            if(ref_form != null)
+            {
+                ref_form.Close();
             }
 
             panelElemManipulate.Visible = false;
@@ -1202,10 +1213,10 @@ namespace SpellforceDataEditor.special_forms
                 if (field_name == "")
                 {
                     List<int> element_string_result = new();
-                    for(int i = 0; i < ElementSelect.Items.Count; i++)
+                    for (int i = 0; i < ElementSelect.Items.Count; i++)
                     {
                         string s = ElementSelect.Items[i].ToString();
-                        if(s.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+                        if (s.Contains(value, StringComparison.InvariantCultureIgnoreCase))
                         {
                             element_string_result.Add(i);
                         }
@@ -1229,7 +1240,7 @@ namespace SpellforceDataEditor.special_forms
 
         private void ClearSearch()
         {
-            if(search_form != null)
+            if (search_form != null)
             {
                 search_form.Clear();
             }
@@ -1261,5 +1272,35 @@ namespace SpellforceDataEditor.special_forms
             ContinueSearchButton.Enabled = true;
         }
 
+        // references
+        private void findAllReferencesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(ref_form != null)
+            {
+                ref_form.Focus();
+                ref_form.FindElementReferences(ElementDisplay.category.GetCategoryID(), ElementDisplay.current_element);
+                return;
+            }
+
+            ref_form = new();
+            ref_form.Show();
+            ref_form.FormClosed += ref_form_FormClosed;
+
+            if (ElementDisplay != null)
+            {
+                ref_form.FindElementReferences(ElementDisplay.category.GetCategoryID(), ElementDisplay.current_element);
+            }
+        }
+
+        void ref_form_FormClosed(object sender, EventArgs e)
+        {
+            if(ref_form == null)
+            {
+                return;
+            }
+
+            ref_form.FormClosed -= ref_form_FormClosed;
+            ref_form = null;
+        }
     }
 }
