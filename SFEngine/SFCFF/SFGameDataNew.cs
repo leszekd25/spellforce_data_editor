@@ -7,6 +7,7 @@ using System.IO;
 using SFEngine.SFCFF.CTG;
 using SFEngine.SFChunk;
 using System.Xml.Linq;
+using OpenTK.Graphics.OpenGL;
 
 namespace SFEngine.SFCFF
 {
@@ -117,6 +118,7 @@ namespace SFEngine.SFCFF
             yield break;
         }
 
+        // loads gamedata from file
         public int Load(string filename)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFGameDataNew.Load() called");
@@ -139,12 +141,6 @@ namespace SFEngine.SFCFF
                 return result;
             }
 
-//            CompatibilitySortCategories();
-#if DEBUG
-//            CustomScript();                         // only for experimental purposes
-#endif
-
-
             fname = filename;
 
             return result;
@@ -165,9 +161,7 @@ namespace SFEngine.SFCFF
 
             foreach (var cat in GetCategories())
             {
-                byte[] data = null;
-
-                bool write_result = cat.WriteRawData(ref data);
+                bool write_result = cat.Save(sfcf);
                 if(!write_result)
                 {
                     sfcf.Close();
@@ -175,7 +169,6 @@ namespace SFEngine.SFCFF
                     LogUtils.Log.Error(LogUtils.LogSource.SFCFF, "SFGameDataNew.Save() failed: failed to write data to buffer");
                     return -118;
                 }
-                sfcf.AddChunk(cat.GetCategoryID(), 0, false, cat.GetCategoryType(), data);
             }
 
             sfcf.Close();
@@ -184,12 +177,60 @@ namespace SFEngine.SFCFF
             return 0;
         }
 
-        // saves gamedata diff to file
-        public int SaveDiff(string filename)
+        // merges from two provided gamedatas
+        public int Merge(SFGameDataNew gd1, SFGameDataNew gd2)
         {
-            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFGameDataNew.SaveDiff() called - not implemented yet!");
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFGameDataNew.Merge() called");
+            // category map
+            Dictionary<int, ICategory> cats1 = new();
+            foreach (var c in gd1.GetCategories())
+            {
+                cats1[c.GetCategoryID()] = c;
+            }
+            Dictionary<int, ICategory> cats2 = new();
+            foreach (var c in gd2.GetCategories())
+            {
+                cats2[c.GetCategoryID()] = c;
+            }
+            Dictionary<int, ICategory> cats3 = new();
+            foreach (var c in GetCategories())
+            {
+                if (!c.MergeFrom(cats1[c.GetCategoryID()], cats2[c.GetCategoryID()]))
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"SFGameDataNew.Merge() failed: failed to merge category {c.GetCategoryID()}");
+                    return -118;
+                }
+            }
 
-            return -118;
+            return 0;
+        }
+
+        // diffs from two provided gamedatas
+        public int Diff(SFGameDataNew gd1, SFGameDataNew gd2)
+        {
+            LogUtils.Log.Info(LogUtils.LogSource.SFCFF, "SFGameDataNew.Diff() called");
+            // category map
+            Dictionary<int, ICategory> cats1 = new();
+            foreach (var c in gd1.GetCategories())
+            {
+                cats1[c.GetCategoryID()] = c;
+            }
+            Dictionary<int, ICategory> cats2 = new();
+            foreach (var c in gd2.GetCategories())
+            {
+                cats2[c.GetCategoryID()] = c;
+            }
+            Dictionary<int, ICategory> cats3 = new();
+            foreach (var c in GetCategories())
+            {
+                if (!c.DiffFrom(cats1[c.GetCategoryID()], cats2[c.GetCategoryID()]))
+                {
+                    LogUtils.Log.Error(LogUtils.LogSource.SFCFF, $"SFGameDataNew.Diff() failed: failed to diff category {c.GetCategoryID()}");
+                    return -118;
+                }
+            }
+
+            return 0;
         }
 
         // loads gamedata from in-memory chunkfile
@@ -205,12 +246,6 @@ namespace SFEngine.SFCFF
                     sfcf.Close();
                     return -118;
                 }
-            }
-
-            // fix up cat 2016
-            if(c2016.IsLoaded())
-            {
-                //cat_text.special_cat2016_DetermineLanguageIDs();
             }
 
             return 0;

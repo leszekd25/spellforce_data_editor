@@ -1,4 +1,5 @@
-﻿using SFEngine.SFCFF;
+﻿using OpenTK.Windowing.Common.Input;
+using SFEngine.SFCFF;
 using SFEngine.SFUnPak;
 using SpellforceDataEditor.SFCFF;
 using SpellforceDataEditor.SFCFF.category_forms;
@@ -90,6 +91,12 @@ namespace SpellforceDataEditor.special_forms
                 case LoadGamedataForm.GDMode.FULL:
                     success = load_data(LoadGD.MainGDFileName);
                     break;
+                case LoadGamedataForm.GDMode.MERGE:
+                    success = load_data_merge(LoadGD.MainGDFileName, LoadGD.OtherGDFileName);
+                    break;
+                case LoadGamedataForm.GDMode.DIFF:
+                    success = load_data_diff(LoadGD.MainGDFileName, LoadGD.OtherGDFileName);
+                    break;
                 default:
                     break;
             }
@@ -99,7 +106,7 @@ namespace SpellforceDataEditor.special_forms
                 CategorySelect.Enabled = true;
                 foreach (var cat in SFCategoryManager.gamedata.GetCategories())
                 {
-                    CategorySelect.Items.Add(Tuple.Create(cat.GetCategoryID(), cat.GetName()));
+                    CategorySelect.Items.Add(Tuple.Create(cat.GetCategoryID(), $"{cat.GetName()} ({cat.GetNumOfItems()} items)"));
                     CachedElementDisplays.Add(cat.GetCategoryID(), get_element_display_from_category(cat.GetCategoryID()));
                     cat.SetOnElementAddedCallback(CFF_OnElementAdded);
                     cat.SetOnElementModifiedCallback(CFF_OnElementModified);
@@ -148,6 +155,86 @@ namespace SpellforceDataEditor.special_forms
             return true;
         }
 
+        public bool load_data_merge(string fname_orig, string fname_other)
+        {
+            if (data_loaded)
+            {
+                if (close_data() == DialogResult.Cancel)
+                {
+                    return false;
+                }
+            }
+
+            labelStatus.Text = "Loading...";
+            statusStrip1.Refresh();
+
+            SFGameDataNew gamedata = new SFGameDataNew();
+            if (gamedata.Load(fname_orig) < 0)
+            {
+                labelStatus.Text = "Failed to open file " + fname_orig;
+                return false;
+            }
+            SFGameDataNew gamedata2 = new SFGameDataNew();
+            if (gamedata2.Load(fname_other) < 0)
+            {
+                labelStatus.Text = "Failed to open file " + fname_other;
+                return false;
+            }
+            SFGameDataNew gamedata3 = new SFGameDataNew();
+            if(gamedata3.Merge(gamedata, gamedata2) != 0)
+            {
+                labelStatus.Text = "Failed to merge selected gamedata files";
+                return false;
+            }
+
+            SFCategoryManager.Set(gamedata3);
+
+            Text = "GameData Editor - " + fname_orig + " merged with " + fname_other;
+            labelStatus.Text = "Ready";
+
+            return true;
+        }
+
+        public bool load_data_diff(string fname_orig, string fname_other)
+        {
+            if (data_loaded)
+            {
+                if (close_data() == DialogResult.Cancel)
+                {
+                    return false;
+                }
+            }
+
+            labelStatus.Text = "Loading...";
+            statusStrip1.Refresh();
+
+            SFGameDataNew gamedata = new SFGameDataNew();
+            if (gamedata.Load(fname_orig) < 0)
+            {
+                labelStatus.Text = "Failed to open file " + fname_orig;
+                return false;
+            }
+            SFGameDataNew gamedata2 = new SFGameDataNew();
+            if (gamedata2.Load(fname_other) < 0)
+            {
+                labelStatus.Text = "Failed to open file " + fname_other;
+                return false;
+            }
+            SFGameDataNew gamedata3 = new SFGameDataNew();
+            if (gamedata3.Diff(gamedata, gamedata2) != 0)
+            {
+                labelStatus.Text = "Failed to diff selected gamedata files";
+                return false;
+            }
+
+            SFCategoryManager.Set(gamedata3);
+
+            Text = "GameData Editor - " + fname_orig + " diffed with " + fname_other;
+            labelStatus.Text = "Ready";
+
+            return true;
+        }
+
         // gamedata is already loaded, just connect with the gamedata editor
         public void mapeditor_set_gamedata()
         {
@@ -156,7 +243,7 @@ namespace SpellforceDataEditor.special_forms
             CategorySelect.Enabled = true;
             foreach (var cat in SFCategoryManager.gamedata.GetCategories())
             {
-                CategorySelect.Items.Add(Tuple.Create(cat.GetCategoryID(), cat.GetName()));
+                CategorySelect.Items.Add(Tuple.Create(cat.GetCategoryID(), $"{cat.GetName()} ({cat.GetNumOfItems()} items)"));
                 CachedElementDisplays.Add(cat.GetCategoryID(), get_element_display_from_category(cat.GetCategoryID()));
                 cat.SetOnElementAddedCallback(CFF_OnElementAdded);
                 cat.SetOnElementModifiedCallback(CFF_OnElementModified);
@@ -204,16 +291,8 @@ namespace SpellforceDataEditor.special_forms
                     return false;
                 }
 
-                switch (sgd.Mode)
-                {
-                    case SaveGamedataForm.GDMode.FULL:
-                        return save_data_full(sgd.MainGDFileName);
-                    default:
-                        break;
-                }
+                return save_data_full(sgd.MainGDFileName);
             }
-
-            return false;
         }
 
         public bool save_data_full(string fname)
@@ -780,6 +859,21 @@ namespace SpellforceDataEditor.special_forms
                 return;
             }
 
+            // update category name in combobox
+            for(int i = 0; i < CategorySelect.Items.Count; i++)
+            {
+                var item = (Tuple<short, string>)(CategorySelect.Items[i]);
+                if(item.Item1 == cat_id)
+                {
+                    
+                    CategorySelect.SelectedIndexChanged -= CategorySelect_SelectedIndexChanged;
+                    CategorySelect.Items[i] = new Tuple<short, string>((short)cat_id,
+                        $"{CachedElementDisplays[cat_id].category.GetName()} ({CachedElementDisplays[cat_id].category.GetNumOfItems()} items)");
+                    CategorySelect.SelectedIndexChanged += CategorySelect_SelectedIndexChanged;
+                    break;
+                }
+            }
+
             // if selected category is the same, add the element to the list and select the element
             if (selected_category_id == cat_id)
             {
@@ -841,6 +935,21 @@ namespace SpellforceDataEditor.special_forms
             if (!data_loaded)
             {
                 return;
+            }
+
+            // update category name in combobox
+            for (int i = 0; i < CategorySelect.Items.Count; i++)
+            {
+                var item = (Tuple<short, string>)(CategorySelect.Items[i]);
+                if (item.Item1 == cat_id)
+                {
+
+                    CategorySelect.SelectedIndexChanged -= CategorySelect_SelectedIndexChanged;
+                    CategorySelect.Items[i] = new Tuple<short, string>((short)cat_id,
+                        $"{CachedElementDisplays[cat_id].category.GetName()} ({CachedElementDisplays[cat_id].category.GetNumOfItems()} items)");
+                    CategorySelect.SelectedIndexChanged += CategorySelect_SelectedIndexChanged;
+                    break;
+                }
             }
 
             // if selected category is the same, add the element to the list and select the element

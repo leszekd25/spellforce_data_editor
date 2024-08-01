@@ -54,7 +54,9 @@ namespace SFEngine.SFCFF
         public int GetByteCount();
         public bool Load(SFChunkFile file);
         public bool IsLoaded();
-        public bool WriteRawData(ref byte[] data);
+        public bool Save(SFChunkFile file);
+        public bool MergeFrom(ICategory c1, ICategory c2);
+        public bool DiffFrom(ICategory c1, ICategory c2);
         public bool Clear();
         public bool Sort();
         public bool AddEmpty(int new_index);

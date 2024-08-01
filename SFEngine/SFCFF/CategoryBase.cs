@@ -17,6 +17,7 @@ using Windows.UI.Composition.Interactions;
 using SFEngine.SFLua.LuaDecompiler;
 using OpenTK.Windowing.Common.Input;
 using System.Reflection.Metadata;
+using System.Media;
 
 namespace SFEngine.SFCFF
 {
@@ -87,7 +88,7 @@ namespace SFEngine.SFCFF
         {
             if(!file.GetChunkSpanByID(GetCategoryID(), out int type, out int start, out int length))
             {
-                return false;
+                return true;
             }
             if(type != GetCategoryType())
             {
@@ -113,13 +114,195 @@ namespace SFEngine.SFCFF
             return Loaded;
         }
 
-        public bool WriteRawData(ref byte[] data)
+        public bool Save(SFChunkFile sfcf)
         {
+            if(Items.Count == 0)
+            {
+                return true;
+            }
+
             Span<T> items_span = CollectionsMarshal.AsSpan(Items);
             ReadOnlySpan<byte> items_span_raw = MemoryMarshal.Cast<T, byte>(items_span);
-            data = new byte[items_span_raw.Length];
-            items_span_raw.CopyTo(data);
+            sfcf.AddChunk(GetCategoryID(), 0, false, GetCategoryType(), items_span_raw);
 
+            return true;
+        }
+
+        public bool MergeFrom(ICategory c1, ICategory c2)
+        {
+            if((!(c1 is CategoryBaseSingle<T>))||(!(c2 is CategoryBaseSingle<T>)))
+            {
+                return false;
+            }
+            CategoryBaseSingle<T> cat1 = c1 as CategoryBaseSingle<T>;
+            CategoryBaseSingle<T> cat2 = c2 as CategoryBaseSingle<T>;
+
+            // double list ladder
+            int orig_i = 0;
+            int new_i = 0;
+            int orig_id = 0;
+            int new_id = 0;
+            bool orig_end = false;
+            bool new_end = false;
+
+            while (true)
+            {
+                new_end = (new_i == cat2.GetNumOfItems());
+                orig_end = (orig_i == cat1.GetNumOfItems());
+
+                if (orig_end && new_end)
+                {
+                    break;
+                }
+
+                if (!orig_end)
+                {
+                    cat1.GetID(orig_i, out orig_id);
+                }
+                if (!new_end)
+                {
+                    cat2.GetID(new_i, out new_id);
+                }
+
+                if (orig_end)
+                {
+                    Items.Add(cat2[new_i]);
+                }
+                else if (new_end)
+                {
+                    Items.Add(cat1[orig_i]);
+                }
+                else
+                {
+                    if (orig_id == new_id)
+                    {
+                        Items.Add(cat2[new_i]);
+                    }
+                    else if (orig_id > new_id)
+                    {
+                        Items.Add(cat2[new_i]);
+                        // addition!
+
+                        orig_i -= 1;
+                    }
+                    else if (orig_id < new_id)
+                    {
+                        Items.Add(cat1[orig_i]);
+
+                        new_i -= 1;
+                    }
+                }
+
+                if (!orig_end)
+                {
+                    orig_i += 1;
+                }
+                if (!new_end)
+                {
+                    new_i += 1;
+                }
+            }
+
+            Loaded = true;
+            return true;
+        }
+
+        public bool DiffFrom(ICategory c1, ICategory c2)
+        {
+            if ((!(c1 is CategoryBaseSingle<T>)) || (!(c2 is CategoryBaseSingle<T>)))
+            {
+                return false;
+            }
+            CategoryBaseSingle<T> cat1 = c1 as CategoryBaseSingle<T>;
+            CategoryBaseSingle<T> cat2 = c2 as CategoryBaseSingle<T>;
+
+            // climb double list ladder
+            // elems have same IDs: only add elem2 if the elems themselves arent equal
+            // elem1 has lower ID than elem2: dont add any elem
+            // elem1 has higher ID than elem2: add elem2
+
+            // double list ladder
+
+            Span<T> items1_span = CollectionsMarshal.AsSpan(cat1.Items);
+            Span<T> items2_span = CollectionsMarshal.AsSpan(cat2.Items);
+            System.Diagnostics.Debug.WriteLine($"CAT {cat1.GetNumOfItems()} {cat2.GetNumOfItems()}");
+            int orig_i = 0;
+            int new_i = 0;
+            int orig_id = 0;
+            int new_id = 0;
+            bool orig_end = false;
+            bool new_end = false;
+
+            unsafe
+            {
+                fixed (T* ptr1 = items1_span)
+                {
+                    fixed (T* ptr2 = items2_span)
+                    {
+                        while (true)
+                        {
+                            new_end = (new_i == cat2.GetNumOfItems());
+                            orig_end = (orig_i == cat1.GetNumOfItems());
+
+                            if (orig_end && new_end)
+                            {
+                                break;
+                            }
+
+                            if (!orig_end)
+                            {
+                                cat1.GetID(orig_i, out orig_id);
+                            }
+                            if (!new_end)
+                            {
+                                cat2.GetID(new_i, out new_id);
+                            }
+
+                            if (orig_end)
+                            {
+                                Items.Add(cat2[new_i]);
+                            }
+                            else if (new_end)
+                            {
+
+                            }
+                            else
+                            {
+                                if (orig_id == new_id)
+                                {
+                                    if (!Utility.MemoryEqual(&ptr1[orig_i], &ptr2[new_i], (uint)(sizeof(T))))
+                                    {
+                                        Items.Add(cat2[new_i]);
+                                    }
+                                }
+                                else if (orig_id > new_id)
+                                {
+                                    Items.Add(cat2[new_i]);
+                                    // addition!
+
+                                    orig_i -= 1;
+                                }
+                                else if (orig_id < new_id)
+                                {
+
+                                    new_i -= 1;
+                                }
+                            }
+
+                            if (!orig_end)
+                            {
+                                orig_i += 1;
+                            }
+                            if (!new_end)
+                            {
+                                new_i += 1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            Loaded = true;
             return true;
         }
 
@@ -1023,7 +1206,7 @@ namespace SFEngine.SFCFF
         {
             if (!file.GetChunkSpanByID(GetCategoryID(), out int type, out int start, out int length))
             {
-                return false;
+                return true;
             }
             if (type != GetCategoryType())
             {
@@ -1051,15 +1234,444 @@ namespace SFEngine.SFCFF
             return Loaded;
         }
 
-        public bool WriteRawData(ref byte[] data)
+        public bool Save(SFChunkFile sfcf)
         {
+            if (Items.Count == 0)
+            {
+                return true;
+            }
+
             Span<T> items_span = CollectionsMarshal.AsSpan(Items);
             ReadOnlySpan<byte> items_span_raw = MemoryMarshal.Cast<T, byte>(items_span);
-            data = new byte[items_span_raw.Length];
-            items_span_raw.CopyTo(data);
+            sfcf.AddChunk(GetCategoryID(), 0, false, GetCategoryType(), items_span_raw);
 
             return true;
         }
+
+        public bool MergeFrom(ICategory c1, ICategory c2)
+        {
+            if ((!(c1 is CategoryBaseMultiple<T>)) || (!(c2 is CategoryBaseMultiple<T>)))
+            {
+                return false;
+            }
+            CategoryBaseMultiple<T> cat1 = c1 as CategoryBaseMultiple<T>;
+            CategoryBaseMultiple<T> cat2 = c2 as CategoryBaseMultiple<T>;
+
+            // double list ladder
+            Span<T> items1_span = CollectionsMarshal.AsSpan(cat1.Items);
+            Span<T> items2_span = CollectionsMarshal.AsSpan(cat2.Items);
+            int orig_i = 0;
+            int new_i = 0;
+            int orig_id = 0;
+            int new_id = 0;
+            bool orig_end = false;
+            bool new_end = false;
+
+            unsafe
+            {
+                fixed (T* ptr1 = items1_span)
+                {
+                    fixed (T* ptr2 = items2_span)
+                    {
+                        while (true)
+                        {
+                            new_end = (new_i == cat2.GetNumOfItems());
+                            orig_end = (orig_i == cat1.GetNumOfItems());
+
+                            if (orig_end && new_end)
+                            {
+                                break;
+                            }
+
+                            if (!orig_end)
+                            {
+                                cat1.GetID(orig_i, out orig_id);
+                            }
+                            if (!new_end)
+                            {
+                                cat2.GetID(new_i, out new_id);
+                            }
+
+                            if (orig_end)
+                            {
+                                int main_index = cat2.Indices[new_i];
+                                for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                                {
+                                    Items.Add(cat2[main_index + j]);
+                                }
+                            }
+                            else if (new_end)
+                            {
+                                int main_index = cat1.Indices[orig_i];
+                                for (int j = 0; j < cat1.GetItemSubItemNum(orig_i); j++)
+                                {
+                                    Items.Add(cat1[main_index + j]);
+                                }
+                            }
+                            else
+                            {
+                                if (orig_id == new_id)
+                                {
+                                    if (!GetSubitemDiffBehavior())
+                                    {
+                                        int main_index = cat2.Indices[new_i];
+                                        for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                                        {
+                                            Items.Add(cat2[main_index + j]);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        int main_index1 = cat1.Indices[orig_i];
+                                        int main_index2 = cat2.Indices[new_i];
+
+                                        int max_id = -1;
+                                        Dictionary<int, int> subelem1 = new();
+                                        Dictionary<int, int> subelem2 = new();
+
+                                        for (int j = 0; j < cat1.GetItemSubItemNum(orig_i); j++)
+                                        {
+                                            int subid;
+
+                                            subid = cat1.Items[main_index1 + j].GetSubID();
+                                            if (!subelem1.ContainsKey(subid))
+                                            {
+                                                subelem1.Add(subid, j);
+                                            }
+                                            else
+                                            {
+                                                subelem1[subid] = j;
+                                            }
+                                            max_id = Math.Max(max_id, subid);
+                                        }
+                                        for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                                        {
+                                            int subid;
+
+                                            subid = cat2.Items[main_index2 + j].GetSubID();
+                                            if (!subelem2.ContainsKey(subid))
+                                            {
+                                                subelem2.Add(subid, j);
+                                            }
+                                            else
+                                            {
+                                                subelem2[subid] = j;
+                                            }
+                                            max_id = Math.Max(max_id, subid);
+                                        }
+
+                                        for (int j = 0; j <= max_id; j++)
+                                        {
+                                            if (subelem1.ContainsKey(j))
+                                            {
+                                                if (subelem2.ContainsKey(j))
+                                                {
+                                                    if (!Utility.MemoryEqual(&ptr1[main_index1 + subelem1[j]], &ptr2[main_index2 + subelem2[j]], (uint)(sizeof(T))))
+                                                    {
+                                                        Items.Add(cat2[main_index2 + subelem2[j]]);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    Items.Add(cat1[main_index1 + subelem1[j]]);
+                                                }
+                                            }
+                                            else if (subelem2.ContainsKey(j))
+                                            {
+                                                Items.Add(cat2[main_index2 + subelem2[j]]);
+                                            }
+                                        }
+                                    }
+                                }
+                                else if (orig_id > new_id)
+                                {
+                                    int main_index = cat2.Indices[new_i];
+                                    for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                                    {
+                                        Items.Add(cat2[main_index + j]);
+                                    }
+                                    // addition!
+
+                                    orig_i -= 1;
+                                }
+                                else if (orig_id < new_id)
+                                {
+                                    int main_index = cat1.Indices[orig_i];
+                                    for (int j = 0; j < cat1.GetItemSubItemNum(orig_i); j++)
+                                    {
+                                        Items.Add(cat1[main_index + j]);
+                                    }
+
+                                    new_i -= 1;
+                                }
+                            }
+
+                            if (!orig_end)
+                            {
+                                orig_i += 1;
+                            }
+                            if (!new_end)
+                            {
+                                new_i += 1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            CalculateIndices();
+            Loaded = true;
+            return true;
+        }
+
+        public bool DiffFrom(ICategory c1, ICategory c2)
+        {
+            if ((!(c1 is CategoryBaseMultiple<T>)) || (!(c2 is CategoryBaseMultiple<T>)))
+            {
+                return false;
+            }
+            CategoryBaseMultiple<T> cat1 = c1 as CategoryBaseMultiple<T>;
+            CategoryBaseMultiple<T> cat2 = c2 as CategoryBaseMultiple<T>;
+
+            // climb double list ladder
+            // elems have same IDs: only add elem2 if the elems themselves arent equal
+            // elem1 has lower ID than elem2: dont add any elem
+            // elem1 has higher ID than elem2: add elem2
+
+            // double list ladder
+
+            Span<T> items1_span = CollectionsMarshal.AsSpan(cat1.Items);
+            Span<T> items2_span = CollectionsMarshal.AsSpan(cat2.Items);
+            int orig_i = 0;
+            int new_i = 0;
+            int orig_id = 0;
+            int new_id = 0;
+            bool orig_end = false;
+            bool new_end = false;
+
+            unsafe
+            {
+                fixed (T* ptr1 = items1_span)
+                {
+                    fixed (T* ptr2 = items2_span)
+                    {
+                        while (true)
+                        {
+                            new_end = (new_i == cat2.GetNumOfItems());
+                            orig_end = (orig_i == cat1.GetNumOfItems());
+
+                            if (orig_end && new_end)
+                            {
+                                break;
+                            }
+
+                            if (!orig_end)
+                            {
+                                cat1.GetID(orig_i, out orig_id);
+                            }
+                            if (!new_end)
+                            {
+                                cat2.GetID(new_i, out new_id);
+                            }
+
+                            if (orig_end)
+                            {
+                                int main_index = cat2.Indices[new_i];
+                                for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                                {
+                                    Items.Add(cat2[main_index + j]);
+                                }
+                            }
+                            else if (new_end)
+                            {
+
+                            }
+                            else
+                            {
+                                if (orig_id == new_id)
+                                {
+                                    if (!GetSubitemDiffBehavior())
+                                    {
+                                        if (cat1.GetItemSubItemNum(orig_i) != cat2.GetItemSubItemNum(new_i))
+                                        {
+                                            int main_index = cat2.Indices[new_i];
+                                            for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                                            {
+                                                Items.Add(cat2[main_index + j]);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            int main_index1 = cat1.Indices[orig_i];
+                                            int main_index2 = cat2.Indices[new_i];
+
+                                            int max_id = -1;
+                                            Dictionary<int, int> subelem1 = new();
+                                            Dictionary<int, int> subelem2 = new();
+                                            bool equal = true;
+
+                                            for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                                            {
+                                                int subid;
+
+                                                subid = cat1.Items[main_index1 + j].GetSubID();
+                                                if (!subelem1.ContainsKey(subid))
+                                                {
+                                                    subelem1.Add(subid, j);
+                                                }
+                                                else
+                                                {
+                                                    subelem1[subid] = j;
+                                                }
+                                                max_id = Math.Max(max_id, subid);
+
+                                                subid = cat2.Items[main_index2 + j].GetSubID();
+                                                if (!subelem2.ContainsKey(subid))
+                                                {
+                                                    subelem2.Add(subid, j);
+                                                }
+                                                else
+                                                {
+                                                    subelem2[subid] = j;
+                                                }
+                                                max_id = Math.Max(max_id, subid);
+                                            }
+
+                                            for (int j = 0; j <= max_id; j++)
+                                            {
+                                                if (subelem1.ContainsKey(j))
+                                                {
+                                                    if (subelem2.ContainsKey(j))
+                                                    {
+                                                        if (!Utility.MemoryEqual(&ptr1[main_index1 + subelem1[j]], &ptr2[main_index2 + subelem2[j]], (uint)(sizeof(T))))
+                                                        {
+                                                            equal = false;
+                                                            break;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        equal = false;
+                                                        break;
+                                                    }
+                                                }
+                                                else if (subelem2.ContainsKey(j))
+                                                {
+                                                    equal = false;
+                                                    break;
+                                                }
+                                            }
+
+                                            if (!equal)
+                                            {
+                                                int main_index = cat2.Indices[new_i];
+                                                for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                                                {
+                                                    Items.Add(cat2[main_index + j]);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        int main_index1 = cat1.Indices[orig_i];
+                                        int main_index2 = cat2.Indices[new_i];
+
+                                        int max_id = -1;
+                                        Dictionary<int, int> subelem1 = new();
+                                        Dictionary<int, int> subelem2 = new();
+
+                                        for (int j = 0; j < cat1.GetItemSubItemNum(orig_i); j++)
+                                        {
+                                            int subid;
+
+                                            subid = cat1.Items[main_index1 + j].GetSubID();
+                                            if (!subelem1.ContainsKey(subid))
+                                            {
+                                                subelem1.Add(subid, j);
+                                            }
+                                            else
+                                            {
+                                                subelem1[subid] = j;
+                                            }
+                                            max_id = Math.Max(max_id, subid);
+                                        }
+                                        for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                                        {
+                                            int subid;
+
+                                            subid = cat2.Items[main_index2 + j].GetSubID();
+                                            if (!subelem2.ContainsKey(subid))
+                                            {
+                                                subelem2.Add(subid, j);
+                                            }
+                                            else
+                                            {
+                                                subelem2[subid] = j;
+                                            }
+                                            max_id = Math.Max(max_id, subid);
+                                        }
+
+                                        for (int j = 0; j <= max_id; j++)
+                                        {
+                                            if (subelem1.ContainsKey(j))
+                                            {
+                                                if (subelem2.ContainsKey(j))
+                                                {
+                                                    if (!Utility.MemoryEqual(&ptr1[main_index1 + subelem1[j]], &ptr2[main_index2 + subelem2[j]], (uint)(sizeof(T))))
+                                                    {
+                                                        Items.Add(cat2[main_index2 + subelem2[j]]);
+                                                    }
+                                                }
+                                            }
+                                            else if (subelem2.ContainsKey(j))
+                                            {
+                                                Items.Add(cat2[main_index2 + subelem2[j]]);
+                                            }
+                                        }
+                                    }
+                                }
+                                else if (orig_id > new_id)
+                                {
+                                    int main_index = cat2.Indices[new_i];
+                                    for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                                    {
+                                        Items.Add(cat2[main_index + j]);
+                                    }
+                                    // addition!
+
+                                    orig_i -= 1;
+                                }
+                                else if (orig_id < new_id)
+                                {
+
+                                    new_i -= 1;
+                                }
+                            }
+
+                            if (!orig_end)
+                            {
+                                orig_i += 1;
+                            }
+                            if (!new_end)
+                            {
+                                new_i += 1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            CalculateIndices();
+            Loaded = true;
+            return true;
+        }
+
+        // false - treat subitems as parts of whole, true - treat subitems as separate elements
+        public virtual bool GetSubitemDiffBehavior() 
+        { 
+            return false;
+        }  
 
         public bool Clear()
         {

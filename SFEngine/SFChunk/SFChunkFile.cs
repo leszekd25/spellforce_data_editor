@@ -1,7 +1,9 @@
 ﻿// ChunkFile format is used by Spellforce for storing map data, save data and game data
 // While game data is already handled in SFCFF, all of those types can be handled by SFChunkFile class
 
+using SFEngine.SFCFF;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -406,7 +408,7 @@ namespace SFEngine.SFChunk
         }
 
 
-        public void AddChunk(short chunk_id, short occ_id, bool is_compressed, short data_type, byte[] raw_data)
+        public void AddChunk(short chunk_id, short occ_id, bool is_compressed, short data_type, ReadOnlySpan<byte> raw_data)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFChunkFile, "SFChunkFile.AddChunk() called (chunk id = "
                 + chunk_id.ToString() + ", occurence id = "
@@ -445,16 +447,22 @@ namespace SFEngine.SFChunk
             byte[] compressed_data = null;
             if (is_compressed)
             {
-                using (MemoryStream ms_dest = new MemoryStream())
+                unsafe
                 {
-                    using (MemoryStream ms_src = new MemoryStream(raw_data))
+                    fixed (byte* pBuffer = &raw_data[0])
                     {
-                        using (DeflateStream ds = new DeflateStream(ms_dest, CompressionMode.Compress))
+                        using (MemoryStream ms_dest = new MemoryStream())
                         {
-                            ms_src.CopyTo(ds);
+                            using (var ms_src = new UnmanagedMemoryStream(pBuffer, raw_data.Length))
+                            {
+                                using (var ds = new DeflateStream(ms_dest, CompressionMode.Compress))
+                                {
+                                    ms_src.CopyTo(ds);
+                                }
+                            }
+                            compressed_data = ms_dest.ToArray();
                         }
                     }
-                    compressed_data = ms_dest.ToArray();
                 }
             }
 

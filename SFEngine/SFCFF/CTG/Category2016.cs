@@ -70,5 +70,10 @@ namespace SFEngine.SFCFF.CTG
         {
             return 3;
         }
+
+        public override bool GetSubitemDiffBehavior()
+        {
+            return true;
+        }
     }
 }

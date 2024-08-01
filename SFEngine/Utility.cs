@@ -226,7 +226,7 @@ namespace SFEngine
             }
         }
 
-        static public uint CalculateAdler32Checksum(byte[] data)
+        static public uint CalculateAdler32Checksum(ReadOnlySpan<byte> data)
         {
             uint a = 1, b = 0;
             for (int i = 0; i < data.Length; i++)

@@ -37,6 +37,18 @@ namespace SFEngine.SFCFF.CTG
             item.CastsShadow = CastsShadow;
             item.Coords = new List<short>(Coords);
         }
+
+        public bool IsEqualTo(ref Category2030Item item)
+        {
+            if((BuildingID == item.BuildingID)&&(PolygonID == item.PolygonID)&&(CastsShadow == item.CastsShadow))
+            {
+                if(Coords.SequenceEqual(item.Coords))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     public class Category2030 : ICategory
@@ -149,7 +161,7 @@ namespace SFEngine.SFCFF.CTG
             SFChunkFileChunk chunk = file.GetChunkByID(GetCategoryID());
             if (chunk == null)
             {
-                return false;
+                return true;
             }
             if (chunk.header.ChunkDataType != GetCategoryType())
             {
@@ -187,9 +199,14 @@ namespace SFEngine.SFCFF.CTG
             return Loaded;
         }
 
-        public bool WriteRawData(ref byte[] data)
+        public bool Save(SFChunkFile sfcf)
         {
-            data = new byte[GetByteCount()];
+            if (Items.Count == 0)
+            {
+                return true;
+            }
+
+            byte[] data = new byte[GetByteCount()];
             using MemoryStream ms = new MemoryStream(data);
             using BinaryWriter bw = new BinaryWriter(ms);
 
@@ -202,10 +219,254 @@ namespace SFEngine.SFCFF.CTG
                 bw.Write((byte)(item.Coords.Count / 2));
                 for(int j = 0; j < item.Coords.Count; j++)
                 {
-                    bw.Write(item.Coords[i]);
+                    bw.Write(item.Coords[j]);
                 }
             }
 
+            sfcf.AddChunk(GetCategoryID(), 0, false, GetCategoryType(), data);
+
+            return true;
+        }
+
+        public bool MergeFrom(ICategory c1, ICategory c2)
+        {
+            if ((!(c1 is Category2030)) || (!(c2 is Category2030)))
+            {
+                return false;
+            }
+            Category2030 cat1 = c1 as Category2030;
+            Category2030 cat2 = c2 as Category2030;
+
+            // double list ladder
+            int orig_i = 0;
+            int new_i = 0;
+            int orig_id = 0;
+            int new_id = 0;
+            bool orig_end = false;
+            bool new_end = false;
+
+            while (true)
+            {
+                new_end = (new_i == cat2.GetNumOfItems());
+                orig_end = (orig_i == cat1.GetNumOfItems());
+
+                if (orig_end && new_end)
+                {
+                    break;
+                }
+
+                if (!orig_end)
+                {
+                    cat1.GetID(orig_i, out orig_id);
+                }
+                if (!new_end)
+                {
+                    cat2.GetID(new_i, out new_id);
+                }
+
+                if (orig_end)
+                {
+                    int main_index = cat2.Indices[new_i];
+                    for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                    {
+                        Category2030Item it = new();
+                        cat2[main_index + j].CopyTo(ref it);
+                        Items.Add(it);
+                    }
+                }
+                else if (new_end)
+                {
+                    int main_index = cat1.Indices[orig_i];
+                    for (int j = 0; j < cat1.GetItemSubItemNum(orig_i); j++)
+                    {
+                        Category2030Item it = new();
+                        cat1[main_index + j].CopyTo(ref it);
+                        Items.Add(it);
+                    }
+                }
+                else
+                {
+                    if (orig_id == new_id)
+                    {
+                        int main_index = cat2.Indices[new_i];
+                        for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                        {
+                            Category2030Item it = new();
+                            cat2[main_index + j].CopyTo(ref it);
+                            Items.Add(it);
+                        }
+                    }
+                    else if (orig_id > new_id)
+                    {
+                        int main_index = cat2.Indices[new_i];
+                        for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                        {
+                            Category2030Item it = new();
+                            cat2[main_index + j].CopyTo(ref it);
+                            Items.Add(it);
+                        }
+                        // addition!
+
+                        orig_i -= 1;
+                    }
+                    else if (orig_id < new_id)
+                    {
+                        int main_index = cat1.Indices[orig_i];
+                        for (int j = 0; j < cat1.GetItemSubItemNum(orig_i); j++)
+                        {
+                            Category2030Item it = new();
+                            cat1[main_index + j].CopyTo(ref it);
+                            Items.Add(it);
+                        }
+
+                        new_i -= 1;
+                    }
+                }
+
+                if (!orig_end)
+                {
+                    orig_i += 1;
+                }
+                if (!new_end)
+                {
+                    new_i += 1;
+                }
+            }
+
+            CalculateIndices();
+            Loaded = true;
+            return true;
+        }
+
+        public bool DiffFrom(ICategory c1, ICategory c2)
+        {
+            if ((!(c1 is Category2030)) || (!(c2 is Category2030)))
+            {
+                return false;
+            }
+            Category2030 cat1 = c1 as Category2030;
+            Category2030 cat2 = c2 as Category2030;
+
+            // climb double list ladder
+            // elems have same IDs: only add elem2 if the elems themselves arent equal
+            // elem1 has lower ID than elem2: dont add any elem
+            // elem1 has higher ID than elem2: add elem2
+
+            // double list ladder
+
+            Span<Category2030Item> items1_span = CollectionsMarshal.AsSpan(cat1.Items);
+            Span<Category2030Item> items2_span = CollectionsMarshal.AsSpan(cat2.Items);
+            int orig_i = 0;
+            int new_i = 0;
+            int orig_id = 0;
+            int new_id = 0;
+            bool orig_end = false;
+            bool new_end = false;
+
+            while (true)
+            {
+                new_end = (new_i == cat2.GetNumOfItems());
+                orig_end = (orig_i == cat1.GetNumOfItems());
+
+                if (orig_end && new_end)
+                {
+                    break;
+                }
+
+                if (!orig_end)
+                {
+                    cat1.GetID(orig_i, out orig_id);
+                }
+                if (!new_end)
+                {
+                    cat2.GetID(new_i, out new_id);
+                }
+
+                if (orig_end)
+                {
+                    int main_index = cat2.Indices[new_i];
+                    for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                    {
+                        Category2030Item it = new();
+                        cat2[main_index + j].CopyTo(ref it);
+                        Items.Add(it);
+                    }
+                }
+                else if (new_end)
+                {
+
+                }
+                else
+                {
+                    if (orig_id == new_id)
+                    {
+                        if (cat1.GetItemSubItemNum(orig_i) != cat2.GetItemSubItemNum(new_i))
+                        {
+                            int main_index = cat2.Indices[new_i];
+                            for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                            {
+                                Category2030Item it = new();
+                                cat2[main_index + j].CopyTo(ref it);
+                                Items.Add(it);
+                            }
+                        }
+                        else
+                        {
+                            int main_index1 = cat1.Indices[orig_i];
+                            int main_index2 = cat2.Indices[new_i];
+                            bool equal = true;
+                            for(int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                            {
+                                if (!cat1[main_index1+j].IsEqualTo(ref items2_span[main_index2+j]))
+                                {
+                                    equal = false;
+                                    break;
+                                }
+                            }
+                            if (!equal)
+                            {
+                                int main_index = cat2.Indices[new_i];
+                                for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                                {
+                                    Category2030Item it = new();
+                                    cat2[main_index + j].CopyTo(ref it);
+                                    Items.Add(it);
+                                }
+                            }
+                        }
+                    }
+                    else if (orig_id > new_id)
+                    {
+                        int main_index = cat2.Indices[new_i];
+                        for (int j = 0; j < cat2.GetItemSubItemNum(new_i); j++)
+                        {
+                            Category2030Item it = new();
+                            cat2[main_index + j].CopyTo(ref it);
+                            Items.Add(it);
+                        }
+                        // addition!
+
+                        orig_i -= 1;
+                    }
+                    else if (orig_id < new_id)
+                    {
+
+                        new_i -= 1;
+                    }
+                }
+
+                if (!orig_end)
+                {
+                    orig_i += 1;
+                }
+                if (!new_end)
+                {
+                    new_i += 1;
+                }
+            }
+
+            CalculateIndices();
+            Loaded = true;
             return true;
         }
 
