@@ -16,4 +16,4 @@ Most of the features are now complete, including: creating/loading/saving maps, 
 # How to use
 To use the application, simply unzip it wherever you feel like.
 
-Latest version: 17.04.2024.1
+Latest version: 01.08.2024.1
