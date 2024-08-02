@@ -6,6 +6,8 @@ using System.Threading;
 using System.Windows.Forms;
 using OpenTK.Mathematics;
 using System.Runtime.Intrinsics.Arm;
+using SFEngine.SFLua.LuaTokenizer;
+using System.IO;
 
 namespace SpellforceDataEditor
 {
@@ -27,33 +29,6 @@ namespace SpellforceDataEditor
 
         public MainForm()
         {
-            // script decompilation and disassembly
-            /*MemoryStream ms = SFUnPak.SFUnPak.LoadFileFrom("sf34.pak", "script\\p23\\clanrtsspawnp23.lua");
-            BinaryReader br = new BinaryReader(ms);
-            SFLua.LuaDecompiler.LuaBinaryScript scr = new SFLua.LuaDecompiler.LuaBinaryScript(br);
-            scr.func.DumpAll();
-            br.Close();
-            SFLua.LuaDecompiler.Decompiler dec = new SFLua.LuaDecompiler.Decompiler();
-            var chunk = dec.Decompile(scr.func);
-            StringWriter sw = new StringWriter();
-            chunk.WriteLuaString(sw);
-            File.WriteAllText("func_dec2.txt", sw.ToString());*/
-
-            // open sf0.pak, extract fonttables
-            /*SFUnPak.SFPakFileSystem sf0 = new SFUnPak.SFPakFileSystem();
-            sf0.Init("sf0.pak");
-            List<string> files = sf0.ListAllWithFilename("texture", "font_fonttable");
-            sf0.Open();
-            foreach (var f in files)
-            {
-                MemoryStream ms = sf0.GetFileBuffer("texture\\" + f);
-                FileStream fs = new FileStream(f, FileMode.OpenOrCreate, FileAccess.Write);
-                fs.Write(ms.ToArray(), 0, (int)ms.Length);
-                ms.Close();
-                fs.Close();
-            }
-            sf0.Close();*/
-
             SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.Main, "MainForm() called");
             InitializeComponent();
             linkEditor.Links.Add(0, linkEditor.Text.Length, "https://github.com/leszekd25/spellforce_data_editor/tree/with_viewer/bin");
