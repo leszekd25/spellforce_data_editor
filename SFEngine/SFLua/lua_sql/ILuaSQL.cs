@@ -1,19 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace SFEngine.SFLua.lua_sql
 {
     // returns error code
     public interface ILuaSQL
     {
-        int Load();
+        int Load(Lua l);
         int Save();
         void Unload();
     }
 
+    public interface ILuaParsable
+    {
+        void ParseLoad(LuaTable table);
+        string ParseToString();
+    }
+
     public class SFLuaSQL<T>: ILuaSQL where T: class, ILuaParsable, new()
     {
+        public bool loaded = false;
         public Dictionary<int, T> items { get; private set; } = null;
         public string script_name;
 
@@ -41,24 +50,22 @@ namespace SFEngine.SFLua.lua_sql
             }
         }
 
-        public int Load()
+        public int Load(Lua lua)
         {
-            LogUtils.Log.Info(LogUtils.LogSource.SFLua, $"SFLuaSQL.Load(\"{script_name}\") called");
-
-            // check if file exists
-            string filename = SFUnPak.SFUnPak.game_directory_name;
-            if (filename == "")
+            LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaSQL.Load(): called");
+            if (loaded)
             {
-                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQL.Load(): Game directory not found!");
-                return -1;
+                return 0;
             }
-
-            LogUtils.Log.Info(LogUtils.LogSource.SFLua, $"SFLuaSQL.Load(): Executing script \"{script_name}\"");
-
-            object[] ret = SFLuaEnvironment.ExecuteGameScript(script_name);
-            if (ret == null)
+            if(lua.DoFile(script_name) != LuaError.OK)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQL.Load(): Could not execute script!");
+                return -6;
+            }
+            LuaTable table = lua.PopObject() as LuaTable;
+            if(table == null)
+            {
+                LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQL.Load(): Invalid return from script");
                 return -6;
             }
 
@@ -72,9 +79,10 @@ namespace SFEngine.SFLua.lua_sql
             {
                 items.Clear();
 
-                LuaParser.LuaTable table = (LuaParser.LuaTable)ret[0];
+                Dictionary<object, object> table_dict = table.GetDict();
+
                 List<double> indices = new List<double>();
-                foreach (var key in table.entries.Keys)
+                foreach (var key in table_dict.Keys)
                 {
                     indices.Add((double)key);
                 }
@@ -85,7 +93,7 @@ namespace SFEngine.SFLua.lua_sql
                 {
                     int _i = (int)i;
                     log_current_item = _i;
-                    LuaParser.LuaTable i_table = (LuaParser.LuaTable)table[i];
+                    LuaTable i_table = (LuaTable)table_dict[i];
                     T data = new T();
                     data.ParseLoad(i_table);
                     items.Add(_i, data);
@@ -98,6 +106,7 @@ namespace SFEngine.SFLua.lua_sql
                 return -3;
             }
 
+            loaded = true;
             return 0;
         }
 
@@ -105,7 +114,7 @@ namespace SFEngine.SFLua.lua_sql
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFLua, "SFLuaSQL.Save(): called");
 
-            if (items == null)
+            if (!loaded)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SFLua, "SFLuaSQLg.Save(): Data not found!");
                 return -4;
@@ -122,7 +131,18 @@ namespace SFEngine.SFLua.lua_sql
 
             try
             {
-                File.WriteAllText(filename, "return\r\n" + SFLuaEnvironment.ParseDictToString(items));
+                StringBuilder sb = new();
+                sb.Append($"return\r\n{{\r\n");
+                List<int> keys = items.Keys.ToList();
+                keys.Sort();
+                foreach (var i in keys)
+                {
+                    sb.Append($"[{i}] = \r\n\t{{");
+                    sb.Append(items[i].ParseToString());
+                    sb.Append($"\r\n\t}},");
+                }
+                sb.Append($"}}\r\n");
+                File.WriteAllText(filename, sb.ToString());
             }
             catch (Exception)
             {
@@ -134,11 +154,12 @@ namespace SFEngine.SFLua.lua_sql
         }
         public void Unload()
         {
-            if (items != null)
+            if (loaded)
             {
                 items.Clear();
                 items = null;
             }
+            loaded = false;
         }
     }
 }

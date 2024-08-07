@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace SFEngine.SFLua.lua_sql
 {
@@ -22,22 +24,22 @@ namespace SFEngine.SFLua.lua_sql
         public int seconds_per_tick;     // convert from double
         public List<int> units;
 
-        public void ParseLoad(LuaParser.LuaTable table)
+        public void ParseLoad(LuaTable table)
         {
             seconds_per_tick = 0;
-            if (table["Seconds"] != null)
+            if (table.TryGet("Seconds", out object o))
             {
-                seconds_per_tick += (int)(double)table["Seconds"];
+                seconds_per_tick += (int)(double)o;
             }
 
-            if (table["Minutes"] != null)
+            if (table.TryGet("Minutes", out o))
             {
-                seconds_per_tick += (int)((double)table["Minutes"] * 60);
+                seconds_per_tick += (int)((double)o * 60);
             }
 
-            if (table["Hours"] != null)
+            if (table.TryGet("Hours", out o))
             {
-                seconds_per_tick += (int)((double)table["Hours"] * 3600);
+                seconds_per_tick += (int)((double)o * 3600);
             }
 
             if (seconds_per_tick == 0)
@@ -45,14 +47,13 @@ namespace SFEngine.SFLua.lua_sql
                 seconds_per_tick = 60;
             }
 
-            if (table["Units"] != null)
+            if (table.TryGet("Units", out o))
             {
                 units = new List<int>();
-                LuaParser.LuaTable i_spawn_data_units_table = (LuaParser.LuaTable)table["Units"];
-
-                for (int k = 1; k <= i_spawn_data_units_table.entries.Count; k++)
+                LuaTable i_spawn_data_units_table = (LuaTable)o;
+                foreach(KeyValuePair<object, object> kv in i_spawn_data_units_table)
                 {
-                    units.Add((int)(double)i_spawn_data_units_table[(double)k]);
+                    units.Add((int)(double)kv.Value);
                 }
             }
         }
@@ -84,24 +85,24 @@ namespace SFEngine.SFLua.lua_sql
         public List<int> start_units;
         public Dictionary<int, SFMapCoopSpawnTypeDataInfo> data;
 
-        public void ParseLoad(LuaParser.LuaTable table)
+        public void ParseLoad(LuaTable table)
         {
             name = "";
-            if (table["Name"] != null)
+            if (table.TryGet("Name", out object o))
             {
-                name = (string)table["Name"];
+                name = (string)o;
             }
 
             level_range = "";
-            if (table["LevelRange"] != null)
+            if (table.TryGet("LevelRange", out o))
             {
-                level_range = (string)table["LevelRange"];
+                level_range = (string)o;
             }
 
             goal = LuaEnumAiGoal.GoalDefault;
-            if (table["Goal"] != null)
+            if (table.TryGet("Goal", out o))
             {
-                string s = (string)table["Goal"];
+                string s = (string)o;
                 bool success = Enum.TryParse(s, out goal);
                 if (!success)
                 {
@@ -110,27 +111,30 @@ namespace SFEngine.SFLua.lua_sql
             }
 
             max_units = 0;
-            if (table["MaxClanSize"] != null)
+            if (table.TryGet("MaxClanSize", out o))
             {
-                max_units = (int)(double)table["MaxClanSize"];
+                max_units = (int)(double)o;
             }
 
-            if (table["Init"] != null)
+            if (table.TryGet("Init", out o))
             {
                 start_units = new List<int>();
-                LuaParser.LuaTable i_init_table = (LuaParser.LuaTable)table["Init"];
-                for (int j = 1; j <= i_init_table.entries.Count; j++)
+                LuaTable i_init_table = (LuaTable)o;
+                foreach (KeyValuePair<object, object> kv in i_init_table)
                 {
-                    start_units.Add((int)(double)i_init_table[(double)j]);
+                    start_units.Add((int)(double)kv.Value);
                 }
             }
 
-            if (table["SpawnData"] != null)
+            if (table.TryGet("SpawnData", out o))
             {
                 data = new Dictionary<int, SFMapCoopSpawnTypeDataInfo>();
-                LuaParser.LuaTable i_spawn_table = (LuaParser.LuaTable)table["SpawnData"];
+                LuaTable i_spawn_table = (LuaTable)o;
+
+                var table_dict = i_spawn_table.GetDict();
+
                 List<double> i_spawn_indices = new List<double>();
-                foreach (var key in i_spawn_table.entries.Keys)
+                foreach (var key in table_dict.Keys)
                 {
                     i_spawn_indices.Add((double)key);
                 }
@@ -139,7 +143,7 @@ namespace SFEngine.SFLua.lua_sql
                 foreach (double j in i_spawn_indices)
                 {
                     int _j = (int)j;
-                    LuaParser.LuaTable i_spawn_data_table = (LuaParser.LuaTable)i_spawn_table[j];
+                    LuaTable i_spawn_data_table = (LuaTable)table_dict[j];
                     SFMapCoopSpawnTypeDataInfo cstdi = new SFMapCoopSpawnTypeDataInfo();
                     cstdi.ParseLoad(i_spawn_data_table);
                     data.Add(_j, cstdi);
@@ -149,36 +153,45 @@ namespace SFEngine.SFLua.lua_sql
 
         public string ParseToString()
         {
-            string ret = "";
-            ret += "Name = \"" + name.ToString() + "\",";
-            ret += "\r\nLevelRange = \"" + level_range.ToString() + "\",";
+            StringBuilder ret = new();
+            ret.Append($"Name = \"{name}\",");
+            ret.Append($"\r\nLevelRange = \"{level_range}\",");
             if (goal != LuaEnumAiGoal.GoalDefault)
             {
-                ret += "\r\nGoal = " + goal.ToString() + ",";
+                ret.Append($"\r\nGoal = {goal},");
             }
 
             if (max_units != 0)
             {
-                ret += "\r\nMaxClanSize = " + max_units.ToString() + ",";
+                ret.Append($"\r\nMaxClanSize = {max_units},");
             }
 
             if (start_units != null)
             {
-                ret += "\r\nInit = \r\n{\r\n\t";
+                ret.Append($"\r\nInit = \r\n{{\r\n\t");
                 foreach (int i in start_units)
                 {
-                    ret += i.ToString() + ", ";
+                    ret.Append($"{i}, ");
                 }
 
-                ret += "\r\n},";
+                ret.Append($"\r\n}},");
             }
             if (data != null)
             {
-                ret += "\r\nSpawnData = \r\n";
-                ret += SFLuaEnvironment.ParseDictToString(data);
-                ret += ",";
+                ret.Append($"\r\nSpawndata = \r\n{{\r\n\t");
+
+                List<int> indices = data.Keys.ToList();
+                indices.Sort();
+                foreach(var i in indices)
+                {
+                    ret.Append($"[{i}] = \r\n\t{{");
+                    ret.Append(data[i].ParseToString());
+                    ret.Append($"\r\n\t}},");
+                }
+
+                ret.Append($"\r\n}},");
             }
-            return ret;
+            return ret.ToString();
         }
     }
 }

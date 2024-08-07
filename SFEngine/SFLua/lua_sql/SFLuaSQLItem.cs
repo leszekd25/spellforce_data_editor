@@ -17,56 +17,56 @@ namespace SFEngine.SFLua.lua_sql
         public int Category = 0;
         public int SubCategory = 0;
 
-        public void ParseLoad(LuaParser.LuaTable table)
+        public void ParseLoad(LuaTable table)
         {
-            if (table.entries.ContainsKey("meshmalecold"))
+            if (table.TryGet("meshmalecold", out object o))
             {
-                MeshMaleCold = (string)table["meshmalecold"];
+                MeshMaleCold = (string)o;
             }
 
-            if (table.entries.ContainsKey("meshfemalecold"))
+            if (table.TryGet("meshfemalecold", out o))
             {
-                MeshFemaleCold = (string)table["meshfemalecold"];
+                MeshFemaleCold = (string)o;
             }
 
-            if (table.entries.ContainsKey("meshmalewarm"))
+            if (table.TryGet("meshmalewarm", out o))
             {
-                MeshMaleWarm = (string)table["meshmalewarm"];
+                MeshMaleWarm = (string)o;
             }
 
-            if (table.entries.ContainsKey("meshfemalewarm"))
+            if (table.TryGet("meshfemalewarm", out o))
             {
-                MeshFemaleWarm = (string)table["meshfemalewarm"];
+                MeshFemaleWarm = (string)o;
             }
 
-            if (table.entries.ContainsKey("shadowrng"))
+            if (table.TryGet("shadowrng", out o))
             {
-                ShadowRNG = (double)table["shadowrng"];
+                ShadowRNG = (double)o;
             }
 
-            if (table.entries.ContainsKey("selectionsize"))
+            if (table.TryGet("selectionsize", out o))
             {
-                SelectionSize = (double)table["selectionsize"];
+                SelectionSize = (double)o;
             }
 
-            if (table.entries.ContainsKey("animset"))
+            if (table.TryGet("animset", out o))
             {
-                AnimSet = (string)table["animset"];
+                AnimSet = (string)o;
             }
 
-            if (table.entries.ContainsKey("race"))
+            if (table.TryGet("race", out o))
             {
-                Race = (int)(double)table["race"];
+                Race = (int)(double)o;
             }
 
-            if (table.entries.ContainsKey("cat"))
+            if (table.TryGet("cat", out o))
             {
-                Category = (int)(double)table["cat"];
+                Category = (int)(double)o;
             }
 
-            if (table.entries.ContainsKey("subcat"))
+            if (table.TryGet("subcat", out o))
             {
-                SubCategory = (int)(double)table["subcat"];
+                SubCategory = (int)(double)o;
             }
         }
 

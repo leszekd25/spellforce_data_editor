@@ -19,7 +19,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SFLuaSQLItemForm_Load(object sender, EventArgs e)
         {
-            if (SFLuaEnvironment.items.Load() != 0)
+            if (LuaSQLDatabase.items.Load(MainForm.lua) != 0)
             {
                 MessageBox.Show("Could not load script/sql_item.lua");
                 Close();
@@ -34,7 +34,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             ListItems.Items.Clear();
             ListItems.SuspendLayout();
 
-            var items = SFLuaEnvironment.items.items;
+            var items = LuaSQLDatabase.items.items;
             index_to_key = items.Keys.ToList();
             index_to_key.Sort();
 
@@ -78,7 +78,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             int item_id = index_to_key[ListItems.SelectedIndex];    // even though its a dictionary, they're listed sequentially!
             selected_id = item_id;
 
-            var items = SFLuaEnvironment.items.items;
+            var items = LuaSQLDatabase.items.items;
             if (!items.ContainsKey(item_id))
             {
                 return;
@@ -104,10 +104,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 return;
             }
 
-            SFLuaEnvironment.items.items[selected_id].MeshMaleCold = MMC.Text.ToString();
+            LuaSQLDatabase.items.items[selected_id].MeshMaleCold = MMC.Text.ToString();
             if (MMC.Text.ToString() == "")
             {
-                SFLuaEnvironment.items.items[selected_id].MeshMaleCold = "<undefined>";
+                LuaSQLDatabase.items.items[selected_id].MeshMaleCold = "<undefined>";
             }
         }
 
@@ -118,10 +118,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 return;
             }
 
-            SFLuaEnvironment.items.items[selected_id].MeshFemaleCold = MFC.Text.ToString();
+            LuaSQLDatabase.items.items[selected_id].MeshFemaleCold = MFC.Text.ToString();
             if (MFC.Text.ToString() == "")
             {
-                SFLuaEnvironment.items.items[selected_id].MeshFemaleCold = "<undefined>";
+                LuaSQLDatabase.items.items[selected_id].MeshFemaleCold = "<undefined>";
             }
         }
 
@@ -132,10 +132,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 return;
             }
 
-            SFLuaEnvironment.items.items[selected_id].MeshMaleWarm = MMW.Text.ToString();
+            LuaSQLDatabase.items.items[selected_id].MeshMaleWarm = MMW.Text.ToString();
             if (MMW.Text.ToString() == "")
             {
-                SFLuaEnvironment.items.items[selected_id].MeshMaleWarm = "<undefined>";
+                LuaSQLDatabase.items.items[selected_id].MeshMaleWarm = "<undefined>";
             }
         }
 
@@ -146,10 +146,10 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 return;
             }
 
-            SFLuaEnvironment.items.items[selected_id].MeshFemaleWarm = MFW.Text.ToString();
+            LuaSQLDatabase.items.items[selected_id].MeshFemaleWarm = MFW.Text.ToString();
             if (MFW.Text.ToString() == "")
             {
-                SFLuaEnvironment.items.items[selected_id].MeshFemaleWarm = "<undefined>";
+                LuaSQLDatabase.items.items[selected_id].MeshFemaleWarm = "<undefined>";
             }
         }
 
@@ -160,9 +160,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 return;
             }
 
-            SFLuaEnvironment.items.items[selected_id].ShadowRNG =
+            LuaSQLDatabase.items.items[selected_id].ShadowRNG =
                 SFEngine.Utility.TryParseDouble(ShadowRNG.Text,
-                                       SFLuaEnvironment.items.items[selected_id].ShadowRNG);
+                                       LuaSQLDatabase.items.items[selected_id].ShadowRNG);
         }
 
         private void SelectionSize_Validated(object sender, EventArgs e)
@@ -172,9 +172,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 return;
             }
 
-            SFLuaEnvironment.items.items[selected_id].SelectionSize =
+            LuaSQLDatabase.items.items[selected_id].SelectionSize =
                 SFEngine.Utility.TryParseDouble(SelectionSize.Text,
-                                       SFLuaEnvironment.items.items[selected_id].SelectionSize);
+                                       LuaSQLDatabase.items.items[selected_id].SelectionSize);
         }
 
         private void AnimSet_Validated(object sender, EventArgs e)
@@ -184,7 +184,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 return;
             }
 
-            SFLuaEnvironment.items.items[selected_id].AnimSet = AnimSet.Text.ToString();
+            LuaSQLDatabase.items.items[selected_id].AnimSet = AnimSet.Text.ToString();
         }
 
         private void Race_Validated(object sender, EventArgs e)
@@ -194,9 +194,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 return;
             }
 
-            SFLuaEnvironment.items.items[selected_id].Race =
+            LuaSQLDatabase.items.items[selected_id].Race =
                 (int)SFEngine.Utility.TryParseUInt32(Race.Text,
-                                             (uint)SFLuaEnvironment.items.items[selected_id].Race);
+                                             (uint)LuaSQLDatabase.items.items[selected_id].Race);
         }
 
         private void Cat_Validated(object sender, EventArgs e)
@@ -206,9 +206,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 return;
             }
 
-            SFLuaEnvironment.items.items[selected_id].Category =
+            LuaSQLDatabase.items.items[selected_id].Category =
                 (int)SFEngine.Utility.TryParseUInt32(Cat.Text,
-                                             (uint)SFLuaEnvironment.items.items[selected_id].Category);
+                                             (uint)LuaSQLDatabase.items.items[selected_id].Category);
         }
 
         private void SubCat_Validated(object sender, EventArgs e)
@@ -218,9 +218,9 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
                 return;
             }
 
-            SFLuaEnvironment.items.items[selected_id].SubCategory =
+            LuaSQLDatabase.items.items[selected_id].SubCategory =
                 (int)SFEngine.Utility.TryParseUInt32(SubCat.Text,
-                                             (uint)SFLuaEnvironment.items.items[selected_id].SubCategory);
+                                             (uint)LuaSQLDatabase.items.items[selected_id].SubCategory);
         }
 
         private void ItemID_Validated(object sender, EventArgs e)
@@ -232,14 +232,14 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
             int previous_id = selected_id;
             int previous_index = ListItems.SelectedIndex;
-            SFEngine.SFLua.lua_sql.SFLuaSQLItemData item = SFLuaEnvironment.items.items[previous_id];
+            SFEngine.SFLua.lua_sql.SFLuaSQLItemData item = LuaSQLDatabase.items.items[previous_id];
             int new_id = (int)SFEngine.Utility.TryParseUInt32(ItemID.Text, (uint)previous_id);
             if (new_id == previous_id)
             {
                 return;
             }
 
-            SFLuaEnvironment.items.items.Remove(selected_id);
+            LuaSQLDatabase.items.items.Remove(selected_id);
             index_to_key.RemoveAt(previous_index);
             ListItems.Items.RemoveAt(previous_index);
 
@@ -254,7 +254,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             index_to_key.Insert(new_index, new_id);
-            SFLuaEnvironment.items.items.Add(new_id, item);
+            LuaSQLDatabase.items.items.Add(new_id, item);
             ListItems.Items.Insert(new_index, new_id.ToString() + ". " + GetItemString(new_id));
 
             selected_id = new_id;
@@ -283,7 +283,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             item.SubCategory = 0;
 
             index_to_key.Insert(0, 0);
-            SFLuaEnvironment.items.items.Add(0, item);
+            LuaSQLDatabase.items.items.Add(0, item);
             ListItems.Items.Insert(0, "0. " + GetItemString(0));
 
             selected_id = 0;
@@ -298,7 +298,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int ind = ListItems.SelectedIndex;
-            SFLuaEnvironment.items.items.Remove(selected_id);
+            LuaSQLDatabase.items.items.Remove(selected_id);
             index_to_key.RemoveAt(ListItems.SelectedIndex);
             ListItems.Items.RemoveAt(ListItems.SelectedIndex);
 
@@ -317,7 +317,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ButtonSaveChanges_Click(object sender, EventArgs e)
         {
-            if (SFLuaEnvironment.items.Save() != 0)
+            if (LuaSQLDatabase.items.Save() != 0)
             {
                 MessageBox.Show("Error while saving sql_item.lua");
             }

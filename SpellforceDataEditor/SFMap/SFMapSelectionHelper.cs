@@ -216,7 +216,7 @@ namespace SpellforceDataEditor.SFMap
             selected_entity = building;
 
             float sel_scale = 1.0f;
-            SFLuaSQLBuildingData data = SFLuaEnvironment.buildings[building.game_id];
+            SFLuaSQLBuildingData data = LuaSQLDatabase.buildings[building.game_id];
             if (data != null)
             {
                 sel_scale = Math.Max(1.0f, (float)(data.SelectionScaling));
@@ -236,7 +236,7 @@ namespace SpellforceDataEditor.SFMap
             selected_entity = obj;
 
             float sel_scale = 1.0f;
-            SFLuaSQLObjectData data = SFLuaEnvironment.objects[obj.game_id];
+            SFLuaSQLObjectData data = LuaSQLDatabase.objects[obj.game_id];
             if (data != null)
             {
                 sel_scale = Math.Max(1.0f, (float)data.SelectionScaling);
@@ -256,7 +256,7 @@ namespace SpellforceDataEditor.SFMap
             selected_entity = io;
 
             float sel_scale = 1.0f;
-            SFLuaSQLObjectData data = SFLuaEnvironment.objects[io.game_id];
+            SFLuaSQLObjectData data = LuaSQLDatabase.objects[io.game_id];
             if (data != null)
             {
                 sel_scale = Math.Max(1.0f, (float)(data.SelectionScaling));
@@ -298,7 +298,7 @@ namespace SpellforceDataEditor.SFMap
             selected_entity = p;
 
             float sel_scale = 1.0f;
-            SFLuaSQLObjectData data = SFLuaEnvironment.objects[778];
+            SFLuaSQLObjectData data = LuaSQLDatabase.objects[778];
             if (data != null)
             {
                 sel_scale = Math.Max(1.0f, (float)(data.SelectionScaling));

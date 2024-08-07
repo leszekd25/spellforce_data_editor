@@ -244,7 +244,7 @@ namespace SFEngine.SFMap
             ushort chest_id = SFCFF.SFCategoryManager.GetUnitItem((ushort)(unit.game_id), 2);
             if (chest_id != 0)
             {
-                string anim_lib = SFLua.SFLuaEnvironment.items[chest_id].AnimSet;
+                string anim_lib = SFLua.LuaSQLDatabase.items[chest_id].AnimSet;
                 if (anim_lib == "")
                 {
                     bool unit_found = SFCFF.SFCategoryManager.gamedata.c2024.GetItemIndex(unit.game_id, out int unit_index);

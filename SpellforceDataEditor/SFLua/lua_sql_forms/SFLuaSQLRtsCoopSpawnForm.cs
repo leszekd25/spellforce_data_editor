@@ -22,7 +22,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void SFLuaSQLRtsCoopSpawnForm_Load(object sender, EventArgs e)
         {
-            if (SFLuaEnvironment.coop_spawns.Load() != 0)
+            if (LuaSQLDatabase.coop_spawns.Load(MainForm.lua) != 0)
             {
                 MessageBox.Show("Could not load script/GdsRtsCoopSpawnGroups.lua");
                 Close();
@@ -35,7 +35,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void ReloadSpawnTypeList()
         {
             ListSpawnTypes.Items.Clear();
-            var spawn_types = SFLuaEnvironment.coop_spawns.items;
+            var spawn_types = LuaSQLDatabase.coop_spawns.items;
 
             List<int> types = spawn_types.Keys.ToList();
             types.Sort();
@@ -57,7 +57,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             GroupSpawnData.Items.Clear();
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
-            var spawn_data = SFLuaEnvironment.coop_spawns.items[group_id].data;
+            var spawn_data = LuaSQLDatabase.coop_spawns.items[group_id].data;
             if (spawn_data == null)
             {
                 return;
@@ -87,7 +87,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;    // even though its a dictionary, they're listed sequentially!
 
-            var spawn_types = SFLuaEnvironment.coop_spawns.items;
+            var spawn_types = LuaSQLDatabase.coop_spawns.items;
             if (!spawn_types.ContainsKey(group_id))
             {
                 return;
@@ -137,7 +137,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
-            var spawn_data = SFLuaEnvironment.coop_spawns.items[group_id].data;
+            var spawn_data = LuaSQLDatabase.coop_spawns.items[group_id].data;
 
             List<int> activation_keys = spawn_data.Keys.ToList();
             activation_keys.Sort();
@@ -173,7 +173,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
         private void ButtonSaveChanges_Click(object sender, EventArgs e)
         {
-            if (SFLuaEnvironment.coop_spawns.Save() != 0)
+            if (LuaSQLDatabase.coop_spawns.Save() != 0)
             {
                 MessageBox.Show("Error while saving GdsRtsCoopSpawnGroups.lua");
             }
@@ -193,7 +193,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
-            SFLuaEnvironment.coop_spawns.items[group_id].name = GroupName.Text;
+            LuaSQLDatabase.coop_spawns.items[group_id].name = GroupName.Text;
         }
 
         private void GroupLevelRange_Validated(object sender, EventArgs e)
@@ -204,7 +204,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
-            SFLuaEnvironment.coop_spawns.items[group_id].level_range = GroupLevelRange.Text;
+            LuaSQLDatabase.coop_spawns.items[group_id].level_range = GroupLevelRange.Text;
         }
 
         private void GroupGoal_SelectedIndexChanged(object sender, EventArgs e)
@@ -224,7 +224,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             LuaEnumAiGoal goal;
             Enum.TryParse(GroupGoal.SelectedItem.ToString(), out goal);
 
-            SFLuaEnvironment.coop_spawns.items[group_id].goal = goal;
+            LuaSQLDatabase.coop_spawns.items[group_id].goal = goal;
         }
 
         private void GroupClanSize_Validated(object sender, EventArgs e)
@@ -235,7 +235,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
-            SFLuaEnvironment.coop_spawns.items[group_id].max_units = SFEngine.Utility.TryParseUInt16(GroupClanSize.Text);
+            LuaSQLDatabase.coop_spawns.items[group_id].max_units = SFEngine.Utility.TryParseUInt16(GroupClanSize.Text);
         }
 
         private void SelectedUnitID_Validated(object sender, EventArgs e)
@@ -252,7 +252,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
             ushort unit_id = SFEngine.Utility.TryParseUInt16(SelectedUnitID.Text);
-            SFLuaEnvironment.coop_spawns.items[group_id].start_units[GroupStartUnits.SelectedIndex] = (int)unit_id;
+            LuaSQLDatabase.coop_spawns.items[group_id].start_units[GroupStartUnits.SelectedIndex] = (int)unit_id;
 
             if (SFCategoryManager.ready)
             {
@@ -283,7 +283,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
-            var spawn_data = SFLuaEnvironment.coop_spawns.items[group_id].data;
+            var spawn_data = LuaSQLDatabase.coop_spawns.items[group_id].data;
             if (spawn_data.ContainsKey(new_key))
             {
                 return;
@@ -318,20 +318,20 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
-            var spawn_data = SFLuaEnvironment.coop_spawns.items[group_id].data;
+            var spawn_data = LuaSQLDatabase.coop_spawns.items[group_id].data;
 
             List<int> activation_keys = spawn_data.Keys.ToList();
             activation_keys.Sort();
             int key = activation_keys[GroupSpawnData.SelectedIndex];
 
             int hours, minutes;
-            int seconds = SFLuaEnvironment.coop_spawns.items[group_id].data[key].seconds_per_tick;
+            int seconds = LuaSQLDatabase.coop_spawns.items[group_id].data[key].seconds_per_tick;
             hours = seconds / 3600; seconds -= hours * 3600;
             minutes = seconds / 60; seconds -= minutes * 60;
 
             hours = SFEngine.Utility.TryParseUInt16(SpawnDataHours.Text);
             seconds += minutes * 60; seconds += hours * 3600;
-            SFLuaEnvironment.coop_spawns.items[group_id].data[key].seconds_per_tick = seconds;
+            LuaSQLDatabase.coop_spawns.items[group_id].data[key].seconds_per_tick = seconds;
 
             SpawnDataHours.Text = hours.ToString();
         }
@@ -349,21 +349,21 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
-            var spawn_data = SFLuaEnvironment.coop_spawns.items[group_id].data;
+            var spawn_data = LuaSQLDatabase.coop_spawns.items[group_id].data;
 
             List<int> activation_keys = spawn_data.Keys.ToList();
             activation_keys.Sort();
             int key = activation_keys[GroupSpawnData.SelectedIndex];
 
             int hours, minutes;
-            int seconds = SFLuaEnvironment.coop_spawns.items[group_id].data[key].seconds_per_tick;
+            int seconds = LuaSQLDatabase.coop_spawns.items[group_id].data[key].seconds_per_tick;
             hours = seconds / 3600; seconds -= hours * 3600;
             minutes = seconds / 60; seconds -= minutes * 60;
 
             minutes = (int)SFEngine.Utility.TryParseUInt32(SpawnDataMinutes.Text);
             hours += minutes / 60; minutes = minutes % 60;
             seconds += minutes * 60; seconds += hours * 60;
-            SFLuaEnvironment.coop_spawns.items[group_id].data[key].seconds_per_tick = seconds;
+            LuaSQLDatabase.coop_spawns.items[group_id].data[key].seconds_per_tick = seconds;
 
             SpawnDataHours.Text = hours.ToString();
             SpawnDataMinutes.Text = minutes.ToString();
@@ -382,14 +382,14 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
-            var spawn_data = SFLuaEnvironment.coop_spawns.items[group_id].data;
+            var spawn_data = LuaSQLDatabase.coop_spawns.items[group_id].data;
 
             List<int> activation_keys = spawn_data.Keys.ToList();
             activation_keys.Sort();
             int key = activation_keys[GroupSpawnData.SelectedIndex];
 
             int hours, minutes;
-            int seconds = SFLuaEnvironment.coop_spawns.items[group_id].data[key].seconds_per_tick;
+            int seconds = LuaSQLDatabase.coop_spawns.items[group_id].data[key].seconds_per_tick;
             hours = seconds / 3600; seconds -= hours * 3600;
             minutes = seconds / 60; seconds -= minutes * 60;
 
@@ -397,7 +397,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             minutes += seconds / 60; seconds = seconds % 60;
             hours += minutes / 60; minutes = minutes % 60;
             seconds += minutes * 60; seconds += hours * 60;
-            SFLuaEnvironment.coop_spawns.items[group_id].data[key].seconds_per_tick = seconds;
+            LuaSQLDatabase.coop_spawns.items[group_id].data[key].seconds_per_tick = seconds;
 
             SpawnDataHours.Text = hours.ToString();
             SpawnDataMinutes.Text = minutes.ToString();
@@ -422,14 +422,14 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
-            var spawn_data = SFLuaEnvironment.coop_spawns.items[group_id].data;
+            var spawn_data = LuaSQLDatabase.coop_spawns.items[group_id].data;
 
             List<int> activation_keys = spawn_data.Keys.ToList();
             activation_keys.Sort();
             int key = activation_keys[GroupSpawnData.SelectedIndex];
 
             ushort unit_id = SFEngine.Utility.TryParseUInt16(SelectedSpawnDataUnitID.Text);
-            SFLuaEnvironment.coop_spawns.items[group_id].data[key].units[SpawnDataUnits.SelectedIndex] = (int)unit_id;
+            LuaSQLDatabase.coop_spawns.items[group_id].data[key].units[SpawnDataUnits.SelectedIndex] = (int)unit_id;
 
             if (SFCategoryManager.ready)
             {
@@ -444,7 +444,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
         private void ButtonAddCoopSpawn_Click(object sender, EventArgs e)
         {
             int max_type = 0;
-            foreach (int key in SFLuaEnvironment.coop_spawns.items.Keys)
+            foreach (int key in LuaSQLDatabase.coop_spawns.items.Keys)
             {
                 if (key > max_type)
                 {
@@ -457,7 +457,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             new_type.level_range = "???";
             new_type.goal = LuaEnumAiGoal.GoalCoopAggressive;
             new_type.max_units = 0;
-            SFLuaEnvironment.coop_spawns.items.Add(max_type + 1, new_type);
+            LuaSQLDatabase.coop_spawns.items.Add(max_type + 1, new_type);
 
             ListSpawnTypes.Items.Add((max_type + 1).ToString() + ". " + new_type.name);
             ListSpawnTypes.SelectedIndex = max_type;
@@ -471,7 +471,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int key = ListSpawnTypes.SelectedIndex + 1;
-            var spawn_type = SFLuaEnvironment.coop_spawns.items[key];
+            var spawn_type = LuaSQLDatabase.coop_spawns.items[key];
 
             if (spawn_type.start_units == null)
             {
@@ -501,7 +501,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int key = ListSpawnTypes.SelectedIndex + 1;
-            var spawn_type = SFLuaEnvironment.coop_spawns.items[key];
+            var spawn_type = LuaSQLDatabase.coop_spawns.items[key];
 
             spawn_type.start_units.RemoveAt(index);
             if (spawn_type.start_units.Count == 0)
@@ -527,7 +527,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int key = ListSpawnTypes.SelectedIndex + 1;
-            var spawn_type = SFLuaEnvironment.coop_spawns.items[key];
+            var spawn_type = LuaSQLDatabase.coop_spawns.items[key];
 
             if (spawn_type.data == null)
             {
@@ -561,7 +561,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int key = ListSpawnTypes.SelectedIndex + 1;
-            var spawn_type = SFLuaEnvironment.coop_spawns.items[key];
+            var spawn_type = LuaSQLDatabase.coop_spawns.items[key];
 
             List<int> activation_keys = spawn_type.data.Keys.ToList();
             activation_keys.Sort();
@@ -597,7 +597,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int key = ListSpawnTypes.SelectedIndex + 1;
-            var spawn_type = SFLuaEnvironment.coop_spawns.items[key];
+            var spawn_type = LuaSQLDatabase.coop_spawns.items[key];
             if (spawn_type.data == null)
             {
                 return;
@@ -645,7 +645,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int key = ListSpawnTypes.SelectedIndex + 1;
-            var spawn_type = SFLuaEnvironment.coop_spawns.items[key];
+            var spawn_type = LuaSQLDatabase.coop_spawns.items[key];
             if (spawn_type.data == null)
             {
                 return;
@@ -684,7 +684,7 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
-            SelectedUnitID.Text = SFLuaEnvironment.coop_spawns.items[group_id].start_units[GroupStartUnits.SelectedIndex].ToString();
+            SelectedUnitID.Text = LuaSQLDatabase.coop_spawns.items[group_id].start_units[GroupStartUnits.SelectedIndex].ToString();
         }
 
         private void SpawnDataUnits_SelectedIndexChanged(object sender, EventArgs e)
@@ -705,13 +705,13 @@ namespace SpellforceDataEditor.SFLua.lua_sql_forms
             }
 
             int group_id = ListSpawnTypes.SelectedIndex + 1;
-            var spawn_data = SFLuaEnvironment.coop_spawns.items[group_id].data;
+            var spawn_data = LuaSQLDatabase.coop_spawns.items[group_id].data;
 
             List<int> activation_keys = spawn_data.Keys.ToList();
             activation_keys.Sort();
             int key = activation_keys[GroupSpawnData.SelectedIndex];
 
-            SelectedSpawnDataUnitID.Text = SFLuaEnvironment.coop_spawns.items[group_id].data[key].units[SpawnDataUnits.SelectedIndex].ToString();
+            SelectedSpawnDataUnitID.Text = LuaSQLDatabase.coop_spawns.items[group_id].data[key].units[SpawnDataUnits.SelectedIndex].ToString();
         }
     }
 }

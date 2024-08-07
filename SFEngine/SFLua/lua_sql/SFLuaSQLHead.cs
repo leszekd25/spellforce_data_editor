@@ -9,17 +9,16 @@ namespace SFEngine.SFLua.lua_sql
         public string MeshMale = "<undefined>";
         public string MeshFemale = "<undefined>";
 
-        public void ParseLoad(LuaParser.LuaTable table)
+        public void ParseLoad(LuaTable table)
         {
-
-            if (table.entries.ContainsKey("meshmale"))
+            if (table.TryGet("meshmale", out object o))
             {
-                MeshMale = (string)table["meshmale"];
+                MeshMale = (string)o;
             }
 
-            if (table.entries.ContainsKey("meshfemale"))
+            if (table.TryGet("meshfemale", out object o2))
             {
-                MeshFemale = (string)table["meshfemale"];
+                MeshFemale = (string)o2;
             }
         }
 

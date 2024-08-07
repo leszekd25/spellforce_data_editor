@@ -55,7 +55,7 @@ namespace SpellforceDataEditor
             }
             finally
             {
-                SFEngine.SFLua.SFLuaEnvironment.UnloadSQL();
+                SFEngine.SFLua.LuaSQLDatabase.UnloadSQL();
                 SFEngine.SFUnPak.SFUnPak.CloseAllPaks();
                 SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.Main, "Program.Main(): session finish time: " + DateTime.Now.ToLongTimeString());
                 SFEngine.LogUtils.Log.SaveLog("UserLog.txt");

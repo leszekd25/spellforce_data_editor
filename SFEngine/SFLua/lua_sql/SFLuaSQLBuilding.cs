@@ -9,21 +9,21 @@ namespace SFEngine.SFLua.lua_sql
         public List<string> Mesh;
         public double SelectionScaling;
 
-        public void ParseLoad(LuaParser.LuaTable table)
+        public void ParseLoad(LuaTable table)
         {
             Mesh = new List<string>();
-            if (table.entries.ContainsKey("mesh"))
+            LuaTable lt = table["mesh"] as LuaTable;
+            if (lt != null)
             {
-                LuaParser.LuaTable mesh_table = (LuaParser.LuaTable)table["mesh"];
-                for (int k = 1; k <= mesh_table.entries.Count; k++)
+                foreach(KeyValuePair<object, object> kv in lt)
                 {
-                    Mesh.Add((string)mesh_table[(double)k]);
+                    Mesh.Add((string)kv.Value);
                 }
             }
 
-            if (table.entries.ContainsKey("selectionscaling"))
+            if (lt.TryGet("selectionscaling", out object o))
             {
-                SelectionScaling = (double)table["selectionscaling"];
+                SelectionScaling = (double)o;
             }
             else
             {

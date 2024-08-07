@@ -13,39 +13,39 @@ namespace SFEngine.SFLua.lua_sql
         public double Scale = 1;
         public double SelectionScaling = 0;
 
-        public void ParseLoad(LuaParser.LuaTable table)
+        public void ParseLoad(LuaTable table)
         {
-            if (table.entries.ContainsKey("name"))
+            if (table.TryGet("name", out object o))
             {
                 Name = (string)table["name"];
             }
 
             Mesh = new List<string>();
-            if (table.entries.ContainsKey("mesh"))
+            if (table.TryGet("mesh", out o))
             {
-                LuaParser.LuaTable mesh_table = (LuaParser.LuaTable)table["mesh"];
-                for (int k = 1; k <= mesh_table.entries.Count; k++)
+                LuaTable mesh_table = (LuaTable)o;
+                foreach(KeyValuePair<object, object> kv in mesh_table)
                 {
-                    Mesh.Add((string)mesh_table[(double)k]);
+                    Mesh.Add((string)kv.Value);
                 }
             }
 
-            if (table.entries.ContainsKey("shadow"))
+            if (table.TryGet("shadow", out o))
             {
                 Shadow = ((double)table["shadow"] != 0);
             }
 
-            if (table.entries.ContainsKey("billboarded"))
+            if (table.TryGet("billboarded", out o))
             {
                 Billboarded = ((double)table["billboarded"] != 0);
             }
 
-            if (table.entries.ContainsKey("scale"))
+            if (table.TryGet("scale", out o))
             {
                 Scale = (double)table["scale"];
             }
 
-            if (table.entries.ContainsKey("selectionscaling"))
+            if (table.TryGet("selectionscaling", out o))
             {
                 SelectionScaling = (double)table["selectionscaling"];
             }

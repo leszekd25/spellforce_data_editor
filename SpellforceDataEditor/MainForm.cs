@@ -6,8 +6,10 @@ using System.Threading;
 using System.Windows.Forms;
 using OpenTK.Mathematics;
 using System.Runtime.Intrinsics.Arm;
-using SFEngine.SFLua.LuaTokenizer;
 using System.IO;
+using SFEngine.SFLua;
+using Windows.UI.WebUI;
+using System.Threading.Tasks;
 
 namespace SpellforceDataEditor
 {
@@ -26,6 +28,7 @@ namespace SpellforceDataEditor
         public static special_forms.MapEditorForm mapedittool = null;
         public static special_forms.AboutForm applicationinfo = null;
         public static special_forms.SaveDataEditorForm svdata = null;
+        public static Lua lua = null;
 
         public MainForm()
         {
@@ -47,6 +50,9 @@ namespace SpellforceDataEditor
             {
                 LabelIsSpecifiedGameDir.Text = "Game directory:\r\nNOT specified";
             }
+
+            lua = new();
+
 
             SFEngine.LogUtils.Log.TotalMemoryUsage();
         }
@@ -86,7 +92,12 @@ namespace SpellforceDataEditor
             }
             catch (HttpRequestException e)
             {
-                SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.Main, $"MainForm.getVersion_completed(): Error while retrieving update info (error code {e.HttpRequestError}");
+                SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.Main, $"MainForm.getVersion_completed(): Error while retrieving update info (error code {e.HttpRequestError})");
+                return;
+            }
+            catch(TaskCanceledException e)
+            {
+                SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.Main, $"MainForm.getVersion_completed(): Error while retrieving update info (request timeout)");
                 return;
             }
             finally

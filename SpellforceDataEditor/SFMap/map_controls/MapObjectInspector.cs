@@ -231,22 +231,7 @@ namespace SpellforceDataEditor.SFMap.map_controls
 
         private void NPCScript_Click(object sender, EventArgs e)
         {
-            if (ListObjects.SelectedIndex == SFEngine.Utility.NO_INDEX)
-            {
-                return;
-            }
-
-            SFMapObject obj = map.object_manager.objects[ListObjects.SelectedIndex];
-            if (obj.npc_id == 0)
-            {
-                return;
-            }
-
-            string fname = "script\\p" + map.PlatformID.ToString() + "\\n" + obj.npc_id.ToString() + ".lua";
-            if (SFLuaEnvironment.OpenNPCScript((int)map.PlatformID, obj.npc_id) != 0)
-            {
-                MessageBox.Show("Could not open " + fname);
-            }
+            throw new NotImplementedException();
         }
 
         private void Angle_Validated(object sender, EventArgs e)

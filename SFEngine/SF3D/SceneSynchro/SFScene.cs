@@ -292,7 +292,7 @@ namespace SFEngine.SF3D.SceneSynchro
             {
                 case SFCFFMode.ITEM:
                     //find item mesh
-                    string m_name = SFLuaEnvironment.GetItemMesh(item_id, false);
+                    string m_name = LuaSQLDatabase.GetItemMesh(item_id, false);
                     if (m_name == "")
                     {
                         LogUtils.Log.Info(LogUtils.LogSource.SF3D, "SFSceneManager.CatElemToScene(): Item mesh not found (item id = " + item_id.ToString() + ")");
@@ -421,14 +421,14 @@ namespace SFEngine.SF3D.SceneSynchro
                 return unit_node;
             }
             //find chest skin/animations
-            SFLuaSQLItemData chest_data = SFLuaEnvironment.items[chest_id];
+            SFLuaSQLItemData chest_data = LuaSQLDatabase.items[chest_id];
             if (chest_data == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneUnit(): Undefined chestpiece mesh (unit id = "
                     + unit_id + ")");
                 return unit_node;
             }
-            string chest_name = SFLuaEnvironment.GetItemMesh(chest_id, is_female);
+            string chest_name = LuaSQLDatabase.GetItemMesh(chest_id, is_female);
             string anim_name = chest_data.AnimSet;
             if (anim_name == "")
             {
@@ -451,7 +451,7 @@ namespace SFEngine.SF3D.SceneSynchro
             if (legs_id != 0)
             {
                 //find chest skin/animations
-                string legs_name = SFLuaEnvironment.GetItemMesh(legs_id, is_female);
+                string legs_name = LuaSQLDatabase.GetItemMesh(legs_id, is_female);
                 if (legs_name != "")
                 {
                     uo2 = AddSceneNodeAnimated(null, legs_name, "Legs", false);
@@ -462,7 +462,7 @@ namespace SFEngine.SF3D.SceneSynchro
             if ((anim_name == "figure_hero") && (unit_stats_found))
             {
                 int head_id = SFCategoryManager.gamedata.c2005[unit_stats_index].HeadID;
-                SFLuaSQLHeadData head_data = SFLuaEnvironment.heads[head_id];
+                SFLuaSQLHeadData head_data = LuaSQLDatabase.heads[head_id];
                 if (head_data == null)
                 {
                     LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneUnit(): Unit head has undefined mesh (unit id = "
@@ -490,7 +490,7 @@ namespace SFEngine.SF3D.SceneSynchro
             if (helmet_id != 0)
             {
                 //find item mesh
-                string helmet_name = SFLuaEnvironment.GetItemMesh(helmet_id, is_female);
+                string helmet_name = LuaSQLDatabase.GetItemMesh(helmet_id, is_female);
                 if (helmet_name != "")
                 {
                     //create bone attachment
@@ -504,7 +504,7 @@ namespace SFEngine.SF3D.SceneSynchro
             if (rhand_id != 0)
             {
                 //find item mesh
-                string rhand_name = SFLuaEnvironment.GetItemMesh(rhand_id, is_female);
+                string rhand_name = LuaSQLDatabase.GetItemMesh(rhand_id, is_female);
                 if (rhand_name != "")
                 {
                     //create bone attachment
@@ -518,7 +518,7 @@ namespace SFEngine.SF3D.SceneSynchro
             if (lhand_id != 0)
             {
                 //find item mesh
-                string lhand_name = SFLuaEnvironment.GetItemMesh(lhand_id, is_female);
+                string lhand_name = LuaSQLDatabase.GetItemMesh(lhand_id, is_female);
                 if (lhand_name != "")
                 {
                     bool is_shield = false;
@@ -543,7 +543,7 @@ namespace SFEngine.SF3D.SceneSynchro
             // create root
             SceneNode obj_node = AddSceneNodeEmpty(null, object_name);
 
-            SFLuaSQLObjectData obj_data = SFLuaEnvironment.objects[object_id];
+            SFLuaSQLObjectData obj_data = LuaSQLDatabase.objects[object_id];
             List<string> m_lst;
             if (obj_data == null)
             {
@@ -602,7 +602,7 @@ namespace SFEngine.SF3D.SceneSynchro
             // create root
             SceneNode bld_node = AddSceneNodeEmpty(null, building_name);
 
-            SFLuaSQLBuildingData bld_data = SFLuaEnvironment.buildings[building_id];
+            SFLuaSQLBuildingData bld_data = LuaSQLDatabase.buildings[building_id];
             if (bld_data == null)
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SF3D, "SFSceneManager.AddSceneBuilding(): Can't find building data (object id = "

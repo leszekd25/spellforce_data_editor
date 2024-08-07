@@ -1156,11 +1156,11 @@ namespace SpellforceDataEditor.special_forms
             }
 
             // load SQL Lua files
-            if (!SFLuaEnvironment.data_loaded)
+            if (!LuaSQLDatabase.data_loaded)
             {
                 ForceSetStatusText("Loading SQL Lua files...", Color.Blue);
-                SFLuaEnvironment.LoadSQL(false);
-                if (!SFLuaEnvironment.data_loaded)
+                LuaSQLDatabase.LoadSQL(MainForm.lua, false);
+                if (!LuaSQLDatabase.data_loaded)
                 {
                     StatusText.Text = "Could not load SQL Lua files. Can't create new map";
                     SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFMap, "MapEditorForm.CreateMap(): Failed to load SQL data!");
@@ -1298,11 +1298,11 @@ namespace SpellforceDataEditor.special_forms
                 }
 
                 // load SQL Lua files
-                if (!SFLuaEnvironment.data_loaded)
+                if (!LuaSQLDatabase.data_loaded)
                 {
                     ForceSetStatusText("Loading SQL Lua files...", Color.Blue);
-                    SFLuaEnvironment.LoadSQL(false);
-                    if (!SFLuaEnvironment.data_loaded)
+                    LuaSQLDatabase.LoadSQL(MainForm.lua, false);
+                    if (!LuaSQLDatabase.data_loaded)
                     {
                         StatusText.Text = "Could not load SQL Lua files. Can't load map.";
                         SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFMap, "MapEditorForm.LoadMap(): Failed to load SQL data!");

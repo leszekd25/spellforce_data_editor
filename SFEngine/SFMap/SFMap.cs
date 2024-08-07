@@ -1686,7 +1686,7 @@ namespace SFEngine.SFMap
             foreach (SFMapBuilding b in building_manager.buildings)
             {
                 float sel_scale = 0.0f;
-                SFLua.lua_sql.SFLuaSQLBuildingData bld_data = SFLua.SFLuaEnvironment.buildings[b.game_id];
+                SFLua.lua_sql.SFLuaSQLBuildingData bld_data = SFLua.LuaSQLDatabase.buildings[b.game_id];
                 if (bld_data != null)
                 {
                     sel_scale = (float)(bld_data.SelectionScaling / 2);
@@ -1721,7 +1721,7 @@ namespace SFEngine.SFMap
             foreach (SFMapObject o in object_manager.objects)
             {
                 float sel_scale = 0.0f;
-                SFLua.lua_sql.SFLuaSQLObjectData obj_data = SFLua.SFLuaEnvironment.objects[o.game_id];
+                SFLua.lua_sql.SFLuaSQLObjectData obj_data = SFLua.LuaSQLDatabase.objects[o.game_id];
                 if (obj_data != null)
                 {
                     if (obj_data.SelectionScaling != 0.0f)

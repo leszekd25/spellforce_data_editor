@@ -261,8 +261,8 @@ namespace SpellforceDataEditor.special_forms
 #endif
             SFResourceManager.ListAllPakResources();
 
-            SFLuaEnvironment.LoadSQL(false);
-            if (!SFLuaEnvironment.data_loaded)
+            LuaSQLDatabase.LoadSQL(MainForm.lua, false);
+            if (!LuaSQLDatabase.data_loaded)
             {
                 SFEngine.LogUtils.Log.Error(SFEngine.LogUtils.LogSource.SFMap, "SFAssetManagerForm(): Failed to load SQL data!");
                 Close();

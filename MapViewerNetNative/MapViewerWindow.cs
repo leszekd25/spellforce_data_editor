@@ -22,6 +22,7 @@ namespace MapViewerNetNative
 
     public class MapViewerWindow : GameWindow
     {
+        Lua L;
         SFMap map = null;
 
         Vector2 mouse_current_pos = new Vector2(0, 0);   // while moving, this keeps track of mouse position
@@ -274,7 +275,8 @@ namespace MapViewerNetNative
             SFResourceManager.ListAllFilesystemResources();
 
             // load SQL stuff
-            SFLuaEnvironment.LoadSQL(false);
+            L = new();
+            LuaSQLDatabase.LoadSQL(L, false);
 
 
             // load gamedata
