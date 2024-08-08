@@ -53,7 +53,6 @@ namespace SpellforceDataEditor
 
             lua = new();
 
-
             SFEngine.LogUtils.Log.TotalMemoryUsage();
         }
 

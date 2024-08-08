@@ -146,6 +146,7 @@ namespace SFEngine.SFLua
             ];
 
         static int LUAGEN_ID = 0;
+        static Dictionary<nint, Lua> luastate_to_lua = new();
 
         public Lua(int stacksize = 0)
         {
@@ -166,11 +167,13 @@ namespace SFEngine.SFLua
 
             LUAGEN_ID++;
 
+            luastate_to_lua[L] = this;
             RegisterType<GCHandle>();     // actually necessary
             RegisterType<Type>();         // very helpful
             RegisterType<FieldInfo>();    // necessary to be able to put FieldInfo into the table
             RegisterType<Lua>();          // very helpful 
-            SetGlobal("_ENV", this);
+            RegisterType<MethodInfo>();   // necessary
+            RegisterTagMethod<MethodInfo>(LuaTagMethod.TM_FUNCTION, LUAOVERRIDE_TM_function_methodwrapper);
             RegisterGlobalFunction("dofile", LUAOVERRIDE_dofile);
 
             LuaNative.lua_settop(L, old_top);
@@ -199,6 +202,7 @@ namespace SFEngine.SFLua
             {
                 r.Free();
             }
+            luastate_to_lua.Remove(L);
             L = IntPtr.Zero;
             GC.SuppressFinalize(this);
         }
@@ -254,28 +258,30 @@ namespace SFEngine.SFLua
         {
             // registered userdata
             Type t = o.GetType();
-            if (udtype_to_ud.TryGetValue(t, out CLuaUserdata ud))
+            CLuaUserdata ud;
+            while (!udtype_to_ud.TryGetValue(t, out ud))
             {
-                CLuaRefCounter cref;
-                if (!obj_to_ref.TryGetValue(o, out cref))
-                { 
-                    cref = new();
-                    cref.obj = GCHandle.Alloc(o, GCHandleType.Normal);
-                    cref.idx = cur_reg_idx;
-                    cref.t = t;
-                    obj_to_ref.Add(o, cref);
-
-                    regobj_to_objidx.Add(cref.obj, cur_reg_idx);
-                    objidx_to_regobj.Add(cur_reg_idx, cref.obj);
-                    cur_reg_idx++;
+                if (t.BaseType == null)
+                {
+                    throw new Exception();
                 }
+                t = t.BaseType;
+            }
+            CLuaRefCounter cref;
+            if (!obj_to_ref.TryGetValue(o, out cref))
+            { 
+                cref = new();
+                cref.obj = GCHandle.Alloc(o, GCHandleType.Normal);
+                cref.idx = cur_reg_idx;
+                cref.t = t;
+                obj_to_ref.Add(o, cref);
 
-                LuaNative.lua_pushusertag(L, cref.idx, ud.tag);
+                regobj_to_objidx.Add(cref.obj, cur_reg_idx);
+                objidx_to_regobj.Add(cur_reg_idx, cref.obj);
+                cur_reg_idx++;
             }
-            else
-            {
-                throw new Exception("Unregistered type detected");
-            }
+
+            LuaNative.lua_pushusertag(L, cref.idx, ud.tag);
             LuaNative.lua_setglobal(L, k);
         }
 
@@ -367,26 +373,29 @@ namespace SFEngine.SFLua
 
             // registered userdata
             Type t = o.GetType();
-            if(udtype_to_ud.TryGetValue(t, out CLuaUserdata ud))
+            CLuaUserdata ud;
+            while(!udtype_to_ud.TryGetValue(t, out ud))
             {
-                CLuaRefCounter cref;
-                if (!obj_to_ref.TryGetValue(o, out cref))
+                if(t.BaseType == null)
                 {
-                    cref = new();
-                    cref.obj = GCHandle.Alloc(o, GCHandleType.Normal);
-                    cref.idx = cur_reg_idx;
-                    cref.t = t;
-                    obj_to_ref.Add(o, cref);
-
-                    regobj_to_objidx.Add(cref.obj, cur_reg_idx);
-                    objidx_to_regobj.Add(cur_reg_idx, cref.obj);
-                    cur_reg_idx++;
+                    throw new Exception();
                 }
-                LuaNative.lua_pushusertag(L, cref.idx, ud.tag);
+                t = t.BaseType;
             }
+            CLuaRefCounter cref;
+            if (!obj_to_ref.TryGetValue(o, out cref))
+            {
+                cref = new();
+                cref.obj = GCHandle.Alloc(o, GCHandleType.Normal);
+                cref.idx = cur_reg_idx;
+                cref.t = t;
+                obj_to_ref.Add(o, cref);
 
-
-            throw new Exception();
+                regobj_to_objidx.Add(cref.obj, cur_reg_idx);
+                objidx_to_regobj.Add(cur_reg_idx, cref.obj);
+                cur_reg_idx++;
+            }
+            LuaNative.lua_pushusertag(L, cref.idx, ud.tag);
         }
 
         public object PopObject()
@@ -452,6 +461,7 @@ namespace SFEngine.SFLua
 
                         object o = h.Target;
 
+                        LuaNative.lua_settop(L, -2);
                         return o;
                     }
                 case LuaType.NIL:
@@ -632,8 +642,7 @@ namespace SFEngine.SFLua
                             case LuaTagMethod.TM_LT:
                             case LuaTagMethod.TM_CONCAT:
                                 {
-                                    RegisterTagMethod<T>(lma.Tag, mi);
-                                    break;
+                                    throw new NotImplementedException("");
                                 }
                             default:
                                 {
@@ -650,144 +659,15 @@ namespace SFEngine.SFLua
             RegisterTagMethod<T>(LuaTagMethod.TM_GC, LUAOVERRIDE_TM_gc);
         }
 
-        MethodBuilder EmitWrapper(string name, MethodInfo func)
-        {
-            // create new function with signature public static int LUAGEN{X}_{name}(lua_State L)  <-- lua_State is nint
-            // this function pops arguments from the stack, calls the function func.MethodHandle from the MethodInfo argument of RegisterGlobalFunction, and pushes results
 
-            // function will emit the following:
-            // - instructions to call LuaNative functions to pop and store arguments from the stack
-            // - instructions to call func.MethodHandle with these arguments
-            // - instructions to call LuaNative functions to push results of func.MethodHandle to the stack
-            // - instructions to return how many results were pushed
-
-            var paramInfo = func.GetParameters();
-            var paramTypes = new Type[paramInfo.Length];
-            var returnTypesList = new List<Type>();
-
-            var returnType = func.ReturnType;
-            returnTypesList.Add(returnType);
-
-            for (int i = 0; i < paramTypes.Length; i++)
-            {
-                paramTypes[i] = paramInfo[i].ParameterType;
-                if (paramInfo[i].IsIn || paramInfo[i].IsOut)
-                {
-                    throw new NotImplementedException("Inout parameters not supported (for now)");
-                }
-            }
-
-            // public static int method(lua_State L)
-            MethodBuilder methodImpl = parent_type.DefineMethod($"{func.DeclaringType.Name}_{name}", MethodAttributes.Static | MethodAttributes.Public, typeof(int), [typeof(nint)]);
-
-            ILGenerator generator = methodImpl.GetILGenerator();
-
-            Type luanative_t = typeof(LuaNative);
-            Type lua_t = typeof(Lua);
-            MethodInfo getenv_mi = lua_t.GetMethod("GetEnv");
-            MethodInfo popobject_mi = lua_t.GetMethod("PopObject");
-            MethodInfo pushobject_mi = lua_t.GetMethod("PushObject");
-            MethodInfo gettop_mi = luanative_t.GetMethod("lua_gettop");
-            MethodInfo settop_mi = luanative_t.GetMethod("lua_settop");
-
-
-            LocalBuilder local_top = generator.DeclareLocal(typeof(int));
-            LocalBuilder local_argarray = generator.DeclareLocal(typeof(object[]));
-            LocalBuilder local_lua = generator.DeclareLocal(typeof(Lua));
-
-            // int old_top = LuaNative.lua_gettop(L)
-            generator.Emit(OpCodes.Ldarg_0);
-            generator.Emit(OpCodes.Call, gettop_mi);
-            generator.Emit(OpCodes.Stloc_0);
-
-            // object[] args = new object[paramInfo.Length]
-            generator.Emit(OpCodes.Ldc_I4, paramInfo.Length);
-            generator.Emit(OpCodes.Newarr, typeof(object));
-            generator.Emit(OpCodes.Stloc_1);
-
-            // Lua lua = Lua.GetEnv();
-            generator.Emit(OpCodes.Call, getenv_mi);
-            generator.Emit(OpCodes.Stloc_2);
-
-            // read arguments from lua to arg array
-            for (int i = 0; i < paramInfo.Length; i++)
-            {
-                // args[i] = lua.PopObject();
-                // load array on stack
-                generator.Emit(OpCodes.Ldarg_1);
-                generator.Emit(OpCodes.Ldc_I4, i);
-                // call Pop()
-                generator.Emit(OpCodes.Ldarg_2);
-                generator.Emit(OpCodes.Call, popobject_mi);
-                // store object in the array
-                generator.Emit(OpCodes.Stelem, typeof(object));
-            }
-            // push the caller if method is not static
-            if(!func.IsStatic)
-            {
-                // arg this T = (T)lua.PopObject();
-                generator.Emit(OpCodes.Ldarg_2);
-                generator.Emit(OpCodes.Call, popobject_mi);  // here is the caller
-                generator.Emit(OpCodes.Castclass, func.DeclaringType);
-            }
-            // push objects to C stack, unboxing (?) if needed
-            for(int i = 0; i < paramInfo.Length; i++)
-            {
-                // arg i argtype[i] = args[i]
-                generator.Emit(OpCodes.Ldarg_1);
-                generator.Emit(OpCodes.Ldc_I4, i);
-                generator.Emit(OpCodes.Stelem, paramInfo[i].ParameterType);
-            }
-            // [this].func(arg0 .. )
-            generator.Emit(OpCodes.Call, func);
-            if (func.ReturnType != typeof(void))
-            {
-                // lua.Push(<return>)
-                generator.Emit(OpCodes.Ldarg_2);
-                generator.Emit(OpCodes.Call, pushobject_mi);
-                // LuaNative.lua_settop(L)
-                generator.Emit(OpCodes.Ldloc_0);
-                generator.Emit(OpCodes.Ldarg_0);
-                generator.Emit(OpCodes.Call, settop_mi);
-                // return 1
-                generator.Emit(OpCodes.Ldc_I4_1);
-                generator.Emit(OpCodes.Ret);
-            }
-            else
-            {
-                // LuaNative.lua_settop(L)
-                generator.Emit(OpCodes.Ldloc_0);
-                generator.Emit(OpCodes.Ldarg_0);
-                generator.Emit(OpCodes.Call, settop_mi);
-                // return 0
-                generator.Emit(OpCodes.Ldc_I4_0);
-                generator.Emit(OpCodes.Ret);
-            }
-
-            return methodImpl;
-        }
-
-        public LuaFunction RegisterGlobalFunction(string name, MethodInfo func)
+        public void RegisterGlobalFunction(string name, MethodInfo func)
         {
             if (!func.IsStatic)
             {
                 throw new Exception("Cant register non-static global functions (for now...)");
             }
 
-            MethodBuilder mb = EmitWrapper(name, func);
-
-            // push new function on stack
-            nint cfunc_ptr = mb.MethodHandle.GetFunctionPointer();
-            CLuaFunction cfunc = cfunc_ptr.ToCLuaFunction();
-            LuaNative.lua_pushcclosure(L, cfunc_ptr, 0);
-
-            // set global to this function
-            LuaNative.lua_setglobal(L, name);
-
-            // store function somewhere so its still referenced somewhere
-            LuaFunction luafunc = GetGlobal(name) as LuaFunction;
-            registered_functions.Add(luafunc);
-            return luafunc;
+            SetGlobal(name, func);
         }
 
         public LuaFunction RegisterGlobalFunction(string name, CLuaFunction func)
@@ -797,37 +677,6 @@ namespace SFEngine.SFLua
             LuaNative.lua_setglobal(L, name);
             LuaFunction luafunc = GetGlobal(name) as LuaFunction;
             registered_functions.Add(luafunc);
-            return luafunc;
-        }
-
-        LuaFunction RegisterTagMethod<T>(LuaTagMethod tm, MethodInfo func)
-        {
-            Type t = typeof(T);
-            if (!udtype_to_ud.TryGetValue(t, out CLuaUserdata ud))
-            {
-                throw new Exception("Unknown userdata type");
-            }
-
-            if (!func.IsStatic)
-            {
-                throw new Exception("Cant register non-static tag methods (for now...)");
-            }
-
-            MethodBuilder mb = EmitWrapper($"LUATM_{tms[(int)tm]}", func);
-
-            // push new function on stack
-            nint cfunc_ptr = mb.MethodHandle.GetFunctionPointer();
-            CLuaFunction cfunc = cfunc_ptr.ToCLuaFunction();
-            LuaNative.lua_pushcclosure(L, cfunc_ptr, 0);
-
-            // store function somewhere so its still referenced somewhere
-            LuaFunction luafunc = PopObject() as LuaFunction;
-            registered_functions.Add(luafunc);
-
-            // set tag method
-            PushObject(luafunc);
-            LuaNative.lua_settagmethod(L, ud.tag, tms[(int)tm]);
-
             return luafunc;
         }
 
@@ -850,7 +699,7 @@ namespace SFEngine.SFLua
             return luafunc;
         }
 
-        LuaFunction RegisterMethod<T>(string name, MethodInfo func)
+        void RegisterMethod<T>(string name, MethodInfo func)
         {
             if (func.IsStatic)
             {
@@ -862,28 +711,15 @@ namespace SFEngine.SFLua
                 throw new Exception("Unknown userdata type");
             }
 
-            MethodBuilder mb = EmitWrapper(name, func);
-
-            // push new function on stack
-            nint cfunc_ptr = mb.MethodHandle.GetFunctionPointer();
-            CLuaFunction cfunc = cfunc_ptr.ToCLuaFunction();
-            LuaNative.lua_pushcclosure(L, cfunc_ptr, 0);
-
-            // store function somewhere so its still referenced somewhere
-            LuaFunction luafunc = PopObject() as LuaFunction;
-            registered_functions.Add(luafunc);
-
             // register method
             if (ud.registered_functions == null)
             {
                 ud.registered_functions = new LuaTable(this);
             }
             ud.registered_functions[name] = func;
-
-            return luafunc;
         }
 
-        LuaFunction RegisterTypeConstructor<T>(MethodInfo func)
+        void RegisterTypeConstructor<T>(MethodInfo func)
         {
             if (!func.IsConstructor)
             {
@@ -899,25 +735,12 @@ namespace SFEngine.SFLua
                 throw new Exception("Unknown userdata type");
             }
 
-            MethodBuilder mb = EmitWrapper($"{func.DeclaringType}_NEW", func);
-
-            // push new function on stack
-            nint cfunc_ptr = mb.MethodHandle.GetFunctionPointer();
-            CLuaFunction cfunc = cfunc_ptr.ToCLuaFunction();
-            LuaNative.lua_pushcclosure(L, cfunc_ptr, 0);
-
-            // store function somewhere so its still referenced somewhere
-            LuaFunction luafunc = PopObject() as LuaFunction;
-            registered_functions.Add(luafunc);
-
             // register method
             if (ud.registered_functions == null)
             {
                 ud.registered_functions = new LuaTable(this);
             }
             ud.registered_functions["new"] = func;
-
-            return luafunc;
         }
 
 
@@ -979,16 +802,7 @@ namespace SFEngine.SFLua
 
         public static Lua GetEnv(IntPtr _L)
         {
-            Lua env;
-
-            int old_top = LuaNative.lua_gettop(_L);
-            LuaNative.lua_getglobal(_L, "_ENV");
-            IntPtr envptr = LuaNative.lua_touserdata(_L, -1);
-            GCHandle h = GCHandle.FromIntPtr(envptr);
-            env = h.Target as Lua;
-            LuaNative.lua_settop(_L, old_top);
-
-            return env;
+            return luastate_to_lua[_L];
         }
 
         // dofile override
@@ -1098,6 +912,44 @@ namespace SFEngine.SFLua
             cref.obj.Free();
 
             return 0;
+        }
+
+        public static int LUAOVERRIDE_TM_function_methodwrapper(IntPtr _L)
+        {
+            Lua env = GetEnv(_L);
+
+            List<object> args = new();
+            while(true)
+            {
+                object o = env.PopObject();
+                if(o is MethodInfo)
+                {
+                    object caller = null;
+                    MethodInfo wrapper = o as MethodInfo;
+                    ParameterInfo[] pi = wrapper.GetParameters();
+                    if(!wrapper.IsStatic)
+                    {
+                        caller = args[args.Count - 1];
+                        args.RemoveAt(args.Count - 1);
+                    }
+                    args.Reverse();
+                    for(int i = 0; i < args.Count; i++)
+                    {
+                        args[i] = Convert.ChangeType(args[i], pi[i].ParameterType);
+                    }
+                    object ret = wrapper.Invoke(caller, args.ToArray());
+                    if(wrapper.ReturnType != typeof(void))
+                    {
+                        env.PushObject(ret);
+                        return 1;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                args.Add(o);
+            }
         }
     }
 }
