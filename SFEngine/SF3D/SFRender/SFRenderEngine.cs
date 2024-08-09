@@ -25,7 +25,7 @@ namespace SFEngine.SF3D.SFRender
         public static float max_render_distance = 1000f;
 
         static bool CurrentCullEnabled = false;
-        static CullFaceMode CurrentCullMode = CullFaceMode.FrontAndBack;
+        static TriangleFace CurrentCullMode = TriangleFace.FrontAndBack;
         static float CurrentDepthBias = 0.0f;
         static RenderMode CurrentRenderMode = RenderMode.SRCALPHA_INVSRCALPHA;
         static bool CurrentDistanceFade = true;
@@ -90,7 +90,7 @@ namespace SFEngine.SF3D.SFRender
 
         private static void DebugCallback(DebugSource source,
                                     DebugType type,
-                                    int id,
+                                    uint id,
                                     DebugSeverity severity,
                                     int length,
                                     IntPtr message,
@@ -108,7 +108,7 @@ namespace SFEngine.SF3D.SFRender
             }
         }
 
-        private static DebugProc _debugProcCallback = DebugCallback;
+        private static GLDebugProc _debugProcCallback = DebugCallback;
 #endif //DEBUG
         public static void Initialize(Vector2 view_size)
         {
@@ -279,7 +279,7 @@ namespace SFEngine.SF3D.SFRender
                     shader_simple.AddParameter("EmissionColor");
                     shader_simple.AddParameter("ViewPos");
 
-                    int uniform_tilecol_simple = GL.GetUniformBlockIndex(shader_simple.ProgramID, "TileColors");
+                    uint uniform_tilecol_simple = GL.GetUniformBlockIndex(shader_simple.ProgramID, "TileColors");
                     GL.UniformBlockBinding(shader_simple.ProgramID, uniform_tilecol_simple, 2);
                 }
             }
@@ -323,7 +323,7 @@ namespace SFEngine.SF3D.SFRender
                     shader_simple_transparency.AddParameter("EmissionColor");
                     shader_simple_transparency.AddParameter("ViewPos");
 
-                    int uniform_tilecol_simple = GL.GetUniformBlockIndex(shader_simple_transparency.ProgramID, "TileColors");
+                    uint uniform_tilecol_simple = GL.GetUniformBlockIndex(shader_simple_transparency.ProgramID, "TileColors");
                     GL.UniformBlockBinding(shader_simple_transparency.ProgramID, uniform_tilecol_simple, 2);
                 }
             }
@@ -370,7 +370,7 @@ namespace SFEngine.SF3D.SFRender
                     shader_animated.AddParameter("EmissionColor");
                     shader_animated.AddParameter("ViewPos");
 
-                    int uniform_tilecol_simple = GL.GetUniformBlockIndex(shader_animated.ProgramID, "TileColors");
+                    uint uniform_tilecol_simple = GL.GetUniformBlockIndex(shader_animated.ProgramID, "TileColors");
                     GL.UniformBlockBinding(shader_animated.ProgramID, uniform_tilecol_simple, 2);
                 }
             }
@@ -400,14 +400,14 @@ namespace SFEngine.SF3D.SFRender
             shader_heightmap.AddParameter("HeightMap");
             shader_heightmap.AddParameter("BumpMap");
             shader_heightmap.AddParameter("SunColor");
-            int uniform_tilecol = GL.GetUniformBlockIndex(shader_heightmap.ProgramID, "TileColors");
+            uint uniform_tilecol = GL.GetUniformBlockIndex(shader_heightmap.ProgramID, "TileColors");
             GL.UniformBlockBinding(shader_heightmap.ProgramID, uniform_tilecol, 2);
             if (Settings.EditorMode)
             {
                 shader_heightmap.AddParameter("GridColor");
                 shader_heightmap.AddParameter("CurrentFlags");
                 shader_heightmap.AddParameter("FlagMap");
-                int uniform_overlaycol = GL.GetUniformBlockIndex(shader_heightmap.ProgramID, "Overlays");
+                uint uniform_overlaycol = GL.GetUniformBlockIndex(shader_heightmap.ProgramID, "Overlays");
                 GL.UniformBlockBinding(shader_heightmap.ProgramID, uniform_overlaycol, 1);
             }
             if (Settings.TerrainTextureLOD != 2)
@@ -496,70 +496,70 @@ namespace SFEngine.SF3D.SFRender
         public static void ApplyLight()
         {
             GL.UseProgram(shader_simple.ProgramID);
-            GL.Uniform4(shader_simple["SunColor"], scene.atmosphere.sun_light.Color * scene.atmosphere.sun_light.Strength);
+            GL.Uniform4f(shader_simple["SunColor"], 1, scene.atmosphere.sun_light.Color * scene.atmosphere.sun_light.Strength);
             if ((Settings.ShadingQuality >= 1) || (Settings.EnableShadows))
             {
-                GL.Uniform4(shader_simple["AmbientColor"], scene.atmosphere.ambient_light.Color * scene.atmosphere.ambient_light.Strength);
+                GL.Uniform4f(shader_simple["AmbientColor"], 1, scene.atmosphere.ambient_light.Color * scene.atmosphere.ambient_light.Strength);
             }
             if (Settings.ShadingQuality >= 1)
             {
-                GL.Uniform3(shader_simple["SunDirection"], scene.atmosphere.sun_light.Direction);
-                GL.Uniform4(shader_simple["FogColor"], scene.atmosphere.FogColor * scene.atmosphere.FogStrength);
-                GL.Uniform1(shader_simple["FogStart"], scene.atmosphere.FogStart);
-                GL.Uniform1(shader_simple["FogEnd"], scene.atmosphere.FogEnd);
-                GL.Uniform1(shader_simple["FogExponent"], scene.atmosphere.FogExponent);
+                GL.Uniform3f(shader_simple["SunDirection"], 1, scene.atmosphere.sun_light.Direction);
+                GL.Uniform4f(shader_simple["FogColor"], 1, scene.atmosphere.FogColor * scene.atmosphere.FogStrength);
+                GL.Uniform1f(shader_simple["FogStart"], scene.atmosphere.FogStart);
+                GL.Uniform1f(shader_simple["FogEnd"], scene.atmosphere.FogEnd);
+                GL.Uniform1f(shader_simple["FogExponent"], scene.atmosphere.FogExponent);
             }
 
             GL.UseProgram(shader_simple_transparency.ProgramID);
-            GL.Uniform4(shader_simple_transparency["SunColor"], scene.atmosphere.sun_light.Color * scene.atmosphere.sun_light.Strength);
+            GL.Uniform4f(shader_simple_transparency["SunColor"], 1, scene.atmosphere.sun_light.Color * scene.atmosphere.sun_light.Strength);
             if ((Settings.ShadingQuality >= 1) || (Settings.EnableShadows))
             {
-                GL.Uniform4(shader_simple_transparency["AmbientColor"], scene.atmosphere.ambient_light.Color * scene.atmosphere.ambient_light.Strength);
+                GL.Uniform4f(shader_simple_transparency["AmbientColor"], 1, scene.atmosphere.ambient_light.Color * scene.atmosphere.ambient_light.Strength);
             }
             if (Settings.ShadingQuality >= 1)
             {
-                GL.Uniform3(shader_simple_transparency["SunDirection"], scene.atmosphere.sun_light.Direction);
-                GL.Uniform4(shader_simple_transparency["FogColor"], scene.atmosphere.FogColor * scene.atmosphere.FogStrength);
-                GL.Uniform1(shader_simple_transparency["FogStart"], scene.atmosphere.FogStart);
-                GL.Uniform1(shader_simple_transparency["FogEnd"], scene.atmosphere.FogEnd);
-                GL.Uniform1(shader_simple_transparency["FogExponent"], scene.atmosphere.FogExponent);
+                GL.Uniform3f(shader_simple_transparency["SunDirection"], 1, scene.atmosphere.sun_light.Direction);
+                GL.Uniform4f(shader_simple_transparency["FogColor"], 1, scene.atmosphere.FogColor * scene.atmosphere.FogStrength);
+                GL.Uniform1f(shader_simple_transparency["FogStart"], scene.atmosphere.FogStart);
+                GL.Uniform1f(shader_simple_transparency["FogEnd"], scene.atmosphere.FogEnd);
+                GL.Uniform1f(shader_simple_transparency["FogExponent"], scene.atmosphere.FogExponent);
             }
 
             GL.UseProgram(shader_animated.ProgramID);
-            GL.Uniform4(shader_animated["SunColor"], scene.atmosphere.sun_light.Color * scene.atmosphere.sun_light.Strength);
+            GL.Uniform4f(shader_animated["SunColor"], 1, scene.atmosphere.sun_light.Color * scene.atmosphere.sun_light.Strength);
             if ((Settings.ShadingQuality >= 1) || (Settings.EnableShadows))
             {
-                GL.Uniform4(shader_animated["AmbientColor"], scene.atmosphere.ambient_light.Color * scene.atmosphere.ambient_light.Strength);
+                GL.Uniform4f(shader_animated["AmbientColor"], 1, scene.atmosphere.ambient_light.Color * scene.atmosphere.ambient_light.Strength);
             }
             if (Settings.ShadingQuality >= 1)
             {
-                GL.Uniform3(shader_animated["SunDirection"], scene.atmosphere.sun_light.Direction);
-                GL.Uniform4(shader_animated["FogColor"], scene.atmosphere.FogColor * scene.atmosphere.FogStrength);
-                GL.Uniform1(shader_animated["FogStart"], scene.atmosphere.FogStart);
-                GL.Uniform1(shader_animated["FogEnd"], scene.atmosphere.FogEnd);
-                GL.Uniform1(shader_animated["FogExponent"], scene.atmosphere.FogExponent);
+                GL.Uniform3f(shader_animated["SunDirection"], 1, scene.atmosphere.sun_light.Direction);
+                GL.Uniform4f(shader_animated["FogColor"], 1, scene.atmosphere.FogColor * scene.atmosphere.FogStrength);
+                GL.Uniform1f(shader_animated["FogStart"], scene.atmosphere.FogStart);
+                GL.Uniform1f(shader_animated["FogEnd"], scene.atmosphere.FogEnd);
+                GL.Uniform1f(shader_animated["FogExponent"], scene.atmosphere.FogExponent);
             }
 
             GL.UseProgram(shader_heightmap.ProgramID);
-            GL.Uniform4(shader_heightmap["SunColor"], scene.atmosphere.sun_light.Color * scene.atmosphere.sun_light.Strength);
+            GL.Uniform4f(shader_heightmap["SunColor"], 1, scene.atmosphere.sun_light.Color * scene.atmosphere.sun_light.Strength);
             if ((Settings.ShadingQuality >= 1) || (Settings.EnableShadows))
             {
-                GL.Uniform4(shader_heightmap["AmbientColor"], scene.atmosphere.ambient_light.Color * scene.atmosphere.ambient_light.Strength);
+                GL.Uniform4f(shader_heightmap["AmbientColor"], 1, scene.atmosphere.ambient_light.Color * scene.atmosphere.ambient_light.Strength);
             }
             if (Settings.ShadingQuality >= 1)
             {
-                GL.Uniform3(shader_heightmap["SunDirection"], scene.atmosphere.sun_light.Direction);
-                GL.Uniform4(shader_heightmap["FogColor"], scene.atmosphere.FogColor * scene.atmosphere.FogStrength);
-                GL.Uniform1(shader_heightmap["FogStart"], scene.atmosphere.FogStart);
-                GL.Uniform1(shader_heightmap["FogEnd"], scene.atmosphere.FogEnd);
-                GL.Uniform1(shader_heightmap["FogExponent"], scene.atmosphere.FogExponent);
+                GL.Uniform3f(shader_heightmap["SunDirection"], 1, scene.atmosphere.sun_light.Direction);
+                GL.Uniform4f(shader_heightmap["FogColor"], 1, scene.atmosphere.FogColor * scene.atmosphere.FogStrength);
+                GL.Uniform1f(shader_heightmap["FogStart"], scene.atmosphere.FogStart);
+                GL.Uniform1f(shader_heightmap["FogEnd"], scene.atmosphere.FogEnd);
+                GL.Uniform1f(shader_heightmap["FogExponent"], scene.atmosphere.FogExponent);
             }
 
             if (Settings.ToneMapping)
             {
                 GL.UseProgram(shader_sky.ProgramID);
-                GL.Uniform4(shader_sky["AmbientColor"], scene.atmosphere.ambient_light.Color);
-                GL.Uniform4(shader_sky["FogColor"], scene.atmosphere.FogColor * scene.atmosphere.FogStrength);
+                GL.Uniform4f(shader_sky["AmbientColor"], 1, scene.atmosphere.ambient_light.Color);
+                GL.Uniform4f(shader_sky["FogColor"], 1, scene.atmosphere.FogColor * scene.atmosphere.FogStrength);
             }
 
             GL.UseProgram(0);
@@ -569,102 +569,102 @@ namespace SFEngine.SF3D.SFRender
         private static void ApplyTexturingUnits()
         {
             GL.UseProgram(shader_simple.ProgramID);
-            GL.Uniform1(shader_simple["DiffuseTex"], 0);
+            GL.Uniform1i(shader_simple["DiffuseTex"], 0);
             if (Settings.EnableShadows)
             {
-                GL.Uniform1(shader_simple["ShadowMap"], 1);
+                GL.Uniform1i(shader_simple["ShadowMap"], 1);
             }
             if (Settings.ShadingQuality >= 1)
             {
                 if (Settings.ShadingQuality >= 2)
                 {
-                    GL.Uniform1(shader_simple["GroundMap"], 2);
+                    GL.Uniform1i(shader_simple["GroundMap"], 2);
                 }
             }
 
             GL.UseProgram(shader_simple_transparency.ProgramID);
-            GL.Uniform1(shader_simple_transparency["DiffuseTex"], 0);
+            GL.Uniform1i(shader_simple_transparency["DiffuseTex"], 0);
             if (Settings.EnableShadows)
             {
-                GL.Uniform1(shader_simple_transparency["ShadowMap"], 1);
+                GL.Uniform1i(shader_simple_transparency["ShadowMap"], 1);
             }
             if (Settings.ShadingQuality >= 1)
             {
                 if (Settings.ShadingQuality >= 2)
                 {
-                    GL.Uniform1(shader_simple_transparency["GroundMap"], 2);
+                    GL.Uniform1i(shader_simple_transparency["GroundMap"], 2);
                 }
             }
 
             GL.UseProgram(shader_animated.ProgramID);
-            GL.Uniform1(shader_animated["DiffuseTex"], 0);
+            GL.Uniform1i(shader_animated["DiffuseTex"], 0);
             if (Settings.EnableShadows)
             {
-                GL.Uniform1(shader_animated["ShadowMap"], 1);
+                GL.Uniform1i(shader_animated["ShadowMap"], 1);
             }
             if (Settings.ShadingQuality >= 1)
             {
                 if (Settings.ShadingQuality >= 2)
                 {
-                    GL.Uniform1(shader_animated["GroundMap"], 2);
+                    GL.Uniform1i(shader_animated["GroundMap"], 2);
                 }
             }
 
             GL.UseProgram(shader_heightmap.ProgramID);
             if (Settings.TerrainTextureLOD != 2)
             {
-                GL.Uniform1(shader_heightmap["myTextureSampler"], 0);
+                GL.Uniform1i(shader_heightmap["myTextureSampler"], 0);
             }
             if (Settings.EnableShadows)
             {
-                GL.Uniform1(shader_heightmap["ShadowMap"], 1);
+                GL.Uniform1i(shader_heightmap["ShadowMap"], 1);
             }
-            GL.Uniform1(shader_heightmap["TileMap"], 2);
+            GL.Uniform1i(shader_heightmap["TileMap"], 2);
             if (Settings.EditorMode)
             {
-                GL.Uniform1(shader_heightmap["FlagMap"], 3);
+                GL.Uniform1i(shader_heightmap["FlagMap"], 3);
             }
-            GL.Uniform1(shader_heightmap["HeightMap"], 4);
-            GL.Uniform1(shader_heightmap["BumpMap"], 5);
+            GL.Uniform1i(shader_heightmap["HeightMap"], 4);
+            GL.Uniform1i(shader_heightmap["BumpMap"], 5);
 
             GL.UseProgram(shader_heightmap_depth_prepass.ProgramID);
-            GL.Uniform1(shader_heightmap_depth_prepass["HeightMap"], 4);
+            GL.Uniform1i(shader_heightmap_depth_prepass["HeightMap"], 4);
 
             if (Settings.EnableShadows)
             {
                 GL.UseProgram(shader_shadowmap.ProgramID);
-                GL.Uniform1(shader_shadowmap["DiffuseTexture"], 0);
+                GL.Uniform1i(shader_shadowmap["DiffuseTexture"], 0);
 
                 GL.UseProgram(shader_shadowmap_animated.ProgramID);
-                GL.Uniform1(shader_shadowmap_animated["DiffuseTexture"], 0);
+                GL.Uniform1i(shader_shadowmap_animated["DiffuseTexture"], 0);
 
                 GL.UseProgram(shader_shadowmap_heightmap.ProgramID);
-                GL.Uniform1(shader_shadowmap_heightmap["DiffuseTexture"], 0);
-                GL.Uniform1(shader_shadowmap_heightmap["HeightMap"], 4);
+                GL.Uniform1i(shader_shadowmap_heightmap["DiffuseTexture"], 0);
+                GL.Uniform1i(shader_shadowmap_heightmap["HeightMap"], 4);
 
                 GL.UseProgram(shader_shadowmap_blur.ProgramID);
-                GL.Uniform1(shader_shadowmap_blur["image"], 0);
+                GL.Uniform1i(shader_shadowmap_blur["image"], 0);
 
                 if (Settings.ShadowType == Settings.ShadowMapTechnique.VSM)
                 {
                     GL.UseProgram(shader_vsm_resolve.ProgramID);
-                    GL.Uniform1(shader_vsm_resolve["ShadowMap"], 0);
+                    GL.Uniform1i(shader_vsm_resolve["ShadowMap"], 0);
                 }
                 else if (Settings.ShadowType == Settings.ShadowMapTechnique.MSM)
                 {
                     GL.UseProgram(shader_msm_resolve.ProgramID);
-                    GL.Uniform1(shader_msm_resolve["ShadowMap"], 0);
+                    GL.Uniform1i(shader_msm_resolve["ShadowMap"], 0);
                 }
             }
 
             GL.UseProgram(shader_ui.ProgramID);
-            GL.Uniform1(shader_ui["Tex"], 0);
+            GL.Uniform1i(shader_ui["Tex"], 0);
 
             GL.UseProgram(shader_selection.ProgramID);
-            GL.Uniform1(shader_selection["DiffuseTex"], 0);
+            GL.Uniform1i(shader_selection["DiffuseTex"], 0);
 
             GL.UseProgram(shader_selection_animated.ProgramID);
-            GL.Uniform1(shader_selection_animated["DiffuseTex"], 0);
+            GL.Uniform1i(shader_selection_animated["DiffuseTex"], 0);
 
             GL.UseProgram(0);
         }
@@ -674,29 +674,29 @@ namespace SFEngine.SF3D.SFRender
             GL.UseProgram(shader_simple.ProgramID);
             if (Settings.ShadingQuality >= 1)
             {
-                GL.Uniform1(shader_simple["ObjectFadeStart"], CurrentFadeStart);
-                GL.Uniform1(shader_simple["ObjectFadeEnd"], CurrentFadeEnd);
+                GL.Uniform1f(shader_simple["ObjectFadeStart"], CurrentFadeStart);
+                GL.Uniform1f(shader_simple["ObjectFadeEnd"], CurrentFadeEnd);
             }
 
             GL.UseProgram(shader_simple_transparency.ProgramID);
             if (Settings.ShadingQuality >= 1)
             {
-                GL.Uniform1(shader_simple_transparency["ObjectFadeStart"], CurrentFadeStart);
-                GL.Uniform1(shader_simple_transparency["ObjectFadeEnd"], CurrentFadeEnd);
+                GL.Uniform1f(shader_simple_transparency["ObjectFadeStart"], CurrentFadeStart);
+                GL.Uniform1f(shader_simple_transparency["ObjectFadeEnd"], CurrentFadeEnd);
             }
 
             GL.UseProgram(shader_animated.ProgramID);
             if (Settings.ShadingQuality >= 1)
             {
-                GL.Uniform1(shader_animated["ObjectFadeStart"], CurrentFadeStart);
-                GL.Uniform1(shader_animated["ObjectFadeEnd"], CurrentFadeEnd);
+                GL.Uniform1f(shader_animated["ObjectFadeStart"], CurrentFadeStart);
+                GL.Uniform1f(shader_animated["ObjectFadeEnd"], CurrentFadeEnd);
             }
 
             GL.UseProgram(shader_heightmap.ProgramID);
             if ((Settings.EnableShadows)&&(Settings.ShadingQuality >= 1))
             {
-                GL.Uniform1(shader_heightmap["ShadowFadeStart"], CurrentFadeStart);
-                GL.Uniform1(shader_heightmap["ShadowFadeEnd"], CurrentFadeEnd);
+                GL.Uniform1f(shader_heightmap["ShadowFadeStart"], CurrentFadeStart);
+                GL.Uniform1f(shader_heightmap["ShadowFadeEnd"], CurrentFadeEnd);
             }
             GL.UseProgram(0);
         }
@@ -722,17 +722,17 @@ namespace SFEngine.SF3D.SFRender
                 if ((shader == shader_simple) || (shader == shader_simple_transparency) || (shader == shader_animated))
                 {
                     CurrentDepthBias = 0;
-                    GL.Uniform1(active_shader["DepthBias"], 0.0f);
+                    GL.Uniform1f(active_shader["DepthBias"], 0.0f);
                     if (Settings.ShadingQuality >= 1)
                     {
                         CurrentDistanceFade = false;
-                        GL.Uniform1(active_shader["DistanceFade"], 0.0f);
+                        GL.Uniform1f(active_shader["DistanceFade"], 0.0f);
                         CurrentApplyShading = false;
-                        GL.Uniform1(active_shader["ApplyShading"], 0);
+                        GL.Uniform1i(active_shader["ApplyShading"], 0);
                         if (Settings.ShadingQuality >= 2)
                         {
                             CurrentEmissionColor = Vector4.Zero;
-                            GL.Uniform4(active_shader["EmissionColor"], CurrentEmissionColor);
+                            GL.Uniform4f(active_shader["EmissionColor"], 1, CurrentEmissionColor);
                         }
                     }
                 }
@@ -776,7 +776,7 @@ namespace SFEngine.SF3D.SFRender
             if (v != CurrentDepthBias)
             {
                 CurrentDepthBias = v;
-                GL.Uniform1(active_shader["DepthBias"], v);
+                GL.Uniform1f(active_shader["DepthBias"], v);
             }
         }
 
@@ -785,7 +785,7 @@ namespace SFEngine.SF3D.SFRender
             if (b != CurrentDistanceFade)
             {
                 CurrentDistanceFade = b;
-                GL.Uniform1(active_shader["DistanceFade"], b ? 1.0f : 0.0f);
+                GL.Uniform1f(active_shader["DistanceFade"], b ? 1.0f : 0.0f);
             }
         }
 
@@ -801,7 +801,7 @@ namespace SFEngine.SF3D.SFRender
             }
         }
 
-        private static void SetCullMode(CullFaceMode mode)
+        private static void SetCullMode(TriangleFace mode)
         {
             if(CurrentCullMode != mode)
             {
@@ -860,7 +860,7 @@ namespace SFEngine.SF3D.SFRender
             if (CurrentEmissionColor != col)
             {
                 CurrentEmissionColor = col;
-                GL.Uniform4(active_shader["EmissionColor"], col);
+                GL.Uniform4f(active_shader["EmissionColor"], 1, col);
             }
         }
 
@@ -907,7 +907,7 @@ namespace SFEngine.SF3D.SFRender
             for (int i = 0; i < 16; i++)
             {
                 GL.ActiveTexture((TextureUnit)((int)TextureUnit.Texture0 + i));
-                GL.BindTexture(TextureTarget.Texture2D, 0);
+                GL.BindTexture(TextureTarget.Texture2d, 0);
                 CurrentTexture[i] = 0;
             }
             CurrentActiveTexture = 15;
@@ -930,7 +930,7 @@ namespace SFEngine.SF3D.SFRender
             if (apply_shading != CurrentApplyShading)
             {
                 CurrentApplyShading = apply_shading;
-                GL.Uniform1(active_shader["ApplyShading"], apply_shading ? 1 : 0);
+                GL.Uniform1i(active_shader["ApplyShading"], apply_shading ? 1 : 0);
             }
         }
 
@@ -1144,7 +1144,7 @@ namespace SFEngine.SF3D.SFRender
                         [
                             new()
                             {
-                                format = PixelFormat.DepthComponent, internal_format = PixelInternalFormat.DepthComponent16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.DepthAttachment,
+                                format = PixelFormat.DepthComponent, internal_format = InternalFormat.DepthComponent16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.DepthAttachment,
                                 sample_count = 4, min_filter = (int)All.Linear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToEdge, wrap_t = (int)All.ClampToEdge, anisotropy = 0
                             }
                         ]);
@@ -1154,7 +1154,7 @@ namespace SFEngine.SF3D.SFRender
                         [
                             new()
                             {
-                                format = PixelFormat.Rg, internal_format = PixelInternalFormat.Rg16f, pixel_type = PixelType.Float, attachment_type = FramebufferAttachment.ColorAttachment0,
+                                format = PixelFormat.Rg, internal_format = InternalFormat.Rg16f, pixel_type = PixelType.Float, attachment_type = FramebufferAttachment.ColorAttachment0,
                                 sample_count = 0, min_filter = (int)All.LinearMipmapLinear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToBorder, wrap_t = (int)All.ClampToBorder,
                                 wrap_border_col = new Vector4(1.0f), anisotropy = Settings.MaxAnisotropy
                             }
@@ -1165,7 +1165,7 @@ namespace SFEngine.SF3D.SFRender
                         [
                             new()
                             {
-                                format = PixelFormat.Rg, internal_format = PixelInternalFormat.Rg16f, pixel_type = PixelType.Float, attachment_type = FramebufferAttachment.ColorAttachment0,
+                                format = PixelFormat.Rg, internal_format = InternalFormat.Rg16f, pixel_type = PixelType.Float, attachment_type = FramebufferAttachment.ColorAttachment0,
                                 sample_count = 0, min_filter = (int)All.LinearMipmapLinear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToBorder, wrap_t = (int)All.ClampToBorder,
                                 wrap_border_col = new Vector4(1.0f), anisotropy = Settings.MaxAnisotropy
                             }
@@ -1186,7 +1186,7 @@ namespace SFEngine.SF3D.SFRender
                         [
                             new()
                             {
-                                format = PixelFormat.DepthComponent, internal_format = PixelInternalFormat.DepthComponent16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.DepthAttachment,
+                                format = PixelFormat.DepthComponent, internal_format = InternalFormat.DepthComponent16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.DepthAttachment,
                                 sample_count = 4, min_filter = (int)All.Linear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToEdge, wrap_t = (int)All.ClampToEdge, anisotropy = 0
                             }
                         ]);
@@ -1196,7 +1196,7 @@ namespace SFEngine.SF3D.SFRender
                         [
                             new()
                             {
-                                format = PixelFormat.Rgba, internal_format = PixelInternalFormat.Rgba16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.ColorAttachment0,
+                                format = PixelFormat.Rgba, internal_format = InternalFormat.Rgba16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.ColorAttachment0,
                                 sample_count = 0, min_filter = (int)All.LinearMipmapLinear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToBorder, wrap_t = (int)All.ClampToBorder,
                                 wrap_border_col = new Vector4(1.0f), anisotropy = Settings.MaxAnisotropy
                             }
@@ -1207,7 +1207,7 @@ namespace SFEngine.SF3D.SFRender
                         [
                             new()
                             {
-                                format = PixelFormat.Rgba, internal_format = PixelInternalFormat.Rgba16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.ColorAttachment0,
+                                format = PixelFormat.Rgba, internal_format = InternalFormat.Rgba16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.ColorAttachment0,
                                 sample_count = 0, min_filter = (int)All.LinearMipmapLinear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToBorder, wrap_t = (int)All.ClampToBorder,
                                 wrap_border_col = new Vector4(1.0f), anisotropy = Settings.MaxAnisotropy
                             }
@@ -1224,14 +1224,14 @@ namespace SFEngine.SF3D.SFRender
                     [
                         new()
                         {
-                            format = PixelFormat.Rgb, internal_format = (Settings.ToneMapping ? PixelInternalFormat.Rgb16f : PixelInternalFormat.Rgb),
+                            format = PixelFormat.Rgb, internal_format = (Settings.ToneMapping ? InternalFormat.Rgb16f : InternalFormat.Rgb),
                             pixel_type = (Settings.ToneMapping ? PixelType.Float : PixelType.UnsignedByte), attachment_type = FramebufferAttachment.ColorAttachment0,
                             sample_count = Settings.AntiAliasingSamples, min_filter = (int)All.Nearest, mag_filter = (int)All.Nearest, wrap_s = (int)All.ClampToEdge,
                             wrap_t = (int)All.ClampToEdge, anisotropy = 0
                         },
                         new()
                         {
-                            format = PixelFormat.DepthComponent, internal_format = PixelInternalFormat.DepthComponent32, pixel_type = PixelType.Float,
+                            format = PixelFormat.DepthComponent, internal_format = InternalFormat.DepthComponent32, pixel_type = PixelType.Float,
                             attachment_type = FramebufferAttachment.DepthAttachment, min_filter = (int)All.Nearest, mag_filter = (int)All.Nearest,
                             wrap_s = (int)All.ClampToEdge, wrap_t = (int)All.ClampToEdge, sample_count = Settings.AntiAliasingSamples, anisotropy = 0
                         }
@@ -1245,14 +1245,14 @@ namespace SFEngine.SF3D.SFRender
                 [
                     new()
                     {
-                        format = PixelFormat.Rgb, internal_format = (Settings.ToneMapping ? PixelInternalFormat.Rgb16f : PixelInternalFormat.Rgb),
+                        format = PixelFormat.Rgb, internal_format = (Settings.ToneMapping ? InternalFormat.Rgb16f : InternalFormat.Rgb),
                         pixel_type = (Settings.ToneMapping ? PixelType.Float : PixelType.UnsignedByte), attachment_type = FramebufferAttachment.ColorAttachment0,
                         sample_count = 0, min_filter = (int)All.Nearest, mag_filter = (int)All.Nearest, wrap_s = (int)All.ClampToEdge,
                         wrap_t = (int)All.ClampToEdge, anisotropy = 0
                     },
                     new()
                     {
-                        format = PixelFormat.DepthComponent, internal_format = PixelInternalFormat.DepthComponent32, pixel_type = PixelType.Float,
+                        format = PixelFormat.DepthComponent, internal_format = InternalFormat.DepthComponent32, pixel_type = PixelType.Float,
                         attachment_type = FramebufferAttachment.DepthAttachment, min_filter = (int)All.Nearest, mag_filter = (int)All.Nearest,
                         wrap_s = (int)All.ClampToEdge, wrap_t = (int)All.ClampToEdge, sample_count = 0, anisotropy = 0
                     }
@@ -1290,7 +1290,7 @@ namespace SFEngine.SF3D.SFRender
         {
             SFMapHeightMap heightmap = scene.map.heightmap;
 
-            GL.Uniform1(active_shader["GridSize"], heightmap.width);
+            GL.Uniform1i(active_shader["GridSize"], heightmap.width);
             if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
             {
                 SetVertexArrayObject(heightmap.mesh.vertex_array);
@@ -1298,13 +1298,13 @@ namespace SFEngine.SF3D.SFRender
             else if (Settings.TerrainLOD == SFMapHeightMapLOD.TESSELATION)
             {
                 SetVertexArrayObject(heightmap.mesh_tesselated.vertex_array);
-                GL.Uniform3(active_shader["cameraPos"], scene.camera.position);
+                GL.Uniform3f(active_shader["cameraPos"], 1, scene.camera.position);
             }
 
-            SetTexture(4, TextureTarget.Texture2D, heightmap.height_data_texture.tex_id);
+            SetTexture(4, TextureTarget.Texture2d, heightmap.height_data_texture.tex_id);
 
             Matrix4 vp_mat = scene.camera.ViewProjMatrix;
-            GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
+            GL.UniformMatrix4f(active_shader["VP"], 1, false, in vp_mat);
 
             StartQuery();
             if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
@@ -1324,7 +1324,7 @@ namespace SFEngine.SF3D.SFRender
 
             Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
 
-            GL.Uniform1(active_shader["GridSize"], heightmap.width);
+            GL.Uniform1i(active_shader["GridSize"], heightmap.width);
             if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
             {
                 SetVertexArrayObject(heightmap.mesh.vertex_array);
@@ -1332,42 +1332,42 @@ namespace SFEngine.SF3D.SFRender
             else if (Settings.TerrainLOD == SFMapHeightMapLOD.TESSELATION)
             {
                 SetVertexArrayObject(heightmap.mesh_tesselated.vertex_array);
-                GL.Uniform3(active_shader["cameraPos"], scene.camera.position);
+                GL.Uniform3f(active_shader["cameraPos"], 1, scene.camera.position);
             }
 
-            SetTexture(4, TextureTarget.Texture2D, heightmap.height_data_texture.tex_id);
+            SetTexture(4, TextureTarget.Texture2d, heightmap.height_data_texture.tex_id);
 
             if (current_pass == RenderPass.SCENE)
             {
                 if (Settings.EditorMode)
                 {
-                    SetTexture(3, TextureTarget.Texture2D, (heightmap.overlay_texture == null ? opaque_tex.tex_id : heightmap.overlay_texture.tex_id));
+                    SetTexture(3, TextureTarget.Texture2d, (heightmap.overlay_texture == null ? opaque_tex.tex_id : heightmap.overlay_texture.tex_id));
                 }
 
-                SetTexture(5, TextureTarget.Texture2D, heightmap.terrain_texture_lod_bump.tex_id);
-                SetTexture(2, TextureTarget.Texture2D, heightmap.tile_data_texture.tex_id);
-                SetTexture(0, TextureTarget.Texture2DArray, heightmap.texture_manager.terrain_texture);
+                SetTexture(5, TextureTarget.Texture2d, heightmap.terrain_texture_lod_bump.tex_id);
+                SetTexture(2, TextureTarget.Texture2d, heightmap.tile_data_texture.tex_id);
+                SetTexture(0, TextureTarget.Texture2dArray, heightmap.texture_manager.terrain_texture);
                 Matrix4 vp_mat = scene.camera.ViewProjMatrix;
                 if (Settings.EnableShadows)
                 {
-                    GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
+                    GL.UniformMatrix4f(active_shader["LSM"], 1, false, in lsm_mat);
                 }
 
-                GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
+                GL.UniformMatrix4f(active_shader["VP"], 1, false, in vp_mat);
                 if (Settings.EditorMode)
                 {
-                    GL.Uniform4(active_shader["GridColor"], Settings.GridColor);
-                    GL.Uniform1(active_shader["CurrentFlags"], (Settings.OverlaysVisible ? (ushort)heightmap.overlay_flags : 0));
+                    GL.Uniform4f(active_shader["GridColor"], 1, Settings.GridColor);
+                    GL.Uniform1i(active_shader["CurrentFlags"], (Settings.OverlaysVisible ? (ushort)heightmap.overlay_flags : 0));
                 }
                 if (Settings.ShadingQuality >= 2)
                 {
-                    GL.Uniform3(active_shader["ViewPos"], scene.camera.position);
+                    GL.Uniform3f(active_shader["ViewPos"], 1, scene.camera.position);
                 }
             }
             else if (current_pass == RenderPass.SHADOWMAP)
             {
-                GL.UniformMatrix4(active_shader["VP"], false, ref lsm_mat);
-                SetTexture(0, TextureTarget.Texture2D, 0);
+                GL.UniformMatrix4f(active_shader["VP"], 1, false, in lsm_mat);
+                SetTexture(0, TextureTarget.Texture2d, 0);
             }
 
             StartQuery();
@@ -1396,11 +1396,11 @@ namespace SFEngine.SF3D.SFRender
 
             SetRenderMode(mat.texRenderMode);
             SetDepthBias(mat.matDepthBias);
-            SetTexture(0, TextureTarget.Texture2D, mat.texture.tex_id);
+            SetTexture(0, TextureTarget.Texture2d, mat.texture.tex_id);
             SetCullEnabled((mat.matFlags & 4) != 0);
             if(CurrentCullEnabled)
             {
-                SetCullMode(CullFaceMode.Front);
+                SetCullMode(TriangleFace.Front);
             }
         }
 
@@ -1418,7 +1418,7 @@ namespace SFEngine.SF3D.SFRender
                 new IntPtr(SFSubModel3D.Cache.ElementRanges[eri].Start * 4),
                 instance_count,
                 SFSubModel3D.Cache.VertexRanges[vri].Start,
-                instance_start);
+                (uint)instance_start);
             EndQuery();
         }
 
@@ -1457,7 +1457,7 @@ namespace SFEngine.SF3D.SFRender
         static void RenderStaticObjectsShadowmap(IEnumerable<SFSubModel3D> models)
         {
             Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
-            GL.UniformMatrix4(active_shader["VP"], false, ref lsm_mat);
+            GL.UniformMatrix4f(active_shader["VP"], 1, false, in lsm_mat);
 
             SetVertexArrayObject(SFSubModel3D.Cache.VertexArrayObjectID);
             foreach (SFSubModel3D submodel in models)
@@ -1468,7 +1468,7 @@ namespace SFEngine.SF3D.SFRender
                     continue;
                 }
 
-                SetTexture(0, TextureTarget.Texture2D, (mat.matFlags & 4) == 0 ? mat.texture.tex_id : opaque_tex.tex_id);
+                SetTexture(0, TextureTarget.Texture2d, (mat.matFlags & 4) == 0 ? mat.texture.tex_id : opaque_tex.tex_id);
 
                 RenderStaticObject(submodel, submodel.owner.MatrixOffset, submodel.owner.MatrixCount);
             }
@@ -1481,20 +1481,20 @@ namespace SFEngine.SF3D.SFRender
             SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
 
             Matrix4 vp_mat = scene.camera.ViewProjMatrix;
-            GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
+            GL.UniformMatrix4f(active_shader["VP"], 1, false, in vp_mat);
             if (Settings.EnableShadows)
             {
                 Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
-                GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
+                GL.UniformMatrix4f(active_shader["LSM"], 1, false, in lsm_mat);
             }
 
             if (Settings.ShadingQuality >= 2)
             {
-                GL.Uniform1(active_shader["GridSize"], scene.map.heightmap.width);
-                GL.Uniform3(active_shader["ViewPos"], scene.camera.position);
-                SetTexture(3, TextureTarget.Texture2D, scene.map.heightmap.tile_data_texture.tex_id);
+                GL.Uniform1i(active_shader["GridSize"], scene.map.heightmap.width);
+                GL.Uniform3f(active_shader["ViewPos"], 1, scene.camera.position);
+                SetTexture(3, TextureTarget.Texture2d, scene.map.heightmap.tile_data_texture.tex_id);
             }
-            GL.Uniform1(active_shader["AlphaCutout"], alpha_cutout);
+            GL.Uniform1f(active_shader["AlphaCutout"], alpha_cutout);
 
             foreach (SFSubModel3D submodel in models)
             {
@@ -1515,33 +1515,33 @@ namespace SFEngine.SF3D.SFRender
             if (current_pass == RenderPass.SCENE)
             {
                 Matrix4 p_mat = scene.camera.ProjMatrix;
-                GL.UniformMatrix4(active_shader["P"], false, ref p_mat);
+                GL.UniformMatrix4f(active_shader["P"], 1, false, in p_mat);
                 Matrix4 v_mat = scene.camera.ViewMatrix;
-                GL.UniformMatrix4(active_shader["V"], false, ref v_mat);
+                GL.UniformMatrix4f(active_shader["V"], 1, false, in v_mat);
                 if (Settings.EnableShadows)
                 {
-                    GL.UniformMatrix4(active_shader["LSM"], false, ref lsm_mat);
+                    GL.UniformMatrix4f(active_shader["LSM"], 1, false, in lsm_mat);
                 }
 
                 if (Settings.ShadingQuality >= 2)
                 {
-                    GL.Uniform1(active_shader["GridSize"], scene.map.heightmap.width);
-                    SetTexture(2, TextureTarget.Texture2D, scene.map.heightmap.tile_data_texture.tex_id);
-                    GL.Uniform3(active_shader["ViewPos"], scene.camera.position);
+                    GL.Uniform1i(active_shader["GridSize"], scene.map.heightmap.width);
+                    SetTexture(2, TextureTarget.Texture2d, scene.map.heightmap.tile_data_texture.tex_id);
+                    GL.Uniform3f(active_shader["ViewPos"], 1, scene.camera.position);
                 }
-                GL.Uniform1(active_shader["AlphaCutout"], 0.01f);
+                GL.Uniform1f(active_shader["AlphaCutout"], 0.01f);
             }
             else if (current_pass == RenderPass.SHADOWMAP)
             {
                 Matrix4 p_mat = Matrix4.Identity;
-                GL.UniformMatrix4(active_shader["P"], false, ref p_mat);
-                GL.UniformMatrix4(active_shader["V"], false, ref lsm_mat);
+                GL.UniformMatrix4f(active_shader["P"], 1, false, in p_mat);
+                GL.UniformMatrix4f(active_shader["V"], 1, false, in lsm_mat);
             }
 
             foreach (SceneNodeAnimated an in scene.an_primary_nodes)
             {
-                GL.UniformMatrix4(active_shader["M"], false, ref an.result_transform);
-                GL.UniformMatrix4(active_shader["boneTransforms"], an.BoneTransforms.Length, false, ref an.BoneTransforms[0].Row0.X);
+                GL.UniformMatrix4f(active_shader["M"], 1, false, in an.result_transform);
+                GL.UniformMatrix4f(active_shader["boneTransforms"], an.BoneTransforms.Length, false, an.BoneTransforms);
 
                 // if an is in an_nodes, it must have skin
                 for (int n = 0; n < an.DrivenNodes.Count; n++)
@@ -1559,11 +1559,11 @@ namespace SFEngine.SF3D.SFRender
                         {
                             if ((msc.material.matFlags & 4) == 0)
                             {
-                                SetTexture(0, TextureTarget.Texture2D, msc.material.texture.tex_id);
+                                SetTexture(0, TextureTarget.Texture2d, msc.material.texture.tex_id);
                             }
                             else
                             {
-                                SetTexture(0, TextureTarget.Texture2D, opaque_tex.tex_id);
+                                SetTexture(0, TextureTarget.Texture2d, opaque_tex.tex_id);
                             }
                         }
                         else
@@ -1579,11 +1579,11 @@ namespace SFEngine.SF3D.SFRender
 
         public static void RenderUI()
         {
-            GL.Uniform2(active_shader["ScreenSize"], ref render_size);
+            GL.Uniform2f(active_shader["ScreenSize"], 1, in render_size);
 
             foreach (SFTexture tex in ui.storages.Keys)
             {
-                SetTexture(0, TextureTarget.Texture2D, tex.tex_id);
+                SetTexture(0, TextureTarget.Texture2d, tex.tex_id);
 
                 UIQuadStorage storage = ui.storages[tex];
                 SetVertexArrayObject(storage.vertex_array);
@@ -1600,7 +1600,7 @@ namespace SFEngine.SF3D.SFRender
                         continue;
                     }
 
-                    GL.Uniform2(active_shader["offset"], storage.spans[i].position);
+                    GL.Uniform2f(active_shader["offset"], 1, storage.spans[i].position);
                     StartQuery();
                     GL.DrawArrays(PrimitiveType.Triangles, storage.spans[i].start * 6, storage.spans[i].used * 6);
                     EndQuery();
@@ -1620,14 +1620,14 @@ namespace SFEngine.SF3D.SFRender
                     UseShader(shader_selection);
 
                     Matrix4 vp_mat = scene.camera.ViewProjMatrix;
-                    GL.UniformMatrix4(active_shader["VP"], false, ref vp_mat);
+                    GL.UniformMatrix4f(active_shader["VP"], 1, false, in vp_mat);
 
-                    GL.Uniform1(active_shader["Time"], scene.current_time * 2.0f);
-                    GL.Uniform4(active_shader["Color"], new Vector4(0.1f, 0.1f, 0.1f, 0.8f));
+                    GL.Uniform1f(active_shader["Time"], scene.current_time * 2.0f);
+                    GL.Uniform4f(active_shader["Color"], 1, new Vector4(0.1f, 0.1f, 0.1f, 0.8f));
 
                     foreach (var submodel in n.Mesh.submodels)
                     {
-                        SetTexture(0, TextureTarget.Texture2D, submodel.material.texture.tex_id);
+                        SetTexture(0, TextureTarget.Texture2d, submodel.material.texture.tex_id);
 
                         RenderStaticObject(submodel, n.Mesh.MatrixOffset + n.CurrentMeshMatrixIndex, 1);
                     }
@@ -1642,16 +1642,16 @@ namespace SFEngine.SF3D.SFRender
                     SetVertexArrayObject(SFModelSkinChunk.Cache.VertexArrayObjectID);
                     UseShader(shader_selection_animated);
 
-                    GL.UniformMatrix4(active_shader["M"], false, ref an.result_transform);
+                    GL.UniformMatrix4f(active_shader["M"], 1, false, in an.result_transform);
                     Matrix4 v_mat = scene.camera.ViewMatrix;
-                    GL.UniformMatrix4(active_shader["V"], false, ref v_mat);
+                    GL.UniformMatrix4f(active_shader["V"], 1, false, in v_mat);
                     Matrix4 p_mat = scene.camera.ProjMatrix;
-                    GL.UniformMatrix4(active_shader["P"], false, ref p_mat);
+                    GL.UniformMatrix4f(active_shader["P"], 1, false, in p_mat);
 
-                    GL.UniformMatrix4(active_shader["boneTransforms"], an.BoneTransforms.Length, false, ref an.BoneTransforms[0].Row0.X);
+                    GL.UniformMatrix4f(active_shader["boneTransforms"], an.BoneTransforms.Length, false, an.BoneTransforms);
 
-                    GL.Uniform1(active_shader["Time"], scene.current_time * 2.0f);
-                    GL.Uniform4(active_shader["Color"], new Vector4(0.1f, 0.1f, 0.1f, 0.8f));
+                    GL.Uniform1f(active_shader["Time"], scene.current_time * 2.0f);
+                    GL.Uniform4f(active_shader["Color"], 1, new Vector4(0.1f, 0.1f, 0.1f, 0.8f));
 
                     // if an is in an_nodes, it must have skin
                     for (int n = 0; n < an.DrivenNodes.Count; n++)
@@ -1665,7 +1665,7 @@ namespace SFEngine.SF3D.SFRender
                         for (int i = 0; i < skin.submodels.Length; i++)
                         {
                             var msc = skin.submodels[i];
-                            SetTexture(0, TextureTarget.Texture2D, msc.material.texture.tex_id);
+                            SetTexture(0, TextureTarget.Texture2d, msc.material.texture.tex_id);
 
                             RenderAnimatedObject(msc);
                         }
@@ -1692,7 +1692,7 @@ namespace SFEngine.SF3D.SFRender
             }
 
             SetCullEnabled(true);
-            SetCullMode(CullFaceMode.Front);
+            SetCullMode(TriangleFace.Front);
 
             // draw animated object shadows
             UseShader(shader_shadowmap_animated);
@@ -1754,7 +1754,7 @@ namespace SFEngine.SF3D.SFRender
 
                 // resolve multisample
                 UseShader(sh_sm_resolve);
-                GL.Uniform1(active_shader["TextureSize"], Settings.ShadowMapSize);
+                GL.Uniform1i(active_shader["TextureSize"], Settings.ShadowMapSize);
                 RenderFullscreen(fb_sm_base, fb_sm_multisample.textures[0]);
 
                 // variance/moment shadow mapping technique allows smooth shadows by simply blurring the shadowmap
@@ -1762,18 +1762,18 @@ namespace SFEngine.SF3D.SFRender
                 {
                     UseShader(shader_shadowmap_blur);
                     // horizontal blur
-                    GL.Uniform1(active_shader["horizontal"], 1);
+                    GL.Uniform1i(active_shader["horizontal"], 1);
                     RenderFullscreen(fb_sm_hpass, fb_sm_base.textures[0]);
                     // vertical blur
-                    GL.Uniform1(active_shader["horizontal"], 0);
+                    GL.Uniform1i(active_shader["horizontal"], 0);
                     RenderFullscreen(fb_sm_base, fb_sm_hpass.textures[0]);
                 }
 
-                SetTexture(0, TextureTarget.Texture2D, fb_sm_base.textures[0].tex_id);
-                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                SetTexture(0, TextureTarget.Texture2d, fb_sm_base.textures[0].tex_id);
+                GL.GenerateMipmap(TextureTarget.Texture2d);
 
                 // bind generated shadowmap
-                SetTexture(1, TextureTarget.Texture2D, fb_sm_base.textures[0].tex_id);
+                SetTexture(1, TextureTarget.Texture2d, fb_sm_base.textures[0].tex_id);
             }
 
             // render actual view
@@ -1808,7 +1808,7 @@ namespace SFEngine.SF3D.SFRender
             // depth function set to less or equal, for heightmap pre-pass
             // first draw just heightmap, without anything fancy, only then draw details of the heightmap
             SetCullEnabled(true);
-            SetCullMode(CullFaceMode.Back);
+            SetCullMode(TriangleFace.Back);
             GL.DepthFunc(DepthFunction.Lequal);
             if (scene.map != null)
             {
@@ -1845,8 +1845,8 @@ namespace SFEngine.SF3D.SFRender
             {
                 UseShader(shader_sky);
                 Matrix4 v_mat = scene.camera.ViewMatrix;
-                GL.UniformMatrix4(active_shader["V"], true, ref v_mat);
-                GL.Uniform1(active_shader["AspectRatio"], 1.0f);
+                GL.UniformMatrix4f(active_shader["V"], 1, true, in v_mat);
+                GL.Uniform1f(active_shader["AspectRatio"], 1.0f);
                 RenderFullscreen(null, null);
             }
 
@@ -1900,7 +1900,7 @@ namespace SFEngine.SF3D.SFRender
             if (Settings.ToneMapping)
             {
                 UseShader(shader_framebuffer_tonemapped);
-                GL.Uniform1(active_shader["exposure"], 1.0f);
+                GL.Uniform1f(active_shader["exposure"], 1.0f);
                 SetFramebuffer(null);
                 RenderFullscreen(null, screenspace_intermediate.textures[0]);
             }
@@ -1920,7 +1920,7 @@ namespace SFEngine.SF3D.SFRender
                 for (int i = 0; i < current_query; i++)
                 {
                     int result = 0;
-                    GL.GetQueryObject(queries[i], GetQueryObjectParam.QueryResult, out result);
+                    GL.GetQueryObjecti(queries[i], QueryObjectParameterName.QueryResult, out result);
                     query_results.Add(i, result);
                 }
 

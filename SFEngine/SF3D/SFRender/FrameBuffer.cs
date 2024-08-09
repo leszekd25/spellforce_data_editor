@@ -15,7 +15,7 @@ namespace SFEngine.SF3D.SFRender
     public struct FramebufferAttachmentInfo
     {
         public FramebufferAttachment attachment_type;
-        public PixelInternalFormat internal_format;
+        public InternalFormat internal_format;
         public PixelFormat format;
         public PixelType pixel_type;
         public int sample_count;
@@ -53,13 +53,13 @@ namespace SFEngine.SF3D.SFRender
 
                 vertices_vbo = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.ArrayBuffer, vertices_vbo);
-                GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * 4, vertices, BufferUsageHint.StaticDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * 4, vertices, BufferUsage.StaticDraw);
                 GL.EnableVertexAttribArray(0);
                 GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, 0);
 
                 uvs_vbo = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.ArrayBuffer, uvs_vbo);
-                GL.BufferData(BufferTarget.ArrayBuffer, uvs.Length * 4, uvs, BufferUsageHint.StaticDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, uvs.Length * 4, uvs, BufferUsage.StaticDraw);
                 GL.EnableVertexAttribArray(1);
                 GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 0, 0);
             }
@@ -98,7 +98,7 @@ namespace SFEngine.SF3D.SFRender
             fbo = GL.GenFramebuffer();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
 
-            List<DrawBuffersEnum> col_attachments = new List<DrawBuffersEnum>();
+            List<DrawBufferMode> col_attachments = new List<DrawBufferMode>();
 
             if (attachments != null)
             {
@@ -125,7 +125,7 @@ namespace SFEngine.SF3D.SFRender
 
                     if ((attachments[i].attachment_type >= FramebufferAttachment.ColorAttachment0) && (attachments[i].attachment_type <= FramebufferAttachment.ColorAttachment31))
                     {
-                        col_attachments.Add((DrawBuffersEnum)attachments[i].attachment_type);
+                        col_attachments.Add((DrawBufferMode)attachments[i].attachment_type);
                     }
                 }
             }
@@ -140,8 +140,8 @@ namespace SFEngine.SF3D.SFRender
                 GL.DrawBuffers(col_attachments.Count, col_attachments.ToArray());
             }
 
-            FramebufferErrorCode e = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
-            if (e != FramebufferErrorCode.FramebufferComplete)
+            FramebufferStatus e = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
+            if (e != FramebufferStatus.FramebufferComplete)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "Framebuffer.Resize(): Error generating framebuffer! Error type " + e.ToString());
             }

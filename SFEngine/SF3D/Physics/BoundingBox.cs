@@ -139,14 +139,14 @@ namespace SFEngine.SF3D.Physics
             // rotate all 8 points along the respective XY planes by azimuth, and create new bounding box from min and max of those points
             Vector3[] vs =
             [
-                new Vector3(a),
+                a,
                 new Vector3(a.X, a.Y, b.Z),
                 new Vector3(a.X, b.Y, a.Z),
                 new Vector3(a.X, b.Y, b.Z),
                 new Vector3(b.X, a.Y, a.Z),
                 new Vector3(b.X, a.Y, b.Z),
                 new Vector3(b.X, b.Y, a.Z),
-                new Vector3(b),
+                b,
             ];
             MathUtils.RotateVec3Array(vs, center, azimuth, altitude);
 

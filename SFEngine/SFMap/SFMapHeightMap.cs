@@ -53,12 +53,12 @@ namespace SFEngine.SFMap
             SF3D.SFRender.SFRenderEngine.SetVertexArrayObject(vertex_array);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsage.StaticDraw);
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, element_buffer);
-            GL.BufferData<uint>(BufferTarget.ElementArrayBuffer, indices.Length * 4, indices, BufferUsageHint.StaticDraw);
+            GL.BufferData<uint>(BufferTarget.ElementArrayBuffer, indices.Length * 4, indices, BufferUsage.StaticDraw);
 
             SF3D.SFRender.SFRenderEngine.SetVertexArrayObject(0);
 
@@ -85,7 +85,7 @@ namespace SFEngine.SFMap
             int v_count = index_max - index_min;
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
-            GL.BufferSubData<Vector3>(BufferTarget.ArrayBuffer, new IntPtr(12 * index_min), 12 * v_count, ref vertices[index_min]);
+            GL.BufferSubData<Vector3>(BufferTarget.ArrayBuffer, new IntPtr(12 * index_min), 12 * v_count, in vertices[index_min]);
         }
 
         public void Unload()
@@ -137,13 +137,13 @@ namespace SFEngine.SFMap
             SF3D.SFRender.SFRenderEngine.SetVertexArrayObject(vertex_array);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, position_buffer);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * 12, vertices, BufferUsage.StaticDraw);
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
 
             SF3D.SFRender.SFRenderEngine.SetVertexArrayObject(0);
 
-            GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
+            GL.PatchParameteri(PatchParameterName.PatchVertices, 4);
         }
 
         public void Unload()
@@ -460,11 +460,11 @@ namespace SFEngine.SFMap
             flag_data = new ushort[w * h]; flag_data.Initialize();
             temporary_mask = new byte[w * h];
 
-            tile_data_texture = SFTexture.DynamicTexture((ushort)w, (ushort)h, 1, TextureTarget.Texture2D, InternalFormat.Rgba8ui, PixelFormat.RgbaInteger, PixelType.UnsignedByte, (int)All.Nearest, (int)All.Nearest, (int)All.ClampToBorder, (int)All.ClampToBorder, Vector4.Zero, 0, false, false);
+            tile_data_texture = SFTexture.DynamicTexture((ushort)w, (ushort)h, 1, TextureTarget.Texture2d, InternalFormat.Rgba8ui, PixelFormat.RgbaInteger, PixelType.UnsignedByte, (int)All.Nearest, (int)All.Nearest, (int)All.ClampToBorder, (int)All.ClampToBorder, Vector4.Zero, 0, false, false);
             SFResources.SFResourceManager.Textures.AddManually(tile_data_texture, "_TILES_TEXTURE_");
             tile_data_texture.UpdateImage(tile_data, 0, 0, 0);
 
-            height_data_texture = SFTexture.DynamicTexture((ushort)w, (ushort)h, 1, TextureTarget.Texture2D, InternalFormat.R16, PixelFormat.Red, PixelType.UnsignedShort, (int)All.Nearest, (int)All.Nearest, (int)All.ClampToBorder, (int)All.ClampToBorder, Vector4.Zero, 0, false, false);
+            height_data_texture = SFTexture.DynamicTexture((ushort)w, (ushort)h, 1, TextureTarget.Texture2d, InternalFormat.R16, PixelFormat.Red, PixelType.UnsignedShort, (int)All.Nearest, (int)All.Nearest, (int)All.ClampToBorder, (int)All.ClampToBorder, Vector4.Zero, 0, false, false);
             SFResources.SFResourceManager.Textures.AddManually(height_data_texture, "_HEIGHTMAP_TEXTURE_");
             height_data_texture.UpdateImage(height_data, 0, 0, 0);
 
@@ -475,12 +475,12 @@ namespace SFEngine.SFMap
                 // create uniform buffer object for overlays
                 uniformOverlays_buffer = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.UniformBuffer, uniformOverlays_buffer);
-                GL.BufferData(BufferTarget.UniformBuffer, 16 * 4 * 4, new IntPtr(0), BufferUsageHint.StaticDraw);
+                GL.BufferData(BufferTarget.UniformBuffer, 16 * 4 * 4, new IntPtr(0), BufferUsage.StaticDraw);
                 GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-                GL.BindBufferRange(BufferRangeTarget.UniformBuffer, 1, uniformOverlays_buffer, new IntPtr(0), 16 * 4 * 4);
+                GL.BindBufferRange(BufferTarget.UniformBuffer, 1, uniformOverlays_buffer, new IntPtr(0), 16 * 4 * 4);
                 SetOverlayColors();
 
-                overlay_texture = SFTexture.DynamicTexture((ushort)w, (ushort)h, 1, TextureTarget.Texture2D, InternalFormat.R16ui, PixelFormat.RedInteger, PixelType.UnsignedShort, (int)All.Nearest, (int)All.Nearest, (int)All.ClampToEdge, (int)All.ClampToEdge, Vector4.Zero, 0, false, false);
+                overlay_texture = SFTexture.DynamicTexture((ushort)w, (ushort)h, 1, TextureTarget.Texture2d, InternalFormat.R16ui, PixelFormat.RedInteger, PixelType.UnsignedShort, (int)All.Nearest, (int)All.Nearest, (int)All.ClampToEdge, (int)All.ClampToEdge, Vector4.Zero, 0, false, false);
                 SFResources.SFResourceManager.Textures.AddManually(overlay_texture, "_OVERLAY_TEXTURE_"); 
                 overlay_texture.UpdateImage(flag_data, 0, 0, 0);
             }
@@ -488,13 +488,13 @@ namespace SFEngine.SFMap
 
         public void UpdateTileMap()
         {
-            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2D, tile_data_texture.tex_id);
+            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2d, tile_data_texture.tex_id);
             tile_data_texture.UpdateImage(tile_data, 0, 0, 0);
         }
 
         public void UpdateHeightMap()
         {
-            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2D, height_data_texture.tex_id);
+            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2d, height_data_texture.tex_id);
             height_data_texture.UpdateImage(height_data, 0, 0, 0);
         }
 
@@ -540,10 +540,10 @@ namespace SFEngine.SFMap
                 return;
             }
 
-            SF3D.SFRender.SFRenderEngine.SetTexture(3, TextureTarget.Texture2D, 0);
-            SF3D.SFRender.SFRenderEngine.SetTexture(3, TextureTarget.Texture2D, overlay_texture.tex_id);
+            SF3D.SFRender.SFRenderEngine.SetTexture(3, TextureTarget.Texture2d, 0);
+            SF3D.SFRender.SFRenderEngine.SetTexture(3, TextureTarget.Texture2d, overlay_texture.tex_id);
             overlay_texture.UpdateImage(flag_data, 0, 0, 0);
-            //GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, width, height, PixelFormat.RedInteger, PixelType.UnsignedShort, flag_data);
+            //GL.TexSubImage2D(TextureTarget.Texture2d, 0, 0, 0, width, height, PixelFormat.RedInteger, PixelType.UnsignedShort, flag_data);
         }
 
         public SFMapHeightMapChunk GetChunk(SFCoord pos)
@@ -651,9 +651,9 @@ namespace SFEngine.SFMap
             }
             else
             {
-                SF3D.SFRender.SFRenderEngine.SetTexture(5, TextureTarget.Texture2D, terrain_texture_lod_bump.tex_id);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.Repeat);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.Repeat);
+                SF3D.SFRender.SFRenderEngine.SetTexture(5, TextureTarget.Texture2d, terrain_texture_lod_bump.tex_id);
+                GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, (int)All.Repeat);
+                GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, (int)All.Repeat);
             }
 
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Generate(): Chunks generated: " + chunk_nodes.Length.ToString());
@@ -1277,7 +1277,7 @@ namespace SFEngine.SFMap
                 }
             }
             GL.BindBuffer(BufferTarget.UniformBuffer, uniformOverlays_buffer);
-            GL.BufferSubData(BufferTarget.UniformBuffer, new IntPtr(0), 16 * 4 * 4, ref uniformOverlays[0]);
+            GL.BufferSubData(BufferTarget.UniformBuffer, new IntPtr(0), 16 * 4 * 4, in uniformOverlays[0]);
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
         }
 

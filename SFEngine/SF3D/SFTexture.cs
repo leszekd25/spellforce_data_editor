@@ -155,19 +155,19 @@ namespace SFEngine.SF3D
             // multisampled textures are handled separately
             if (sampleCount > 1)
             {
-                GL.TexImage2DMultisample((TextureTargetMultisample)texture_target, (int)sampleCount, (PixelInternalFormat)internal_format, width, height, true);
+                GL.TexImage2DMultisample(texture_target, (int)sampleCount, internal_format, width, height, true);
             }
             else
             {
                 // texture arrays are handled separately
-                if (texture_target == TextureTarget.Texture2DArray)
+                if (texture_target == TextureTarget.Texture2dArray)
                 {
                     if(mipMapStart != 0)
                     {
                         LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFTexture.Init(): Mip starts at " + mipMapStart.ToString() + ", which is invalid for 2D texture array");
                         throw new Exception("SFTexture.Init(): Mip starts at " + mipMapStart.ToString() + ", which is invalid for 2D texture array");
                     }
-                    GL.TexStorage3D(TextureTarget3d.Texture2DArray, (int)mipMapCount, (SizedInternalFormat)internal_format, width, height, depth);
+                    GL.TexStorage3D(TextureTarget.Texture2dArray, (int)mipMapCount, (SizedInternalFormat)internal_format, width, height, depth);
                     for(int level = 0; level < mipMapCount; ++level)
                     {
                         size = w * h * InternalFormatSizeBits[internal_format] / 8;
@@ -190,7 +190,7 @@ namespace SFEngine.SF3D
                         if ((internal_format == InternalFormat.CompressedRgbaS3tcDxt1Ext) || (internal_format == InternalFormat.CompressedRgbaS3tcDxt3Ext) || (internal_format == InternalFormat.CompressedRgbaS3tcDxt5Ext))
                         {
                             size = ((w + 3) / 4) * ((h + 3) / 4) * blockSize;
-                            GL.CompressedTexImage2D(texture_target, level, internal_format, w, h, 0, size, ref data[data_offset + offset]);
+                            GL.CompressedTexImage2D(texture_target, level, internal_format, w, h, 0, size, in data[data_offset + offset]);
                         }
                         // all other textures are handled separately
                         else
@@ -198,11 +198,11 @@ namespace SFEngine.SF3D
                             size = w * h * InternalFormatSizeBits[internal_format] / 8;
                             if (data != null)
                             {
-                                GL.TexImage2D(texture_target, level, (PixelInternalFormat)internal_format, w, h, 0, pixel_format, pixel_type, ref data[data_offset + offset]);
+                                GL.TexImage2D(texture_target, level, internal_format, w, h, 0, pixel_format, pixel_type, in data[data_offset + offset]);
                             }
                             else
                             {
-                                GL.TexImage2D(texture_target, level, (PixelInternalFormat)internal_format, w, h, 0, pixel_format, pixel_type, new IntPtr(0));
+                                GL.TexImage2D(texture_target, level, internal_format, w, h, 0, pixel_format, pixel_type, new IntPtr(0));
                             }
                         }
                         DeviceSize += size;
@@ -214,23 +214,29 @@ namespace SFEngine.SF3D
 
                     if (generate_mipmap)
                     {
-                        GL.GenerateMipmap((GenerateMipmapTarget)texture_target);
+                        GL.GenerateMipmap(texture_target);
                     }
                 }
 
 
-                GL.TexParameter(texture_target, TextureParameterName.TextureMinFilter, min_filter);//(generate_mipmap || (mipMapCount > 1)) ? (int)All.LinearMipmapLinear : (int)All.Linear);
-                GL.TexParameter(texture_target, TextureParameterName.TextureMagFilter, mag_filter);//(int)All.Linear);
-                GL.TexParameter(texture_target, TextureParameterName.TextureWrapS, wrap_s);//(int)All.ClampToEdge);
-                GL.TexParameter(texture_target, TextureParameterName.TextureWrapT, wrap_t);//(int)All.ClampToEdge);
+                GL.TexParameteri(texture_target, TextureParameterName.TextureMinFilter, min_filter);//(generate_mipmap || (mipMapCount > 1)) ? (int)All.LinearMipmapLinear : (int)All.Linear);
+                GL.TexParameteri(texture_target, TextureParameterName.TextureMagFilter, mag_filter);//(int)All.Linear);
+                GL.TexParameteri(texture_target, TextureParameterName.TextureWrapS, wrap_s);//(int)All.ClampToEdge);
+                GL.TexParameteri(texture_target, TextureParameterName.TextureWrapT, wrap_t);//(int)All.ClampToEdge);
                 if (wrap_s == (int)All.ClampToBorder)
                 {
-                    float[] col = new float[] { wrap_border_col.X, wrap_border_col.Y, wrap_border_col.Z, wrap_border_col.W };
-                    GL.TexParameter(texture_target, TextureParameterName.TextureBorderColor, col);
+                    float[] col = [wrap_border_col.X, wrap_border_col.Y, wrap_border_col.Z, wrap_border_col.W];
+                    unsafe
+                    {
+                        fixed(float* ptr = col)
+                        {
+                            GL.TexParameterfv(texture_target, TextureParameterName.TextureBorderColor, ptr);
+                        }
+                    }
                 }
                 if (Settings.AnisotropicFiltering)
                 {
-                    GL.TexParameter(texture_target, (TextureParameterName)All.TextureMaxAnisotropy, Math.Max(1, Math.Min((float)Settings.MaxAnisotropy, anisotropy)));
+                    GL.TexParameterf(texture_target, (TextureParameterName)All.TextureMaxAnisotropy, Math.Max(1, Math.Min((float)Settings.MaxAnisotropy, anisotropy)));
                 }
             }
 
@@ -242,9 +248,9 @@ namespace SFEngine.SF3D
 
         public void SetWrapMode(int mode)
         {
-            SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2D, tex_id);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, mode);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, mode);
+            SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2d, tex_id);
+            GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, mode);
+            GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, mode);
         }
 
         public struct SFTextureLoadArgs
@@ -318,7 +324,7 @@ namespace SFEngine.SF3D
             generate_mipmap = false;
             free_on_init = true;
 
-            texture_target = TextureTarget.Texture2D;
+            texture_target = TextureTarget.Texture2d;
             // no pixel format or pixel type; texture internal format is compressed, as seen below
 
             switch (fourCC)
@@ -490,7 +496,7 @@ namespace SFEngine.SF3D
             height = isp_h;
             depth = 1;
             CalculateMipmapLevel(width, height, 1);
-            texture_target = TextureTarget.Texture2D;
+            texture_target = TextureTarget.Texture2d;
             internal_format = InternalFormat.Rgba;
             pixel_format = PixelFormat.Rgba;
             pixel_type = PixelType.UnsignedByte;
@@ -558,7 +564,7 @@ namespace SFEngine.SF3D
             height = h;
             depth = 1;
             CalculateMipmapLevel(width, height, 1);
-            texture_target = TextureTarget.Texture2D;
+            texture_target = TextureTarget.Texture2d;
             internal_format = InternalFormat.Rgba;
             pixel_format = PixelFormat.Rgba;
             pixel_type = PixelType.UnsignedByte;
@@ -630,7 +636,7 @@ namespace SFEngine.SF3D
                 wrap_border_col = wbcol,
                 anisotropy = an
             };
-            tex.texture_target = (sample_count > 1 ? (TextureTarget)TextureTargetMultisample.Texture2DMultisample : TextureTarget.Texture2D);
+            tex.texture_target = (sample_count > 1 ? TextureTarget.Texture2dMultisample : TextureTarget.Texture2d);
             tex.free_on_init = true;
             tex.generate_mipmap = false;
             tex.ignore_mipmap_settings_on_load = true;
@@ -644,11 +650,11 @@ namespace SFEngine.SF3D
 
             GCHandle idata_handle = GCHandle.Alloc(idata, GCHandleType.Pinned);
             IntPtr idata_ptr = idata_handle.AddrOfPinnedObject();
-            if (texture_target == TextureTarget.Texture2D)
+            if (texture_target == TextureTarget.Texture2d)
             {
-                GL.TexImage2D(texture_target, lvl, (PixelInternalFormat)internal_format, width, height, 0, pixel_format, pixel_type, new IntPtr(idata_ptr.ToInt64() + idata_offset));
+                GL.TexImage2D(texture_target, lvl, internal_format, width, height, 0, pixel_format, pixel_type, new IntPtr(idata_ptr.ToInt64() + idata_offset));
             }
-            else if(texture_target == TextureTarget.Texture2DArray)
+            else if(texture_target == TextureTarget.Texture2dArray)
             {
                 GL.TexSubImage3D(texture_target, lvl, 0, 0, d, width, height, 1, pixel_format, pixel_type, new IntPtr(idata_ptr.ToInt64() + idata_offset));
             }
@@ -656,7 +662,7 @@ namespace SFEngine.SF3D
 
             if (generate_mipmap)
             {
-                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                GL.GenerateMipmap(TextureTarget.Texture2d);
             }
         }
 
@@ -686,7 +692,7 @@ namespace SFEngine.SF3D
                 int size = ((w + 3) / 4) * ((h + 3) / 4) * 64;
                 if (level >= mipMapStart)
                 {
-                    GL.GetTexImage(texture_target, (int)(level - mipMapStart), PixelFormat.Rgba, PixelType.UnsignedByte, ref pixels[offset]);
+                    GL.GetTexImage(texture_target, (int)(level - mipMapStart), PixelFormat.Rgba, PixelType.UnsignedByte, out pixels[offset]);
 
                     offset += size;
                 }

@@ -1,7 +1,5 @@
-﻿using OpenTK.Mathematics;
-using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.Common;
-using OpenTK.Windowing.GraphicsLibraryFramework;
+﻿using OpenTK.Platform;
+using OpenTK.Mathematics;
 using SFEngine.SF3D.Physics;
 using SFEngine.SF3D.SceneSynchro;
 using SFEngine.SF3D.SFRender;
@@ -11,25 +9,26 @@ using SFEngine.SFMap;
 using SFEngine.SFResources;
 using SFEngine.SFUnPak;
 using System;
+using OpenTK.Core.Utility;
+using OpenTK.Graphics;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace MapViewerNetNative
 {
-    public struct SpecialKeysPressed
+    public class MapViewerWindow
     {
-        public bool Ctrl;
-        public bool Shift;
-    }
+        WindowHandle window;
+        OpenGLContextHandle glContext;
 
-    public class MapViewerWindow : GameWindow
-    {
         Lua L;
         SFMap map = null;
 
-        Vector2 mouse_current_pos = new Vector2(0, 0);   // while moving, this keeps track of mouse position
+        Vector2i mouse_current_pos = new Vector2i(0, 0);   // while moving, this keeps track of mouse position
 
         bool dynamic_render = true;     // animations will work if this is enabled
 
-        Vector2 scroll_mouse_start = new Vector2(0, 0);
+        Vector2i scroll_mouse_start = new Vector2i(0, 0);
         bool mouse_scroll = false;
         public float zoom_level = 1.0f;
         float camera_speed_factor = 1.0f;
@@ -37,27 +36,235 @@ namespace MapViewerNetNative
         bool[] arrows_pressed = new bool[] { false, false, false, false };  // left, right, up, down
         bool[] rotation_pressed = new bool[] { false, false, false, false };// left, right, up, down
 
+        Stopwatch stopwatch;
+        double cur_dt = 0.0;
         double cur_time = 0.0;
         int updates_this_second = 0;
 
-        public MapViewerWindow() : base(
-            new GameWindowSettings() { UpdateFrequency = 0 },
-            new NativeWindowSettings() { ClientSize = (1024, 768), RedBits = 8, GreenBits = 8, BlueBits = 8, AlphaBits = 8, DepthBits = 24, StencilBits = 8, Title = "MapViewer", WindowState = OpenTK.Windowing.Common.WindowState.Normal, API = OpenTK.Windowing.Common.ContextAPI.OpenGL, APIVersion = new Version(4, 2), Flags = ContextFlags.Default })
-            //base(1024, 768, new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(32), 24, 8), "Map Viewer", GameWindowFlags.Default, DisplayDevice.Default, 4, 2, OpenTK.Graphics.GraphicsContextFlags.Default)
+        public MapViewerWindow()
         {
-            UpdateFrame += OnWindowUpdate;
-            MouseDown += OnWindowMouseDown;
-            MouseMove += OnWindowMouseMove;
-            MouseWheel += OnWindowMouseScroll;
-            MouseUp += OnWindowMouseUp;
-            KeyDown += OnWindowKeyPress;
-            KeyUp += OnWindowKeyRelease;
-            Resize += OnWindowResize;
+            stopwatch = Stopwatch.StartNew();
+            EventQueue.EventRaised += EventRaised;
 
-            VSync = (SFEngine.Settings.VSync ? VSyncMode.On : VSyncMode.Off);
+            ToolkitOptions options = new ToolkitOptions();
+            options.ApplicationName = "OpenTK tutorial";
+            options.Logger = new ConsoleLogger();
+            Toolkit.Init(options);
 
+            OpenGLGraphicsApiHints contextSettings = new OpenGLGraphicsApiHints()
+            {
+                // Here different options of the opengl context can be set.
+                Version = new Version(4, 1),
+                Profile = OpenGLProfile.Core,
+                DebugFlag = true,
+                DepthBits = ContextDepthBits.Depth24,
+                StencilBits = ContextStencilBits.Stencil8,
+            };
+
+            window = Toolkit.Window.Create(contextSettings);
+            glContext = Toolkit.OpenGL.CreateFromWindow(window);
+
+            // Show window
+            Toolkit.Window.SetTitle(window, "OpenTK window");
+            Toolkit.Window.SetSize(window, 1024, 768);
+            Toolkit.Window.SetMode(window, WindowMode.Normal);
+
+            // The the current opengl context and load the bindings.
+            Toolkit.OpenGL.SetSwapInterval(0);
+            Toolkit.OpenGL.SetCurrentContext(glContext);
+            GLLoader.LoadBindings(Toolkit.OpenGL.GetBindingsContext(glContext));
+
+            // on window load
             OnWindowLoad();
+            SFRenderEngine.ResizeView((1024, 768));
         }
+
+        public void Run()
+        {
+            while (true)
+            {
+                // This will process events for all windows and
+                // post those events to the event queue.
+                Toolkit.Window.ProcessEvents(false);
+                if (Toolkit.Window.IsWindowDestroyed(window))
+                {
+                    break;
+                }
+
+                // update
+                stopwatch.Stop();
+                cur_dt = (double)stopwatch.ElapsedTicks / Stopwatch.Frequency;
+                cur_time += cur_dt;
+                stopwatch.Restart();
+                OnWindowUpdate();
+
+                Toolkit.OpenGL.SwapBuffers(glContext);
+            }
+        }
+
+        void OnWindowLoad()
+        {
+            // load settings and initialize file system
+            SFEngine.Settings.Load();
+            SFEngine.Settings.EditorMode = false;
+            if (!SFUnPak.game_directory_specified)
+            {
+                throw new Exception("FAILED TO LOAD GAME DIRECTORY");
+            }
+            SFResourceManager.ListAllFilesystemResources();
+
+            // load SQL stuff
+            L = new();
+            LuaSQLDatabase.LoadSQL(L, false);
+
+
+            // load gamedata
+            SFCategoryManager.gamedata.Load(SFUnPak.game_directory_name + "\\data\\GameData.cff");
+            SFCategoryManager.manual_SetGamedata();
+
+            // find all resources
+            SFResourceManager.ListAllPakResources();
+
+
+            // create scene and initialize rendering engine
+            SFRenderEngine.scene.Init();
+            SFRenderEngine.Initialize(new Vector2(800, 600));
+            SFRenderEngine.ResetTextures();
+            SFRenderEngine.scene.GenerateMissingMesh();
+            SFRenderEngine.scene.atmosphere.SetSunLocation(135, 60);
+            SFRenderEngine.SetObjectFadeRange(SFEngine.Settings.ObjectFadeMin, SFEngine.Settings.ObjectFadeMax);
+
+            SFRenderEngine.scene.root.Visible = true;
+
+            // create and generate map
+            string map_name = "";
+            List<string> result = Toolkit.Dialog.ShowOpenDialog(window, "Select a map to load", "", [new DialogFileFilter("MAP files (*.map)", "map")], 0);
+            if ((result == null)||(result.Count != 1))
+            {
+                throw new Exception("DID NOT SELECT MAP");
+            }
+            map_name = result[0];
+
+
+            map = new SFMap();
+            if (map.Load(result[0]) != 0)
+            {
+                throw new Exception("FAILED TO LOAD MAP");
+            }
+
+            SFRenderEngine.scene.map = map;
+
+            SetCameraWorldMapPos(new Vector2(map.width / 2, map.height / 2));
+            SetCameraAzimuthAltitude((float)((90 * Math.PI) / 180.0f), (float)((-70 * Math.PI) / 180.0f));
+            zoom_level = 1;
+            AdjustCameraZ();
+
+            SFEngine.Settings.DynamicMap = dynamic_render;
+            if (SFEngine.Settings.DynamicMap)
+            {
+                EnableAnimation(true);
+            }
+
+            GC.Collect();
+        }
+
+        void OnWindowUpdate()
+        {
+            if (cur_time > 1.0)
+            {
+                cur_time -= 1.0;
+                Toolkit.Window.SetTitle(window,$"Map Viewer (fps: {updates_this_second})");
+                updates_this_second = 0;
+            }
+
+            if (map == null)
+            {
+                return;
+            }
+
+            // rotating view by mouse
+            if (mouse_scroll)
+            {
+                Vector2i dv = mouse_current_pos - scroll_mouse_start;
+                Vector2 scroll_translation = new Vector2(dv.X, dv.Y) * (float)cur_dt / 250f;
+                if (scroll_translation != Vector2i.Zero)
+                {
+                    SetCameraAzimuthAltitude(SFRenderEngine.scene.camera.Direction.X - scroll_translation.X, SFRenderEngine.scene.camera.Direction.Y - scroll_translation.Y);
+                }
+            }
+
+            // moving view by arrow keys
+            Vector2 movement_vector = new Vector2(0, 0);
+            if (arrows_pressed[0])
+            {
+                movement_vector += new Vector2(1, 0);
+            }
+
+            if (arrows_pressed[1])
+            {
+                movement_vector += new Vector2(-1, 0);
+            }
+
+            if (arrows_pressed[2])
+            {
+                movement_vector += new Vector2(0, -1);
+            }
+
+            if (arrows_pressed[3])
+            {
+                movement_vector += new Vector2(0, +1);
+            }
+
+            if (movement_vector != new Vector2(0, 0))
+            {
+                SFEngine.MathUtils.RotateVec2Mirrored(in movement_vector, SFRenderEngine.scene.camera.Direction.X + (float)(Math.PI / 2), out movement_vector);
+                movement_vector *= 60.0f * camera_speed_factor * (float)cur_dt;
+                MoveCameraWorldMapPos(SFRenderEngine.scene.camera.position.Xz + movement_vector);
+            }
+
+            // rotating view by home/end/pageup/pagedown
+            movement_vector = new Vector2(0, 0);
+            if (rotation_pressed[0])
+            {
+                movement_vector += new Vector2(-1, 0);
+            }
+
+            if (rotation_pressed[1])
+            {
+                movement_vector += new Vector2(1, 0);
+            }
+
+            if (rotation_pressed[2])
+            {
+                movement_vector += new Vector2(0, -1);
+            }
+
+            if (rotation_pressed[3])
+            {
+                movement_vector += new Vector2(0, 1);
+            }
+
+            if (movement_vector != new Vector2(0, 0))
+            {
+                movement_vector *= 2.0f * (float)cur_dt;
+                SetCameraAzimuthAltitude(SFRenderEngine.scene.camera.Direction.X - movement_vector.X, SFRenderEngine.scene.camera.Direction.Y - movement_vector.Y);
+            }
+
+            SFRenderEngine.scene.camera.Update(0);
+
+            // heavy tasks
+            map.ocean.SetPosition(SFRenderEngine.scene.camera.position);
+            SFRenderEngine.scene.UpdateVisibleChunks(map.heightmap);
+            SFRenderEngine.scene.Update((float)cur_dt);
+            SFRenderEngine.ui.Update();
+            UpdateSunFrustum();
+
+            // pure render stuff
+            SFRenderEngine.RenderScene();
+
+            updates_this_second += 1;
+        }
+
 
         private void AddCameraZoom(float delta)
         {
@@ -263,89 +470,67 @@ namespace MapViewerNetNative
             }
         }
 
-        void OnWindowLoad()
+
+        void EventRaised(PalHandle? handle, PlatformEventType type, EventArgs args)
         {
-            // load settings and initialize file system
-            SFEngine.Settings.Load();
-            SFEngine.Settings.EditorMode = false;
-            if (!SFUnPak.game_directory_specified)
+            // close window
+            if (args is CloseEventArgs closeArgs)
             {
-                throw new Exception("FAILED TO LOAD GAME DIRECTORY");
+                // Destroy the window that the user wanted to close.
+                Toolkit.Window.Destroy(closeArgs.Window);
             }
-            SFResourceManager.ListAllFilesystemResources();
-
-            // load SQL stuff
-            L = new();
-            LuaSQLDatabase.LoadSQL(L, false);
-
-
-            // load gamedata
-            SFCategoryManager.gamedata.Load(SFUnPak.game_directory_name + "\\data\\GameData.cff");
-            SFCategoryManager.manual_SetGamedata();
-
-            // find all resources
-            SFResourceManager.ListAllPakResources();
-
-
-            // create scene and initialize rendering engine
-
-            MakeCurrent();
-            SFRenderEngine.scene.Init();
-            SFRenderEngine.Initialize(new Vector2(800, 600));
-            SFRenderEngine.ResetTextures();
-            SFRenderEngine.scene.GenerateMissingMesh();
-            SFRenderEngine.scene.atmosphere.SetSunLocation(135, 60);
-            SFRenderEngine.SetObjectFadeRange(SFEngine.Settings.ObjectFadeMin, SFEngine.Settings.ObjectFadeMax);
-
-            SFRenderEngine.scene.root.Visible = true;
-
-            // create and generate map
-            string map_name = "";
-            System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
-            ofd.CheckFileExists = true;
-            ofd.DefaultExt = ".map";
-            ofd.Filter = "MAP files (*.map)|*.map";
-            if (ofd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            // resize window
+            if(args is WindowResizeEventArgs windowResizeArgs)
             {
-                throw new Exception("DID NOT SELECT MAP");
+                OnWindowResize(windowResizeArgs);
             }
-
-            map_name = ofd.FileName;
-
-
-            map = new SFMap();
-            if (map.Load(ofd.FileName) != 0)
+            // window mouse down
+            if(args is MouseButtonDownEventArgs mouseButtonDownArgs)
             {
-                throw new Exception("FAILED TO LOAD MAP");
+                OnWindowMouseDown(mouseButtonDownArgs);
             }
-
-            SFRenderEngine.scene.map = map;
-
-            SetCameraWorldMapPos(new Vector2(map.width / 2, map.height / 2));
-            SetCameraAzimuthAltitude((float)((90 * Math.PI) / 180.0f), (float)((-70 * Math.PI) / 180.0f));
-            zoom_level = 1;
-            AdjustCameraZ();
-
-            SFEngine.Settings.DynamicMap = dynamic_render;
-            if (SFEngine.Settings.DynamicMap)
+            // window mouse move
+            if(args is MouseMoveEventArgs mouseMoveArgs)
             {
-                EnableAnimation(true);
+                OnWindowMouseMove(mouseMoveArgs);
             }
-
-            GC.Collect();
+            // window mouse up
+            if(args is MouseButtonUpEventArgs mouseButtonUpArgs)
+            {
+                OnWindowMouseUp(mouseButtonUpArgs);
+            }
+            // window mouse scroll
+            if (args is ScrollEventArgs scrollArgs)
+            {
+                OnWindowMouseScroll(scrollArgs);
+            }
+            // window key press
+            if(args is KeyDownEventArgs keyDownArgs)
+            {
+                OnWindowKeyPress(keyDownArgs);
+            }
+            // window key release
+            if(args is KeyUpEventArgs keyUpArgs)
+            {
+                OnWindowKeyRelease(keyUpArgs);
+            }
         }
 
-        void OnWindowResize(ResizeEventArgs e)
+
+
+        void OnWindowResize(WindowResizeEventArgs e)
         {
-            SFRenderEngine.ResizeView(e.Size);
-            MakeCurrent();
+            SFRenderEngine.ResizeView(e.NewClientSize);
         }
 
-        void OnWindowMouseDown(MouseButtonEventArgs e)
+        void OnWindowMouseDown(MouseButtonDownEventArgs e)
         {
-            if (e.Button == MouseButton.Middle)
+            if (e.Button == MouseButton.Button3)
             {
-                scroll_mouse_start = MousePosition;
+                Toolkit.Mouse.GetPosition(out scroll_mouse_start.X, out scroll_mouse_start.Y);
+                Toolkit.Window.GetClientPosition(window, out int x, out int y);
+                scroll_mouse_start.X -= x;
+                scroll_mouse_start.Y -= y;
                 mouse_scroll = true;
                 return;
             }
@@ -353,56 +538,56 @@ namespace MapViewerNetNative
 
         void OnWindowMouseMove(MouseMoveEventArgs e)
         {
-            mouse_current_pos = new Vector2(e.X, e.Y);
+            mouse_current_pos = new Vector2i((int)e.Position.X, (int)e.Position.Y);
         }
 
-        void OnWindowMouseUp(MouseButtonEventArgs e)
+        void OnWindowMouseUp(MouseButtonUpEventArgs e)
         {
-            if (e.Button == MouseButton.Middle)
+            if (e.Button == MouseButton.Button3)
             {
-                scroll_mouse_start = new Vector2(0, 0);
+                scroll_mouse_start = new Vector2i(0, 0);
                 mouse_scroll = false;
                 return;
             }
         }
 
-        void OnWindowMouseScroll(MouseWheelEventArgs e)
+        void OnWindowMouseScroll(ScrollEventArgs e)
         {
-            AddCameraZoom(e.Offset.Y);
+            AddCameraZoom(e.Delta.Y);
         }
 
-        void OnWindowKeyPress(KeyboardKeyEventArgs e)
+        void OnWindowKeyPress(KeyDownEventArgs e)
         {
             switch (e.Key)
             {
-                case Keys.Left:
+                case Key.LeftArrow:
                     arrows_pressed[0] = true;
                     break;
-                case Keys.Right:
+                case Key.RightArrow:
                     arrows_pressed[1] = true;
                     break;
-                case Keys.Up:
+                case Key.UpArrow:
                     arrows_pressed[2] = true;
                     break;
-                case Keys.Down:
+                case Key.DownArrow:
                     arrows_pressed[3] = true;
                     break;
-                case Keys.Home:
+                case Key.Home:
                     rotation_pressed[0] = true;
                     break;
-                case Keys.End:
+                case Key.End:
                     rotation_pressed[1] = true;
                     break;
-                case Keys.PageUp:
+                case Key.PageUp:
                     rotation_pressed[2] = true;
                     break;
-                case Keys.PageDown:
+                case Key.PageDown:
                     rotation_pressed[3] = true;
                     break;
-                case Keys.Insert:
+                case Key.Insert:
                     AddCameraZoom(-1);
                     break;
-                case Keys.Delete:
+                case Key.Delete:
                     AddCameraZoom(1);
                     break;
                 default:
@@ -410,138 +595,37 @@ namespace MapViewerNetNative
             }
         }
 
-        void OnWindowKeyRelease(KeyboardKeyEventArgs e)
+        void OnWindowKeyRelease(KeyUpEventArgs e)
         {
             switch (e.Key)
             {
-                case Keys.Left:
+                case Key.LeftArrow:
                     arrows_pressed[0] = false;
                     break;
-                case Keys.Right:
+                case Key.RightArrow:
                     arrows_pressed[1] = false;
                     break;
-                case Keys.Up:
+                case Key.UpArrow:
                     arrows_pressed[2] = false;
                     break;
-                case Keys.Down:
+                case Key.DownArrow:
                     arrows_pressed[3] = false;
                     break;
-                case Keys.Home:
+                case Key.Home:
                     rotation_pressed[0] = false;
                     break;
-                case Keys.End:
+                case Key.End:
                     rotation_pressed[1] = false;
                     break;
-                case Keys.PageUp:
+                case Key.PageUp:
                     rotation_pressed[2] = false;
                     break;
-                case Keys.PageDown:
+                case Key.PageDown:
                     rotation_pressed[3] = false;
                     break;
                 default:
                     break;
             }
-        }
-
-
-        void OnWindowUpdate(FrameEventArgs e)
-        {
-            cur_time += e.Time;
-            if (cur_time > 1.0)
-            {
-                cur_time -= 1.0;
-                Title = "Map Viewer (fps: " + updates_this_second + ")";
-                updates_this_second = 0;
-            }
-
-            if (map == null)
-            {
-                return;
-            }
-
-            // rotating view by mouse
-            if (mouse_scroll)
-            {
-                Vector2 scroll_translation = (mouse_current_pos - scroll_mouse_start) * (float)e.Time / 250f;
-                if (scroll_translation != Vector2.Zero)
-                {
-                    SetCameraAzimuthAltitude(SFRenderEngine.scene.camera.Direction.X - scroll_translation.X, SFRenderEngine.scene.camera.Direction.Y - scroll_translation.Y);
-                }
-            }
-
-            // moving view by arrow keys
-            Vector2 movement_vector = new Vector2(0, 0);
-            if (arrows_pressed[0])
-            {
-                movement_vector += new Vector2(1, 0);
-            }
-
-            if (arrows_pressed[1])
-            {
-                movement_vector += new Vector2(-1, 0);
-            }
-
-            if (arrows_pressed[2])
-            {
-                movement_vector += new Vector2(0, -1);
-            }
-
-            if (arrows_pressed[3])
-            {
-                movement_vector += new Vector2(0, +1);
-            }
-
-            if (movement_vector != new Vector2(0, 0))
-            {
-                SFEngine.MathUtils.RotateVec2Mirrored(in movement_vector, SFRenderEngine.scene.camera.Direction.X + (float)(Math.PI / 2), out movement_vector);
-                movement_vector *= 60.0f * camera_speed_factor * (float)e.Time;
-                MoveCameraWorldMapPos(SFRenderEngine.scene.camera.position.Xz + movement_vector);
-            }
-
-            // rotating view by home/end/pageup/pagedown
-            movement_vector = new Vector2(0, 0);
-            if (rotation_pressed[0])
-            {
-                movement_vector += new Vector2(-1, 0);
-            }
-
-            if (rotation_pressed[1])
-            {
-                movement_vector += new Vector2(1, 0);
-            }
-
-            if (rotation_pressed[2])
-            {
-                movement_vector += new Vector2(0, -1);
-            }
-
-            if (rotation_pressed[3])
-            {
-                movement_vector += new Vector2(0, 1);
-            }
-
-            if (movement_vector != new Vector2(0, 0))
-            {
-                movement_vector *= 2.0f * (float)e.Time;
-                SetCameraAzimuthAltitude(SFRenderEngine.scene.camera.Direction.X - movement_vector.X, SFRenderEngine.scene.camera.Direction.Y - movement_vector.Y);
-            }
-
-            SFRenderEngine.scene.camera.Update(0);
-
-            // heavy tasks
-            map.ocean.SetPosition(SFRenderEngine.scene.camera.position);
-            SFRenderEngine.scene.UpdateVisibleChunks(map.heightmap);
-
-            SFRenderEngine.scene.Update((float)e.Time);
-
-            SFRenderEngine.ui.Update();
-            UpdateSunFrustum();
-
-            // pure render stuff
-            SFRenderEngine.RenderScene();
-            SwapBuffers();
-
-            updates_this_second += 1;
         }
     }
 }

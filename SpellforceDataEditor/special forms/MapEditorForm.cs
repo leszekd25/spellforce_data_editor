@@ -80,7 +80,7 @@ namespace SpellforceDataEditor.special_forms
 
             public void InitMinimap(int m_width, int m_height)
             {
-                minimap_tex = SFTexture.DynamicTexture((ushort)m_width, (ushort)m_height, 1, TextureTarget.Texture2D, InternalFormat.Rgba, PixelFormat.Rgba, PixelType.UnsignedByte, (int)All.LinearMipmapLinear, (int)All.Linear, (int)All.ClampToEdge, (int)All.ClampToEdge, Vector4.One, Settings.MaxAnisotropy, true, true);
+                minimap_tex = SFTexture.DynamicTexture((ushort)m_width, (ushort)m_height, 1, TextureTarget.Texture2d, InternalFormat.Rgba, PixelFormat.Rgba, PixelType.UnsignedByte, (int)All.LinearMipmapLinear, (int)All.Linear, (int)All.ClampToEdge, (int)All.ClampToEdge, Vector4.One, Settings.MaxAnisotropy, true, true);
                 SFResourceManager.Textures.AddManually(minimap_tex, "minimap");
 
                 SFRenderEngine.ui.AddStorage(minimap_tex, 1);

@@ -53,7 +53,7 @@ namespace SFEngine.SF3D.SFRender
                 GL.ShaderSource(shader_ids[i], define_preamble + shaders[i].data);
 
                 GL.CompileShader(shader_ids[i]);
-                info = GL.GetShaderInfoLog(shader_ids[i]);
+                GL.GetShaderInfoLog(shader_ids[i], out info);
                 System.Diagnostics.Debug.WriteLine(shaders[i].type.ToString() + " compile info: " + info);
             }
 
@@ -69,7 +69,7 @@ namespace SFEngine.SF3D.SFRender
             }
 
             GL.LinkProgram(ProgramID);
-            info = GL.GetProgramInfoLog(ProgramID);
+            GL.GetProgramInfoLog(ProgramID, out info);
             System.Diagnostics.Debug.WriteLine("Link info: " + info);
 
             for (int i = 0; i < shader_ids.Length; i++)
@@ -96,7 +96,7 @@ namespace SFEngine.SF3D.SFRender
         {
             byte[] data = new byte[100000];
             int ret_len = 0;
-            BinaryFormat ret_fmt = (BinaryFormat)0;
+            All ret_fmt = (All)0;
             GL.GetProgramBinary(ProgramID, 100000, out ret_len, out ret_fmt, data);
             byte[] data2 = new byte[ret_len];
             System.Array.Copy(data, data2, ret_len);

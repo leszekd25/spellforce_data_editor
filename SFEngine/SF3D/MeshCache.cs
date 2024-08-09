@@ -245,7 +245,7 @@ namespace SFEngine.SF3D
             VertexAttribTypeSize.Add(VertexAttribPointerType.Short, 2);
             VertexAttribTypeSize.Add(VertexAttribPointerType.UnsignedByte, 1);
             VertexAttribTypeSize.Add(VertexAttribPointerType.UnsignedInt, 4);
-            VertexAttribTypeSize.Add(VertexAttribPointerType.UnsignedInt10F11F11FRev, 4);
+            VertexAttribTypeSize.Add(VertexAttribPointerType.UnsignedInt10f11f11fRev, 4);
             VertexAttribTypeSize.Add(VertexAttribPointerType.UnsignedInt2101010Rev, 4);
             VertexAttribTypeSize.Add(VertexAttribPointerType.UnsignedShort, 2);
         }
@@ -302,8 +302,8 @@ namespace SFEngine.SF3D
             {
                 int attrib_bytesize = VertexAttributes[i].ComponentCount * VertexAttribTypeSize[VertexAttributes[i].ComponentType];
 
-                GL.EnableVertexAttribArray(i);
-                GL.VertexAttribPointer(i, VertexAttributes[i].ComponentCount, VertexAttributes[i].ComponentType, VertexAttributes[i].Normalized, BytesPerVertex, current_offset);
+                GL.EnableVertexAttribArray((uint)i);
+                GL.VertexAttribPointer((uint)i, VertexAttributes[i].ComponentCount, VertexAttributes[i].ComponentType, VertexAttributes[i].Normalized, BytesPerVertex, current_offset);
                 current_offset += attrib_bytesize;
             }
 
@@ -311,13 +311,13 @@ namespace SFEngine.SF3D
             {
                 InitMatrix(20000);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, MatrixBufferID);
-                GL.BufferData(BufferTarget.ArrayBuffer, 64 * 20000, MatrixBufferData, BufferUsageHint.DynamicDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, 64 * 20000, MatrixBufferData, BufferUsage.DynamicDraw);
 
                 for (int i = 0; i < 4; i++)
                 {
-                    GL.EnableVertexAttribArray(VertexAttributes.Count + i);
-                    GL.VertexAttribPointer(VertexAttributes.Count + i, 4, VertexAttribPointerType.Float, false, 64, 16 * i);
-                    GL.VertexAttribDivisor(VertexAttributes.Count + i, 1);
+                    GL.EnableVertexAttribArray((uint)(VertexAttributes.Count + i));
+                    GL.VertexAttribPointer((uint)(VertexAttributes.Count + i), 4, VertexAttribPointerType.Float, false, 64, 16 * i);
+                    GL.VertexAttribDivisor((uint)(VertexAttributes.Count + i), 1);
                 }
             }
 
@@ -337,7 +337,7 @@ namespace SFEngine.SF3D
         public void FullVertexUpload()
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObjectID);
-            GL.BufferData(BufferTarget.ArrayBuffer, VertexBufferObjectData.Length, VertexBufferObjectData, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, VertexBufferObjectData.Length, VertexBufferObjectData, BufferUsage.StaticDraw);
         }
 
         // updates vertices in the buffer
@@ -347,14 +347,14 @@ namespace SFEngine.SF3D
             GL.BufferSubData(BufferTarget.ArrayBuffer,
                 new IntPtr(VertexRanges[vertex_range_index].Start * BytesPerVertex),
                 VertexRanges[vertex_range_index].Count * BytesPerVertex,
-                ref VertexBufferObjectData[VertexRanges[vertex_range_index].Start * BytesPerVertex]);
+                in VertexBufferObjectData[VertexRanges[vertex_range_index].Start * BytesPerVertex]);
         }
 
         // uploads all elements in the buffer
         public void FullElementUpload()
         {
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferObjectID);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, ElementBufferObjectData.Length * 4, ElementBufferObjectData, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, ElementBufferObjectData.Length * 4, ElementBufferObjectData, BufferUsage.StaticDraw);
         }
 
         // updates elements in the buffer
@@ -364,7 +364,7 @@ namespace SFEngine.SF3D
             GL.BufferSubData(BufferTarget.ElementArrayBuffer,
                 new IntPtr(ElementRanges[element_range_indexx].Start * 4),
                 ElementRanges[element_range_indexx].Count * 4,
-                ref ElementBufferObjectData[ElementRanges[element_range_indexx].Start]);
+                in ElementBufferObjectData[ElementRanges[element_range_indexx].Start]);
         }
 
         public void MatrixUpload(int matrix_start, int matrix_count)
@@ -395,7 +395,7 @@ namespace SFEngine.SF3D
             MatrixBufferData = new Matrix4[current_mbo_size * 2];
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, MatrixBufferID);
-            GL.BufferData(BufferTarget.ArrayBuffer, MatrixBufferData.Length * 64, MatrixBufferData, BufferUsageHint.DynamicDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, MatrixBufferData.Length * 64, MatrixBufferData, BufferUsage.DynamicDraw);
         }
 
 

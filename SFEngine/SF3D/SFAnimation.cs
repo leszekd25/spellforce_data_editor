@@ -12,13 +12,6 @@ namespace SFEngine.SF3D
 {
     public struct BoneAnimationState(in Matrix4 transform)
     {
-        static long INVOCATIONS = 0;
-        static long B11Match = 0;
-        static long B12Match = 0;
-        static long B13Match = 0;
-        static long B21Match = 0;
-        static long B22Match = 0;
-
         public Quaternion rotation = transform.ExtractRotation(false);
         public Vector3 position = transform.Row3.Xyz;
 

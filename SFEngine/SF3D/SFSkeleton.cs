@@ -180,7 +180,7 @@ namespace SFEngine.SF3D
             {
                 if (bone_parents[i] != Utility.NO_INDEX)
                 {
-                    BoneAnimationState.Multiply(ref bone_reference_state[i], ref bone_reference_state[bone_parents[i]], out bone_reference_state[i]);
+                    BoneAnimationState.Multiply(in bone_reference_state[i], in bone_reference_state[bone_parents[i]], out bone_reference_state[i]);
                 }
                 bone_inverted_state[i] = bone_reference_state[i].Inverse();
             }

@@ -10,6 +10,7 @@ using System.IO;
 using SFEngine.SFLua;
 using Windows.UI.WebUI;
 using System.Threading.Tasks;
+using Microsoft.VisualBasic.Logging;
 
 namespace SpellforceDataEditor
 {

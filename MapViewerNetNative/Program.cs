@@ -9,9 +9,12 @@ namespace MapViewerNetNative
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
-            MapViewerWindow mew = new MapViewerWindow();
+            MapViewerWindow mew2 = new MapViewerWindow();
+            mew2.Run();
 
-            mew.Run();
+            //MapViewerWindow mew = new MapViewerWindow();
+
+            //mew.Run();
         }
 
     }

@@ -235,32 +235,32 @@ namespace SFEngine.SFMap
             GenerateTileTextures();
 
             terrain_texture = GL.GenTexture();
-            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2DArray, terrain_texture);
-            GL.TexStorage3D(TextureTarget3d.Texture2DArray, 8, SizedInternalFormat.Rgba8, 256, 256, MAX_TILES);
+            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2dArray, terrain_texture);
+            GL.TexStorage3D(TextureTarget.Texture2dArray, 8, SizedInternalFormat.Rgba8, 256, 256, MAX_TILES);
             for (int i = 0; i < 32; i++)
             {
-                GL.TexSubImage3D(TextureTarget.Texture2DArray, 0, 0, 0, i, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, base_texture_bank[i].data);
+                GL.TexSubImage3D(TextureTarget.Texture2dArray, 0, 0, 0, i, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, base_texture_bank[i].data);
             }
             for(int i = 32; i < 224; i++)
             {
                 if(tile_defined[i])
                 {
-                    GL.TexSubImage3D(TextureTarget.Texture2DArray, 0, 0, 0, i, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, tile_texture_bank[i].data);
+                    GL.TexSubImage3D(TextureTarget.Texture2dArray, 0, 0, 0, i, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, tile_texture_bank[i].data);
                 }
             }
             for(int i = 1; i < 32; i++)
             {
-                GL.TexSubImage3D(TextureTarget.Texture2DArray, 0, 0, 0, 223 + i, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, base_texture_bank[i].data);
+                GL.TexSubImage3D(TextureTarget.Texture2dArray, 0, 0, 0, 223 + i, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, base_texture_bank[i].data);
             }
 
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2DArray);
-            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapS, (int)All.Repeat);
-            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapT, (int)All.Repeat);
-            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMinFilter, (int)All.LinearMipmapLinear);
-            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMagFilter, (int)All.Linear);
+            GL.GenerateMipmap(TextureTarget.Texture2dArray);
+            GL.TexParameteri(TextureTarget.Texture2dArray, TextureParameterName.TextureWrapS, (int)All.Repeat);
+            GL.TexParameteri(TextureTarget.Texture2dArray, TextureParameterName.TextureWrapT, (int)All.Repeat);
+            GL.TexParameteri(TextureTarget.Texture2dArray, TextureParameterName.TextureMinFilter, (int)All.LinearMipmapLinear);
+            GL.TexParameteri(TextureTarget.Texture2dArray, TextureParameterName.TextureMagFilter, (int)All.Linear);
             if (Settings.AnisotropicFiltering)
             {
-                GL.TexParameter(TextureTarget.Texture2DArray, (TextureParameterName)All.TextureMaxAnisotropy, (float)Settings.MaxAnisotropy);
+                GL.TexParameterf(TextureTarget.Texture2dArray, (TextureParameterName)All.TextureMaxAnisotropy, (float)Settings.MaxAnisotropy);
             }
 
             GenerateTileImages();
@@ -268,11 +268,11 @@ namespace SFEngine.SFMap
             // create uniform buffer object for tile color
             uniformTileColor_buffer = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.UniformBuffer, uniformTileColor_buffer);
-            GL.BufferData(BufferTarget.UniformBuffer, 4 * 4 * MAX_TILES, new IntPtr(0), BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.UniformBuffer, 4 * 4 * MAX_TILES, new IntPtr(0), BufferUsage.StaticDraw);
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
             uniformTileColor = new Vector4[MAX_TILES];
-            GL.BindBufferRange(BufferRangeTarget.UniformBuffer, 2, uniformTileColor_buffer, new IntPtr(0), 4 * 4 * MAX_TILES);  // 2, not 1, 1 is reserved for overlays (see heightmap)
+            GL.BindBufferRange(BufferTarget.UniformBuffer, 2, uniformTileColor_buffer, new IntPtr(0), 4 * 4 * MAX_TILES);  // 2, not 1, 1 is reserved for overlays (see heightmap)
 
             UpdateUniformTileColor(0, MAX_TILES - 1);
 
@@ -299,7 +299,7 @@ namespace SFEngine.SFMap
             }
 
             GL.BindBuffer(BufferTarget.UniformBuffer, uniformTileColor_buffer);
-            GL.BufferSubData(BufferTarget.UniformBuffer, new IntPtr(4 * 4 * start), 4 * 4 * (end - start) + 4 * 4, ref uniformTileColor[start]);
+            GL.BufferSubData(BufferTarget.UniformBuffer, new IntPtr(4 * 4 * start), 4 * 4 * (end - start) + 4 * 4, in uniformTileColor[start]);
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
         }
 
@@ -408,11 +408,11 @@ namespace SFEngine.SFMap
 
         public void RefreshBaseTexture(int base_index)
         {
-            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2DArray, terrain_texture);
+            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2dArray, terrain_texture);
 
             tile_texture_bank[base_index] = base_texture_bank[base_index];
             GenerateAverageTileColor(base_index, base_texture_bank[base_index]);
-            GL.TexSubImage3D(TextureTarget.Texture2DArray, 0, 0, 0, base_index, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, tile_texture_bank[base_index].data);
+            GL.TexSubImage3D(TextureTarget.Texture2dArray, 0, 0, 0, base_index, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, tile_texture_bank[base_index].data);
 
             for (int i = 32; i < 224; i++)
             {
@@ -426,16 +426,16 @@ namespace SFEngine.SFMap
                         base_texture_bank[texture_tiledata[i].ind3], texture_tiledata[i].weight3,
                         ref tile_texture_bank[i]);
                         GenerateAverageTileColor(i, tile_texture_bank[i]);
-                        GL.TexSubImage3D(TextureTarget.Texture2DArray, 0, 0, 0, i, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, tile_texture_bank[i].data);
+                        GL.TexSubImage3D(TextureTarget.Texture2dArray, 0, 0, 0, i, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, tile_texture_bank[i].data);
                     }
                 }
             }
 
             tile_texture_bank[223 + base_index] = tile_texture_bank[base_index];
             tile_average_color[223 + base_index] = tile_average_color[base_index];
-            GL.TexSubImage3D(TextureTarget.Texture2DArray, 0, 0, 0, 223 + base_index, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, tile_texture_bank[223 + base_index].data);
+            GL.TexSubImage3D(TextureTarget.Texture2dArray, 0, 0, 0, 223 + base_index, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, tile_texture_bank[223 + base_index].data);
 
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2DArray);
+            GL.GenerateMipmap(TextureTarget.Texture2dArray);
         }
 
         public void RefreshTileTexture(int tile_id)
@@ -446,7 +446,7 @@ namespace SFEngine.SFMap
                 throw new Exception("SFMapTerrainTextureManager.RefreshTileTexture: Invalid tile ID " + tile_id.ToString());
             }
 
-            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2DArray, terrain_texture);
+            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2dArray, terrain_texture);
             if (tile_defined[tile_id])
             {
                 SFTexture.MixUncompressed(
@@ -455,10 +455,10 @@ namespace SFEngine.SFMap
                 base_texture_bank[texture_tiledata[tile_id].ind3], texture_tiledata[tile_id].weight3,
                 ref tile_texture_bank[tile_id]);
                 GenerateAverageTileColor(tile_id, tile_texture_bank[tile_id]);
-                GL.TexSubImage3D(TextureTarget.Texture2DArray, 0, 0, 0, tile_id, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, tile_texture_bank[tile_id].data);
+                GL.TexSubImage3D(TextureTarget.Texture2dArray, 0, 0, 0, tile_id, 256, 256, 1, PixelFormat.Rgba, PixelType.UnsignedByte, tile_texture_bank[tile_id].data);
             }
 
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2DArray);
+            GL.GenerateMipmap(TextureTarget.Texture2dArray);
         }
 
         public void RefreshTilePreview(int tile_id)
