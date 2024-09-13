@@ -5,7 +5,11 @@
  * FrameBuffer provides simple interface for creating and destroying framebuffers of various types
  * */
 
+#if USE_NUMERICS
+using System.Numerics;
+#else
 using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;

@@ -3,7 +3,11 @@
  * CatElemToScene generates scene description based on provided game data element, useful for asset viewer
  */
 
+#if USE_NUMERICS
+using System.Numerics;
+#else
 using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using SFEngine.SFCFF;
 using SFEngine.SFLua;
 using SFEngine.SFLua.lua_sql;
@@ -12,6 +16,7 @@ using SFEngine.SFMap;
 using SFEngine.SF3D.Physics;
 using System;
 using System.Collections.Generic;
+using SFEngine.SFLua.LuaDecompiler;
 
 namespace SFEngine.SF3D.SceneSynchro
 {
@@ -220,7 +225,7 @@ namespace SFEngine.SF3D.SceneSynchro
                 colors[4 * i + 1] = 0x7F;
                 colors[4 * i + 2] = 0xCF;
                 colors[4 * i + 3] = 0xFF;
-                normals[i] = (vertices[i] - new Vector3(0, 0, h)).Normalized();
+                normals[i] = Vector3.Normalize(vertices[i] - new Vector3(0, 0, h));
             }
             // color two vertices differently to annotate angle
             colors[8] = 0xCF;
@@ -323,7 +328,11 @@ namespace SFEngine.SF3D.SceneSynchro
             if (node != null)
             {
                 node.SetParent(root);
+#if USE_NUMERICS
+                node.Rotation = Quaternion.CreateFromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
+#else
                 node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
+#endif // USE_NUMERICS
             }
         }
 
@@ -731,8 +740,13 @@ namespace SFEngine.SF3D.SceneSynchro
                 for (int i = ix1; i <= ix2; i++)
                 {
                     SceneNodeMapChunk chunk_node = heightmap.chunk_nodes[j * chunks_per_row + i];
+#if USE_NUMERICS
+                    xz = new Vector2(chunk_node.MapChunk.aabb.center.X - camera.position.X, chunk_node.MapChunk.aabb.center.Z - camera.position.Z);
+                    chunk_node.DistanceToCamera = xz.Length();
+#else
                     xz = chunk_node.MapChunk.aabb.center.Xz - camera.position.Xz;
                     chunk_node.DistanceToCamera = xz.Length;
+#endif // USE_NUMERICS
                     chunk_node.CameraHeightDifference = camera.position.Y - chunk_node.MapChunk.aabb.b.Y;
 
                     if (chunk_node.DistanceToCamera > max_dist)

@@ -5,7 +5,11 @@
  * are provided
  * */
 
+#if USE_NUMERICS
+using System.Numerics;
+#else
 using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 
 namespace SFEngine.SF3D.Physics
 {
@@ -19,7 +23,7 @@ namespace SFEngine.SF3D.Physics
         public Plane(Vector3 p, Vector3 n)
         {
             point = p;
-            normal = n.Normalized();
+            normal = Vector3.Normalize(n);
             d = -normal.X * point.X - normal.Y * point.Y - normal.Z * point.Z;
             if (normal == Vector3.Zero)
             {
@@ -31,7 +35,7 @@ namespace SFEngine.SF3D.Physics
         public Plane(Vector3 p1, Vector3 p2, Vector3 p3)
         {
             point = p1;
-            normal = Vector3.Cross(p3 - p1, p2 - p1).Normalized();
+            normal = Vector3.Normalize(Vector3.Cross(p3 - p1, p2 - p1));
             d = -normal.X * point.X - normal.Y * point.Y - normal.Z * point.Z;
 
             if (normal == Vector3.Zero)

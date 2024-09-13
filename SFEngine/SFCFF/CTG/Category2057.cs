@@ -1030,7 +1030,7 @@ namespace SFEngine.SFCFF.CTG
                                 U* ptr2 = (U*)(((byte*)(&ptr[Indices[i] + j])) + field_offset);
                                 cur_value = Convert.ToInt32(*ptr2);
 
-                                if (cur_value == num)
+                                if ((cur_value & num) == num)
                                 {
                                     result.Add(i);
                                     break;

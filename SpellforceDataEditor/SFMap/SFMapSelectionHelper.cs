@@ -1,5 +1,8 @@
-﻿using NAudio.Gui;
+﻿#if USE_NUMERICS
+using System.Numerics;
+#else
 using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using System;
 using SFEngine;
 using SFEngine.SF3D;
@@ -148,11 +151,18 @@ namespace SpellforceDataEditor.SFMap
         {
             map = _map;
             sel_obj = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "_SELECTION_", "_SELECTION_");
-            sel_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
             cur_obj = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "_CURSOR_", "_CURSOR_");
-            cur_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
             fld_obj = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "_FLOOD_MESH_", "_FLOOD_MESH_");
+
+#if USE_NUMERICS
+            sel_obj.Rotation = Quaternion.CreateFromYawPitchRoll((float)Math.PI / 2, 0, 0);
+            cur_obj.Rotation = Quaternion.CreateFromYawPitchRoll((float)Math.PI / 2, 0, 0);
+            fld_obj.Rotation = Quaternion.CreateFromYawPitchRoll((float)Math.PI / 2, 0, 0);
+#else
+            sel_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
+            cur_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
             fld_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
+#endif // USE_NUMERICS
         }
 
         public void SetFloodVisible(bool visible)
@@ -420,7 +430,11 @@ namespace SpellforceDataEditor.SFMap
         {
             ClearPreview();
             preview_entity = SFRenderEngine.scene.AddSceneNodeEmpty(SFRenderEngine.scene.root, "_PREVIEW_");
+#if USE_NUMERICS
+            preview_entity.Rotation = Quaternion.CreateFromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
+#else
             preview_entity.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
+#endif // USE_NUMERICS
 
             preview_entity_offset = Vector2.Zero;
         }
@@ -563,7 +577,7 @@ namespace SpellforceDataEditor.SFMap
 
                     vertices[i * smallcircle_resolution + j] = base_coord + offset_coord;
                     uvs[i * smallcircle_resolution + j] = Vector2.One;
-                    normals[i * smallcircle_resolution + j] = offset_coord.Normalized();
+                    normals[i * smallcircle_resolution + j] = Vector3.Normalize(offset_coord);
                     colors[(i * smallcircle_resolution + j) * 4 + 0] = 0x00;
                     colors[(i * smallcircle_resolution + j) * 4 + 1] = 0xDF;
                     colors[(i * smallcircle_resolution + j) * 4 + 2] = 0x00;

@@ -1,6 +1,10 @@
 ﻿using OpenTK;
 using OpenTK.WinForms;
+#if USE_NUMERICS
+using System.Numerics;
+#else
 using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using SFEngine;
 using SFEngine.SF3D;
 using SFEngine.SF3D.Physics;
@@ -1784,7 +1788,11 @@ namespace SpellforceDataEditor.special_forms
             {
                 MathUtils.RotateVec2Mirrored(in movement_vector, SFRenderEngine.scene.camera.Direction.X + (float)(Math.PI / 2), out movement_vector);
                 movement_vector *= 60.0f * camera_speed_factor * SFRenderEngine.scene.DeltaTime;
+#if USE_NUMERICS
+                MoveCameraWorldMapPos(new Vector2(SFRenderEngine.scene.camera.position.X, SFRenderEngine.scene.camera.position.Z) + movement_vector);
+#else
                 MoveCameraWorldMapPos(SFRenderEngine.scene.camera.position.Xz + movement_vector);
+#endif // USE_NUMERICS
                 update_render = true;
                 update_ui = true;
             }
@@ -1836,7 +1844,7 @@ namespace SpellforceDataEditor.special_forms
                     wy = py / RenderWindow.Size.Height;
                     Vector3 r_start = SFRenderEngine.scene.camera.position;
                     Vector3 r_end = SFRenderEngine.scene.camera.ScreenToWorld(new Vector2(wx, wy));
-                    r_end = (((r_end - r_start).Normalized()) * 400.0f) + r_start;    // 400 - ray length
+                    r_end = (Vector3.Normalize(r_end - r_start) * 400.0f) + r_start;    // 400 - ray length
                     Ray ray = new Ray(r_start, r_end - r_start);
 
                     bool ray_success = ray.Intersect(map.heightmap, out Vector3 result);
@@ -1987,8 +1995,11 @@ namespace SpellforceDataEditor.special_forms
             foreach (SceneNodeMapChunk chunk_node in map.heightmap.visible_chunks)
             {
                 Vector3 pos = chunk_node.position;
-
+#if USE_NUMERICS
+                if (max_dist < (p - new Vector2(pos.X + 8, pos.Z + 8)).Length())
+#else
                 if (max_dist < (p - new Vector2(pos.X + 8, pos.Z + 8)).Length)
+#endif // USE_NUMERICS
                 {
                     continue;
                 }
@@ -2032,11 +2043,17 @@ namespace SpellforceDataEditor.special_forms
         {
             // preserve lookat
             Vector3 cur_lookat = SFRenderEngine.scene.camera.Lookat - SFRenderEngine.scene.camera.position;
-
+#if USE_NUMERICS
+            SFRenderEngine.scene.camera.Position = new Vector3(
+                    SFRenderEngine.scene.camera.position.X,
+                    h + map.heightmap.GetRealZ(new Vector2(SFRenderEngine.scene.camera.position.X, SFRenderEngine.scene.camera.position.Z)),
+                    SFRenderEngine.scene.camera.position.Z);
+#else
             SFRenderEngine.scene.camera.Position = new Vector3(
                     SFRenderEngine.scene.camera.position.X,
                     h + map.heightmap.GetRealZ(SFRenderEngine.scene.camera.position.Xz),
                     SFRenderEngine.scene.camera.position.Z);
+#endif // USE_NUMERICS
 
             SFRenderEngine.scene.camera.SetLookat(SFRenderEngine.scene.camera.position + cur_lookat);
         }

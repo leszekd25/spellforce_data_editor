@@ -15,6 +15,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
   <ItemGroup>
     <Reference Include="System.Windows" />
   </ItemGroup>

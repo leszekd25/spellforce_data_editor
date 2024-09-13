@@ -1,4 +1,8 @@
-﻿using OpenTK.Mathematics;
+﻿#if USE_NUMERICS
+using System.Numerics;
+#else
+using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using SFEngine.SF3D.SFRender;
 using SFEngine.SFCFF;
 using SFEngine.SFChunk;
@@ -1579,8 +1583,13 @@ namespace SFEngine.SFMap
                         return;
                     }
 
+#if USE_NUMERICS
+                    Vector2 bb_topleft = new(m_old.aabb.a.X, m_old.aabb.a.Y);
+                    Vector2 bb_bottomright = new(m_old.aabb.b.X, m_old.aabb.b.Y);
+#else
                     Vector2 bb_topleft = m_old.aabb.a.Xy;
                     Vector2 bb_bottomright = m_old.aabb.b.Xy;
+#endif // USE_NUMERICS
 
                     SF3D.SFModel3D m_new = new SF3D.SFModel3D();
                     SF3D.SFSubModel3D sbm_new = new SF3D.SFSubModel3D();
@@ -1614,7 +1623,11 @@ namespace SFEngine.SFMap
                     SFResources.SFResourceManager.Models.Dispose(m_old);
                     SFResources.SFResourceManager.Models.AddManually(m_new, "_DECAL_" + node.name + "_" + n.name);
                     n.Mesh = m_new;
+#if USE_NUMERICS
+                    n.Rotation = Quaternion.Inverse(node.rotation);
+#else
                     n.Rotation = node.rotation.Inverted();
+#endif // USE_NUMERICS
                     n.Scale = new Vector3(1.28f);
 
                     SF3D.SceneSynchro.SFDecalInfo decal_info = SFRenderEngine.scene.decal_info.elements[n.DecalIndex];

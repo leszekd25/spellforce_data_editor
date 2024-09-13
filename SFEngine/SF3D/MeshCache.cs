@@ -1,8 +1,13 @@
-﻿using OpenTK.Mathematics;
+﻿#if USE_NUMERICS
+using System.Numerics;
+#else
+using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using OpenTK.Mathematics;
 
 namespace SFEngine.SF3D
 {
@@ -184,7 +189,11 @@ namespace SFEngine.SF3D
         List<VertexAttribDescription> VertexAttributes = new List<VertexAttribDescription>();
 
         public bool EnableInstancing { get; }
+#if USE_NUMERICS
+        public Matrix4x4[] MatrixBufferData;
+#else
         public Matrix4[] MatrixBufferData;
+#endif // USE_NUMERICS
         public int CurrentMatrix;
 
         // this function moves all ranges and shifts data so that all holes are removed
@@ -229,11 +238,15 @@ namespace SFEngine.SF3D
 
         private void InitMatrix(int count)
         {
+#if USE_NUMERICS
+            MatrixBufferData = new Matrix4x4[count];
+#else
             MatrixBufferData = new Matrix4[count];
+#endif // USE_NUMERICS
         }
 
-        // definitions of vertex attribute sizes
-        static MeshCache()
+    // definitions of vertex attribute sizes
+    static MeshCache()
         {
             VertexAttribTypeSize.Add(VertexAttribPointerType.Byte, 1);
             VertexAttribTypeSize.Add(VertexAttribPointerType.Double, 2);
@@ -391,8 +404,11 @@ namespace SFEngine.SF3D
             }
 
             int current_mbo_size = MatrixBufferData.Length;
-
+#if USE_NUMERICS
+            MatrixBufferData = new Matrix4x4[current_mbo_size * 2];
+#else
             MatrixBufferData = new Matrix4[current_mbo_size * 2];
+#endif // USE_NUMERICS
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, MatrixBufferID);
             GL.BufferData(BufferTarget.ArrayBuffer, MatrixBufferData.Length * 64, MatrixBufferData, BufferUsage.DynamicDraw);

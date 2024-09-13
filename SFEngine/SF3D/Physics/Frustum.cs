@@ -1,4 +1,9 @@
-﻿using OpenTK.Mathematics;
+﻿
+#if USE_NUMERICS
+using System.Numerics;
+#else
+using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using System;
 using System.Collections.Generic;
 
@@ -19,7 +24,7 @@ namespace SFEngine.SF3D.Physics
         public Frustum(Vector3 _start, Vector3 _direction, float _znear, float _zfar, float _aspect_ratio)
         {
             start = _start;
-            direction = _direction.Normalized();
+            direction = Vector3.Normalize(_direction);
             ZNear = _znear;
             ZFar = _zfar;
             aspect_ratio = _aspect_ratio;
@@ -56,8 +61,8 @@ namespace SFEngine.SF3D.Physics
         public void Calculate()
         {
             // get forward, up, right direction
-            Vector3 forward = direction.Normalized();
-            Vector3 right = Vector3.Cross(forward, new Vector3(0, 1, 0)).Normalized();
+            Vector3 forward = Vector3.Normalize(direction);
+            Vector3 right = Vector3.Normalize(Vector3.Cross(forward, new Vector3(0, 1, 0)));
             Vector3 up = Vector3.Cross(forward, right);
             right *= aspect_ratio;
 

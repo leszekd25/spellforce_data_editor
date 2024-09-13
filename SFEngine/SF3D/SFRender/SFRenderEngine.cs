@@ -3,7 +3,11 @@
  * It takes data from SFScene and renders it using predefined shaders
  */
 
+#if USE_NUMERICS
+using System.Numerics;
+#else
 using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using OpenTK.Graphics.OpenGL;
 using SFEngine.SF3D.SceneSynchro;
 using SFEngine.SF3D.UI;
@@ -477,8 +481,13 @@ namespace SFEngine.SF3D.SFRender
                 return;
             }
             render_size = view_size;
+#if USE_NUMERICS
+            scene.camera.ProjMatrix = Matrix4x4.CreatePerspectiveFieldOfView(
+                (float)Math.PI / 4, view_size.X / view_size.Y, min_render_distance, max_render_distance);
+#else
             scene.camera.ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(
                 (float)Math.PI / 4, view_size.X / view_size.Y, min_render_distance, max_render_distance);
+#endif // USE_NUMERICS
             scene.camera.AspectRatio = (float)(view_size.X) / view_size.Y;
             GL.Viewport(0, 0, (int)view_size.X, (int)view_size.Y);
             if (screenspace_intermediate != null)
@@ -1303,7 +1312,11 @@ namespace SFEngine.SF3D.SFRender
 
             SetTexture(4, TextureTarget.Texture2d, heightmap.height_data_texture.tex_id);
 
+#if USE_NUMERICS
+            Matrix4x4 vp_mat = scene.camera.ViewProjMatrix;
+#else
             Matrix4 vp_mat = scene.camera.ViewProjMatrix;
+#endif // USE_NUMERICS
             GL.UniformMatrix4f(active_shader["VP"], 1, false, in vp_mat);
 
             StartQuery();
@@ -1322,7 +1335,11 @@ namespace SFEngine.SF3D.SFRender
         {
             SFMapHeightMap heightmap = scene.map.heightmap;
 
+#if USE_NUMERICS
+            Matrix4x4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
+#else
             Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
+#endif // USE_NUMERICS
 
             GL.Uniform1i(active_shader["GridSize"], heightmap.width);
             if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
@@ -1347,7 +1364,11 @@ namespace SFEngine.SF3D.SFRender
                 SetTexture(5, TextureTarget.Texture2d, heightmap.terrain_texture_lod_bump.tex_id);
                 SetTexture(2, TextureTarget.Texture2d, heightmap.tile_data_texture.tex_id);
                 SetTexture(0, TextureTarget.Texture2dArray, heightmap.texture_manager.terrain_texture);
+#if USE_NUMERICS
+                Matrix4x4 vp_mat = scene.camera.ViewProjMatrix;
+#else
                 Matrix4 vp_mat = scene.camera.ViewProjMatrix;
+#endif // USE_NUMERICS
                 if (Settings.EnableShadows)
                 {
                     GL.UniformMatrix4f(active_shader["LSM"], 1, false, in lsm_mat);
@@ -1456,7 +1477,11 @@ namespace SFEngine.SF3D.SFRender
 
         static void RenderStaticObjectsShadowmap(IEnumerable<SFSubModel3D> models)
         {
+#if USE_NUMERICS
+            Matrix4x4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
+#else
             Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
+#endif // USE_NUMERICS
             GL.UniformMatrix4f(active_shader["VP"], 1, false, in lsm_mat);
 
             SetVertexArrayObject(SFSubModel3D.Cache.VertexArrayObjectID);
@@ -1480,11 +1505,19 @@ namespace SFEngine.SF3D.SFRender
             SetDepthBias(0);
             SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
 
+#if USE_NUMERICS
+            Matrix4x4 vp_mat = scene.camera.ViewProjMatrix;
+#else
             Matrix4 vp_mat = scene.camera.ViewProjMatrix;
+#endif // USE_NUMERICS
             GL.UniformMatrix4f(active_shader["VP"], 1, false, in vp_mat);
             if (Settings.EnableShadows)
             {
+#if USE_NUMERICS
+                Matrix4x4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
+#else
                 Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
+#endif // USE_NUMERICS
                 GL.UniformMatrix4f(active_shader["LSM"], 1, false, in lsm_mat);
             }
 
@@ -1509,14 +1542,23 @@ namespace SFEngine.SF3D.SFRender
         // this is very slow, dunno
         static void RenderAnimatedObjects()
         {
+#if USE_NUMERICS
+            Matrix4x4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
+#else
             Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
+#endif // USE_NUMERICS
 
             SetVertexArrayObject(SFModelSkinChunk.Cache.VertexArrayObjectID);
             if (current_pass == RenderPass.SCENE)
             {
+#if USE_NUMERICS
+                Matrix4x4 p_mat = scene.camera.ProjMatrix;
+                Matrix4x4 v_mat = scene.camera.ViewMatrix;
+#else
                 Matrix4 p_mat = scene.camera.ProjMatrix;
-                GL.UniformMatrix4f(active_shader["P"], 1, false, in p_mat);
                 Matrix4 v_mat = scene.camera.ViewMatrix;
+#endif // USE_NUMERICS
+                GL.UniformMatrix4f(active_shader["P"], 1, false, in p_mat);
                 GL.UniformMatrix4f(active_shader["V"], 1, false, in v_mat);
                 if (Settings.EnableShadows)
                 {
@@ -1533,7 +1575,11 @@ namespace SFEngine.SF3D.SFRender
             }
             else if (current_pass == RenderPass.SHADOWMAP)
             {
+#if USE_NUMERICS
+                Matrix4x4 p_mat = Matrix4x4.Identity;
+#else
                 Matrix4 p_mat = Matrix4.Identity;
+#endif // USE_NUMERICS
                 GL.UniformMatrix4f(active_shader["P"], 1, false, in p_mat);
                 GL.UniformMatrix4f(active_shader["V"], 1, false, in lsm_mat);
             }
@@ -1619,7 +1665,11 @@ namespace SFEngine.SF3D.SFRender
                     SetVertexArrayObject(SFSubModel3D.Cache.VertexArrayObjectID);
                     UseShader(shader_selection);
 
+#if USE_NUMERICS
+                    Matrix4x4 vp_mat = scene.camera.ViewProjMatrix;
+#else
                     Matrix4 vp_mat = scene.camera.ViewProjMatrix;
+#endif // USE_NUMERICS
                     GL.UniformMatrix4f(active_shader["VP"], 1, false, in vp_mat);
 
                     GL.Uniform1f(active_shader["Time"], scene.current_time * 2.0f);
@@ -1643,9 +1693,14 @@ namespace SFEngine.SF3D.SFRender
                     UseShader(shader_selection_animated);
 
                     GL.UniformMatrix4f(active_shader["M"], 1, false, in an.result_transform);
-                    Matrix4 v_mat = scene.camera.ViewMatrix;
-                    GL.UniformMatrix4f(active_shader["V"], 1, false, in v_mat);
+#if USE_NUMERICS
+                    Matrix4x4 p_mat = scene.camera.ProjMatrix;
+                    Matrix4x4 v_mat = scene.camera.ViewMatrix;
+#else
                     Matrix4 p_mat = scene.camera.ProjMatrix;
+                    Matrix4 v_mat = scene.camera.ViewMatrix;
+#endif // USE_NUMERICS
+                    GL.UniformMatrix4f(active_shader["V"], 1, false, in v_mat);
                     GL.UniformMatrix4f(active_shader["P"], 1, false, in p_mat);
 
                     GL.UniformMatrix4f(active_shader["boneTransforms"], an.BoneTransforms.Length, false, an.BoneTransforms);
@@ -1844,7 +1899,11 @@ namespace SFEngine.SF3D.SFRender
             if (Settings.ToneMapping)
             {
                 UseShader(shader_sky);
+#if USE_NUMERICS
+                Matrix4x4 v_mat = scene.camera.ViewMatrix;
+#else
                 Matrix4 v_mat = scene.camera.ViewMatrix;
+#endif // USE_NUMERICS
                 GL.UniformMatrix4f(active_shader["V"], 1, true, in v_mat);
                 GL.Uniform1f(active_shader["AspectRatio"], 1.0f);
                 RenderFullscreen(null, null);

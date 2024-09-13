@@ -2,7 +2,11 @@
  * UIElementIndex is used as an identifier for individual ui elements
  * */
 
+#if USE_NUMERICS
+using System.Numerics;
+#else
 using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using SFEngine.SF3D.SFRender;
 using System.Collections.Generic;
 

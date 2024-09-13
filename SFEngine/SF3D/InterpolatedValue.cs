@@ -5,7 +5,11 @@
  * Currently this interface is implemented by InterpolatedVector3 and InterpolatedQuaternion
  */
 
+#if USE_NUMERICS
+using System.Numerics;
+#else
 using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using System;
 
 namespace SFEngine.SF3D

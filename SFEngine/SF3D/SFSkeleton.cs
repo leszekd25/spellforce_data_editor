@@ -4,7 +4,11 @@
  * It also contains helper method for applying parent transformations to given matrices
  */
 
+#if USE_NUMERICS
+using System.Numerics;
+#else
 using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using SFEngine.SFResources;
 using System;
 using System.IO;
@@ -24,7 +28,11 @@ namespace SFEngine.SF3D
         public string[] bone_names = null;
 
         //helper function for loading vector from file
+#if USE_NUMERICS
         private Vector3 Load_GetVector3(ReadOnlySpan<char> line)
+#else
+        private Vector3 Load_GetVector3(ReadOnlySpan<char> line)
+#endif // USE_NUMERICS
         {
             int i = line.IndexOf(',');
             if (i == -1)
@@ -38,7 +46,11 @@ namespace SFEngine.SF3D
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "SFSkeleton.Load_GetVector3(): Line does not contain vector3! line: '" + line.ToString() + "')");
                 throw new InvalidDataException("ERROR: Corrupted .bor file!");
             }
-            Vector3 vec = new Vector3();
+#if USE_NUMERICS
+            System.Numerics.Vector3 vec = new System.Numerics.Vector3();
+#else
+            OpenTK.Mathematics.Vector3 vec = new OpenTK.Mathematics.Vector3();
+#endif // USE_NUMERICS
             bool success = float.TryParse(line.Slice(0, i), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out vec.X);
             success &= float.TryParse(line.Slice(i + 2, j), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out vec.Y);
             success &= float.TryParse(line.Slice(i + j + 4), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out vec.Z);
@@ -59,7 +71,11 @@ namespace SFEngine.SF3D
             string current_bone_name = "";
             int file_level = 0;
             float Rre = 0f;
-            Vector3 Rim = new Vector3();
+#if USE_NUMERICS
+            System.Numerics.Vector3 Rim = new System.Numerics.Vector3();
+#else
+            OpenTK.Mathematics.Vector3 Rim = new OpenTK.Mathematics.Vector3();
+#endif // USE_NUMERICS
 
             int line_index = 0;
             ReadOnlySpan<char> line = default;
@@ -190,13 +206,17 @@ namespace SFEngine.SF3D
             return 0;
         }
 
+#if USE_NUMERICS
+        public void CalculateTransformation(Matrix4x4[] src_matrices, ref Matrix4x4[] dest_matrices)
+#else
         public void CalculateTransformation(Matrix4[] src_matrices, ref Matrix4[] dest_matrices)
+#endif 
         {
-            for (int i = 0; i < bone_count; i++)
+            for (int i = 0; i<bone_count; i++)
             {
                 if (bone_parents[i] != Utility.NO_INDEX)
                 {
-                    dest_matrices[i] = src_matrices[i] * dest_matrices[bone_parents[i]];
+                    dest_matrices[i] = src_matrices[i]* dest_matrices[bone_parents[i]];
                 }
             }
         }

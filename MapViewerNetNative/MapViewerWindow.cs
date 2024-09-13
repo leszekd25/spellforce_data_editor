@@ -1,5 +1,9 @@
 ﻿using OpenTK.Platform;
+#if USE_NUMERICS
+using System.Numerics;
+#else
 using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using SFEngine.SF3D.Physics;
 using SFEngine.SF3D.SceneSynchro;
 using SFEngine.SF3D.SFRender;
@@ -13,6 +17,7 @@ using OpenTK.Core.Utility;
 using OpenTK.Graphics;
 using System.Diagnostics;
 using System.Collections.Generic;
+using NAudio.Gui;
 
 namespace MapViewerNetNative
 {
@@ -24,11 +29,11 @@ namespace MapViewerNetNative
         Lua L;
         SFMap map = null;
 
-        Vector2i mouse_current_pos = new Vector2i(0, 0);   // while moving, this keeps track of mouse position
+        OpenTK.Mathematics.Vector2i mouse_current_pos = new OpenTK.Mathematics.Vector2i(0, 0);   // while moving, this keeps track of mouse position
 
         bool dynamic_render = true;     // animations will work if this is enabled
 
-        Vector2i scroll_mouse_start = new Vector2i(0, 0);
+        OpenTK.Mathematics.Vector2i scroll_mouse_start = new OpenTK.Mathematics.Vector2i(0, 0);
         bool mouse_scroll = false;
         public float zoom_level = 1.0f;
         float camera_speed_factor = 1.0f;
@@ -66,7 +71,7 @@ namespace MapViewerNetNative
 
             // Show window
             Toolkit.Window.SetTitle(window, "OpenTK window");
-            Toolkit.Window.SetSize(window, 1024, 768);
+            Toolkit.Window.SetSize(window, 400, 400);
             Toolkit.Window.SetMode(window, WindowMode.Normal);
 
             // The the current opengl context and load the bindings.
@@ -76,7 +81,7 @@ namespace MapViewerNetNative
 
             // on window load
             OnWindowLoad();
-            SFRenderEngine.ResizeView((1024, 768));
+            SFRenderEngine.ResizeView(new(400, 400));
         }
 
         public void Run()
@@ -185,9 +190,9 @@ namespace MapViewerNetNative
             // rotating view by mouse
             if (mouse_scroll)
             {
-                Vector2i dv = mouse_current_pos - scroll_mouse_start;
+                OpenTK.Mathematics.Vector2i dv = mouse_current_pos - scroll_mouse_start;
                 Vector2 scroll_translation = new Vector2(dv.X, dv.Y) * (float)cur_dt / 250f;
-                if (scroll_translation != Vector2i.Zero)
+                if (scroll_translation != Vector2.Zero)
                 {
                     SetCameraAzimuthAltitude(SFRenderEngine.scene.camera.Direction.X - scroll_translation.X, SFRenderEngine.scene.camera.Direction.Y - scroll_translation.Y);
                 }
@@ -219,7 +224,11 @@ namespace MapViewerNetNative
             {
                 SFEngine.MathUtils.RotateVec2Mirrored(in movement_vector, SFRenderEngine.scene.camera.Direction.X + (float)(Math.PI / 2), out movement_vector);
                 movement_vector *= 60.0f * camera_speed_factor * (float)cur_dt;
+#if USE_NUMERICS
+                MoveCameraWorldMapPos(new Vector2(SFRenderEngine.scene.camera.position.X, SFRenderEngine.scene.camera.position.Z) + movement_vector);
+#else
                 MoveCameraWorldMapPos(SFRenderEngine.scene.camera.position.Xz + movement_vector);
+#endif // USE_NUMERICS
             }
 
             // rotating view by home/end/pageup/pagedown
@@ -313,8 +322,11 @@ namespace MapViewerNetNative
             foreach (SceneNodeMapChunk chunk_node in map.heightmap.visible_chunks)
             {
                 Vector3 pos = chunk_node.position;
-
+#if USE_NUMERICS
+                if (max_dist < (p - new Vector2(pos.X + 8, pos.Z + 8)).Length())
+#else
                 if (max_dist < (p - new Vector2(pos.X + 8, pos.Z + 8)).Length)
+#endif // USE_NUMERICS
                 {
                     continue;
                 }
@@ -358,10 +370,17 @@ namespace MapViewerNetNative
             // preserve lookat
             Vector3 cur_lookat = SFRenderEngine.scene.camera.Lookat - SFRenderEngine.scene.camera.position;
 
+#if USE_NUMERICS
             SFRenderEngine.scene.camera.Position = new Vector3(
-                    SFRenderEngine.scene.camera.position.X,
-                    h + map.heightmap.GetRealZ(SFRenderEngine.scene.camera.position.Xz),
-                    SFRenderEngine.scene.camera.position.Z);
+                SFRenderEngine.scene.camera.position.X,
+                h + map.heightmap.GetRealZ(new Vector2(SFRenderEngine.scene.camera.position.X, SFRenderEngine.scene.camera.position.Z)),
+                SFRenderEngine.scene.camera.position.Z);
+#else
+            SFRenderEngine.scene.camera.Position = new Vector3(
+                SFRenderEngine.scene.camera.position.X,
+                h + map.heightmap.GetRealZ(SFRenderEngine.scene.camera.position.Xz),
+                SFRenderEngine.scene.camera.position.Z);
+#endif // USE_NUMERICS
 
             SFRenderEngine.scene.camera.SetLookat(SFRenderEngine.scene.camera.position + cur_lookat);
         }
@@ -520,7 +539,7 @@ namespace MapViewerNetNative
 
         void OnWindowResize(WindowResizeEventArgs e)
         {
-            SFRenderEngine.ResizeView(e.NewClientSize);
+            SFRenderEngine.ResizeView(new Vector2(e.NewClientSize.X, e.NewClientSize.Y));
         }
 
         void OnWindowMouseDown(MouseButtonDownEventArgs e)
@@ -538,14 +557,14 @@ namespace MapViewerNetNative
 
         void OnWindowMouseMove(MouseMoveEventArgs e)
         {
-            mouse_current_pos = new Vector2i((int)e.Position.X, (int)e.Position.Y);
+            mouse_current_pos = new OpenTK.Mathematics.Vector2i((int)e.Position.X, (int)e.Position.Y);
         }
 
         void OnWindowMouseUp(MouseButtonUpEventArgs e)
         {
             if (e.Button == MouseButton.Button3)
             {
-                scroll_mouse_start = new Vector2i(0, 0);
+                scroll_mouse_start = new OpenTK.Mathematics.Vector2i(0, 0);
                 mouse_scroll = false;
                 return;
             }

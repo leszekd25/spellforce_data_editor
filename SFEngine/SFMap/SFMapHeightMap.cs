@@ -1,4 +1,8 @@
-﻿using OpenTK.Mathematics;
+﻿#if USE_NUMERICS
+using System.Numerics;
+#else
+using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using OpenTK.Graphics.OpenGL;
 using SFEngine.SF3D;
 using System;
@@ -1273,7 +1277,11 @@ namespace SFEngine.SFMap
             {
                 for (int i = 0; i < 16; i++)
                 {
+#if USE_NUMERICS
+                    uniformOverlays[i] = new Vector4(new Vector3(uniformOverlays[i].X, uniformOverlays[i].Y, uniformOverlays[i].Z) * 2.0f, uniformOverlays[i].W);
+#else
                     uniformOverlays[i] = new Vector4(uniformOverlays[i].Xyz * 2.0f, uniformOverlays[i].W);
+#endif // USE_NUMERICS
                 }
             }
             GL.BindBuffer(BufferTarget.UniformBuffer, uniformOverlays_buffer);
@@ -1319,7 +1327,7 @@ namespace SFEngine.SFMap
             float cz = (x > 0) ? (GetHeightAt(x - 1, y)) : (0);
             float dz = (y > 0) ? (GetHeightAt(x, y - 1)) : (0);
 
-            return (new Vector3(cz - az, 2 * hscale, bz - dz)).Normalized();
+            return Vector3.Normalize(new Vector3(cz - az, 2 * hscale, bz - dz));
         }
 
         public ushort GetHeightAt(int x, int y)

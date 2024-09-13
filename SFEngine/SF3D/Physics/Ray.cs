@@ -4,7 +4,11 @@
  * Ray has maximum length provided, if the intersection happens further than the length, it will not be registered
  * */
 
+#if USE_NUMERICS
+using System.Numerics;
+#else
 using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using System;
 
 namespace SFEngine.SF3D.Physics
@@ -24,7 +28,11 @@ namespace SFEngine.SF3D.Physics
         {
             start = s;
             vector = v;
+#if USE_NUMERICS
+            Length = v.Length();
+#else
             Length = v.Length;
+#endif // USE_NUMERICS
             nvector = v / length;
         }
 
@@ -114,17 +122,29 @@ namespace SFEngine.SF3D.Physics
             int chunk_size = SFMap.SFMapHeightMapMesh.CHUNK_SIZE;
             int chunk_count = hmap.width / chunk_size;
 
-            Vector2 ray_start_xz = (start.X, start.Z);
-            Vector2 ray_xz = (start.X, start.Z);
-            Vector2 ray_grad_xz = (nvector.X, nvector.Z);
+            Vector2 ray_start_xz = new(start.X, start.Z);
+            Vector2 ray_xz = new(start.X, start.Z);
+            Vector2 ray_grad_xz = new(nvector.X, nvector.Z);
+
+
+#if USE_NUMERICS
+            if (ray_grad_xz.Length() == 0)
+            {
+                return false;
+            }
+
+            float projection_coefficient = 1 / ray_grad_xz.Length();
+#else
             if (ray_grad_xz.Length == 0)
             {
                 return false;
             }
 
             float projection_coefficient = 1 / ray_grad_xz.Length;
-            ray_grad_xz = ray_grad_xz.Normalized();
-            Vector2 ray_grad_abs_xz = (Math.Abs(ray_grad_xz.X), Math.Abs(ray_grad_xz.Y));
+#endif // USE_NUMERICS
+
+            ray_grad_xz = Vector2.Normalize(ray_grad_xz);
+            Vector2 ray_grad_abs_xz = new(Math.Abs(ray_grad_xz.X), Math.Abs(ray_grad_xz.Y));
 
             int cur_chunk_x = (int)(ray_xz.X / chunk_size);
             int cur_chunk_y = (int)(ray_xz.Y / chunk_size);
@@ -175,17 +195,17 @@ namespace SFEngine.SF3D.Physics
 
                             int fixed_tile_y = hmap.height - cur_tile_y;
                             // check intersection with tile geometry (2 triangles)
-                            v1 = (cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 1)) / 100.0f, cur_tile_y);
-                            v2 = (cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 1)) / 100.0f, cur_tile_y);
-                            v3 = (cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);
+                            v1 = new(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 1)) / 100.0f, cur_tile_y);
+                            v2 = new(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 1)) / 100.0f, cur_tile_y);
+                            v3 = new(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);
                             if (IntersectMollerTrumbore(v1, v2, v3, out point))
                             {
                                 return true;
                             }
 
-                            v1 = (cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 1)) / 100.0f, cur_tile_y);
-                            v2 = (cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);
-                            v3 = (cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);
+                            v1 = new(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 1)) / 100.0f, cur_tile_y);
+                            v2 = new(cur_tile_x + 1, hmap.GetZ(new SFMap.SFCoord(cur_tile_x + 1, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);
+                            v3 = new(cur_tile_x, hmap.GetZ(new SFMap.SFCoord(cur_tile_x, fixed_tile_y - 2)) / 100.0f, cur_tile_y + 1);
                             if (IntersectMollerTrumbore(v1, v2, v3, out point))
                             {
                                 return true;
@@ -254,7 +274,11 @@ namespace SFEngine.SF3D.Physics
 
                 ray_xz += ray_grad_xz * (float)tmin;
 
+#if USE_NUMERICS
+                if ((ray_xz - ray_start_xz).Length() * projection_coefficient > Length)
+#else
                 if ((ray_xz - ray_start_xz).Length * projection_coefficient > Length)
+#endif // USE_NUMERICS
                 {
                     break;
                 }

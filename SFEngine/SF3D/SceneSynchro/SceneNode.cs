@@ -5,9 +5,14 @@
  * Each node contains transform data which is updated only when needed
  * */
 
+#if USE_NUMERICS
+using System.Numerics;
+#else
 using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace SFEngine.SF3D.SceneSynchro
 {
@@ -18,8 +23,13 @@ namespace SFEngine.SF3D.SceneSynchro
         public List<SceneNode> children = [];
 
         // if true, on the  next  update  local transform will be  updated
+#if USE_NUMERICS
+        protected Matrix4x4 local_transform = Matrix4x4.Identity;
+        public Matrix4x4 result_transform = Matrix4x4.Identity;
+#else
         protected Matrix4 local_transform = Matrix4.Identity;
         public Matrix4 result_transform = Matrix4.Identity;
+#endif // USE_NUMERICS
         protected bool needsanyupdate = true;
         protected bool needsupdatelocaltransform = true;
         protected bool needsupdateresulttransform = true;
@@ -105,8 +115,13 @@ namespace SFEngine.SF3D.SceneSynchro
         // utility function which sets rotation of this node to a given angle (degrees) around the UP axis (0, 1, 0)
         public void SetAnglePlane(int angle_deg)
         {
+#if USE_NUMERICS
+            Rotation = Quaternion.CreateFromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2)
+                     * Quaternion.CreateFromAxisAngle(new Vector3(0f, 0f, 1f), (float)(angle_deg * Math.PI / 180.0f));
+#else
             Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2)
                      * Quaternion.FromAxisAngle(new Vector3(0f, 0f, 1f), (float)(angle_deg * Math.PI / 180.0f));
+#endif // USE_NUMERICS
         }
 
         // if something requires updating, notify all parents about that, root including, so the engine knows to run update routine
@@ -170,9 +185,15 @@ namespace SFEngine.SF3D.SceneSynchro
         {
             if (needsupdatelocaltransform)
             {
+#if USE_NUMERICS
+                Matrix4x4 translation_matrix = Matrix4x4.CreateTranslation(position);
+                Matrix4x4 rotation_matrix = Matrix4x4.CreateFromQuaternion(rotation);
+                Matrix4x4 scale_matrix = Matrix4x4.CreateScale(scale);
+#else
                 Matrix4 translation_matrix = Matrix4.CreateTranslation(position);
                 Matrix4 rotation_matrix = Matrix4.CreateFromQuaternion(rotation);
                 Matrix4 scale_matrix = Matrix4.CreateScale(scale);
+#endif // USE_NUMERICS
                 local_transform = scale_matrix * rotation_matrix * translation_matrix;
 
                 needsupdatelocaltransform = false;
@@ -396,9 +417,15 @@ namespace SFEngine.SF3D.SceneSynchro
             {
                 if (needsupdatelocaltransform)
                 {
+#if USE_NUMERICS
+                    Matrix4x4 translation_matrix = Matrix4x4.CreateTranslation(position);
+                    Matrix4x4 rotation_matrix = Matrix4x4.CreateFromQuaternion(rotation);
+                    Matrix4x4 scale_matrix = Matrix4x4.CreateScale(scale);
+#else
                     Matrix4 translation_matrix = Matrix4.CreateTranslation(position);
                     Matrix4 rotation_matrix = Matrix4.CreateFromQuaternion(rotation);
                     Matrix4 scale_matrix = Matrix4.CreateScale(scale);
+#endif // USE_NUMERICS
                     local_transform = scale_matrix * rotation_matrix * translation_matrix;
 
                     needsupdatelocaltransform = false;
@@ -506,7 +533,11 @@ namespace SFEngine.SF3D.SceneSynchro
         }
 
         public SFAnimation Animation { get { return animation; } }
+#if USE_NUMERICS
+        public Matrix4x4[] BoneTransforms = null;
+#else
         public Matrix4[] BoneTransforms = null;
+#endif // USE_NUMERICS
 
         public float anim_current_time = 0;
         public float AnimCurrentTime { get { return anim_current_time; } }
@@ -533,11 +564,19 @@ namespace SFEngine.SF3D.SceneSynchro
 
             if (_skeleton != null)
             {
+#if USE_NUMERICS
+                BoneTransforms = new Matrix4x4[_skeleton.bone_count];
+                for (int i = 0; i < _skeleton.bone_count; i++)
+                {
+                    BoneTransforms[i] = Matrix4x4.Identity;
+                }
+#else
                 BoneTransforms = new Matrix4[_skeleton.bone_count];
                 for (int i = 0; i < _skeleton.bone_count; i++)
                 {
                     BoneTransforms[i] = Matrix4.Identity;
                 }
+#endif // USE_NUMERICS
             }
             else
             {
@@ -622,8 +661,13 @@ namespace SFEngine.SF3D.SceneSynchro
             if ((visible) && (BoneTransforms != null) && (AnimPlaying))
             {
                 // determine if should update, based on scene camera distance and on bounding box
+#if USE_NUMERICS
+                float dist = (SFRender.SFRenderEngine.scene.camera.position - new Vector3(result_transform.M41, result_transform.M42, result_transform.M43)).Length();
+                float size = (aabb.a - aabb.center).Length();
+#else
                 float dist = (SFRender.SFRenderEngine.scene.camera.position - result_transform.Row3.Xyz).Length;
                 float size = (aabb.a - aabb.center).Length;
+#endif // USE_NUMERICS
                 if (size == 0)
                 {
                     return;
@@ -652,9 +696,15 @@ namespace SFEngine.SF3D.SceneSynchro
             {
                 if (needsupdatelocaltransform)
                 {
+#if USE_NUMERICS
+                    Matrix4x4 translation_matrix = Matrix4x4.CreateTranslation(position);
+                    Matrix4x4 rotation_matrix = Matrix4x4.CreateFromQuaternion(rotation);
+                    Matrix4x4 scale_matrix = Matrix4x4.CreateScale(scale);
+#else
                     Matrix4 translation_matrix = Matrix4.CreateTranslation(position);
                     Matrix4 rotation_matrix = Matrix4.CreateFromQuaternion(rotation);
                     Matrix4 scale_matrix = Matrix4.CreateScale(scale);
+#endif // USE_NUMERICS
                     local_transform = scale_matrix * rotation_matrix * translation_matrix;
 
                     needsupdatelocaltransform = false;
@@ -761,7 +811,11 @@ namespace SFEngine.SF3D.SceneSynchro
                 SceneNodeAnimated pp = (SceneNodeAnimated)parent;
                 if (BoneIndex != Utility.NO_INDEX)
                 {
+#if USE_NUMERICS
+                    pp.Skeleton.bone_reference_state[BoneIndex].ToMatrix(out Matrix4x4 skel_ref);
+#else
                     pp.Skeleton.bone_reference_state[BoneIndex].ToMatrix(out Matrix4 skel_ref);
+#endif // USE_NUMERICS
 
                     result_transform = local_transform * skel_ref * pp.BoneTransforms[BoneIndex] * parent.result_transform;
                 }
@@ -822,10 +876,16 @@ namespace SFEngine.SF3D.SceneSynchro
 
         private Vector3 lookat = Vector3.UnitY;
         private Vector2 direction = Vector2.Zero;
-        private Matrix4 proj_matrix = Matrix4.Identity;
         private float aspect_ratio = 1;
+#if USE_NUMERICS
+        private Matrix4x4 proj_matrix = Matrix4x4.Identity;
+        private Matrix4x4 view_matrix = Matrix4x4.Identity;
+        private Matrix4x4 viewproj_matrix = Matrix4x4.Identity;
+#else
+        private Matrix4 proj_matrix = Matrix4.Identity;
         private Matrix4 view_matrix = Matrix4.Identity;
         private Matrix4 viewproj_matrix = Matrix4.Identity;
+#endif // USE_NUMERICS
 
         private readonly Physics.Frustum frustum;
 
@@ -834,9 +894,15 @@ namespace SFEngine.SF3D.SceneSynchro
 
         // view matrix: modelmatrix
         // proj matrix: projmatrix
+#if USE_NUMERICS
+        public Matrix4x4 ViewProjMatrix { get { return viewproj_matrix; } }
+        public Matrix4x4 ProjMatrix { get { return proj_matrix; } set { proj_matrix = value; viewproj_matrix = proj_matrix; needsanyupdate = true; needsupdatelocaltransform = true; } }
+        public Matrix4x4 ViewMatrix { get { return view_matrix; } }
+#else
         public Matrix4 ViewProjMatrix { get { return viewproj_matrix; } }
         public Matrix4 ProjMatrix { get { return proj_matrix; } set { proj_matrix = value; viewproj_matrix = proj_matrix; needsanyupdate = true; needsupdatelocaltransform = true; } }
         public Matrix4 ViewMatrix { get { return view_matrix; } }
+#endif // USE_NUMERICS
         public float AspectRatio { get { return aspect_ratio; } set { aspect_ratio = value; needsanyupdate = true; needsupdatelocaltransform = true; } }
         public Physics.Frustum Frustum { get { return frustum; } }
 
@@ -862,8 +928,13 @@ namespace SFEngine.SF3D.SceneSynchro
             }
 
             // modify lookat to match
+#if USE_NUMERICS
+            Vector4 lookat_dir = Vector4.Transform(Vector4.UnitX, Matrix4x4.CreateFromQuaternion(Quaternion.CreateFromAxisAngle(Vector3.UnitY, direction.X) * Quaternion.CreateFromAxisAngle(Vector3.UnitZ, direction.Y)));
+            lookat = position + new Vector3(lookat_dir.X, lookat_dir.Y, lookat_dir.Z);
+#else
             Vector3 lookat_dir = Vector3.UnitX * Matrix3.CreateFromQuaternion(Quaternion.FromAxisAngle(Vector3.UnitY, direction.X) * Quaternion.FromAxisAngle(Vector3.UnitZ, direction.Y));
             lookat = position + lookat_dir;
+#endif // USE_NUMERICS
 
             TouchLocalTransform(); TouchParents();
         }
@@ -873,17 +944,33 @@ namespace SFEngine.SF3D.SceneSynchro
             lookat = pos;
 
             // modify direction to match
-            Vector3 DirVector = (lookat - position).Normalized();
+            Vector3 DirVector = Vector3.Normalize(lookat - position);
             Vector3 DirVector2 = DirVector;
 
             DirVector2.Y = 0;
+
+#if USE_NUMERICS
+            if (DirVector2.LengthSquared() == 0)
+#else
             if (DirVector2.LengthSquared == 0)
+#endif // USE_NUMERICS
             {
                 direction.X = 0;
             }
             else
             {
-                DirVector2.Normalize();
+                DirVector2 = Vector3.Normalize(DirVector2);
+                // Math.ACos(Vector2.Dot(a, b));
+#if USE_NUMERICS
+                if (DirVector.Z < 0)
+                {
+                    direction.X = MathF.Acos(Vector3.Dot(Vector3.UnitX, DirVector2));
+                }
+                else
+                {
+                    direction.X = -MathF.Acos(Vector3.Dot(Vector3.UnitX, DirVector2));
+                }
+#else
                 if (DirVector.Z < 0)
                 {
                     direction.X = (float)(Vector3.CalculateAngle(Vector3.UnitX, DirVector2));
@@ -892,9 +979,14 @@ namespace SFEngine.SF3D.SceneSynchro
                 {
                     direction.X = -(float)(Vector3.CalculateAngle(Vector3.UnitX, DirVector2));
                 }
+#endif // USE_NUMERICS
             }
 
+#if USE_NUMERICS
+            direction.Y = (float)(Math.PI / 2) - MathF.Acos(Vector3.Dot(DirVector, Vector3.UnitY));
+#else
             direction.Y = (float)(Math.PI / 2) - (float)(Vector3.CalculateAngle(DirVector, Vector3.UnitY));
+#endif // USE_NUMERICS
 
             TouchLocalTransform(); TouchParents();
         }
@@ -903,7 +995,11 @@ namespace SFEngine.SF3D.SceneSynchro
         {
             if (needsupdatelocaltransform)
             {
+#if USE_NUMERICS
+                view_matrix = Matrix4x4.CreateLookAt(position, lookat, new Vector3(0, 1, 0));
+#else
                 view_matrix = Matrix4.LookAt(position, lookat, new Vector3(0, 1, 0));
+#endif // USE_NUMERICS
                 viewproj_matrix = view_matrix * ProjMatrix;
 
                 // calculate frustum
@@ -926,33 +1022,48 @@ namespace SFEngine.SF3D.SceneSynchro
 
         public Vector3 ScreenToWorld(Vector2 uv)
         {
-            Matrix4 inv = viewproj_matrix.Inverted();
             float depth = 1.0f;
-
-            Vector4 vIn = ((2.0f * uv.X) - 1.0f, 1.0f - (2.0f * uv.Y), 2.0f * depth - 1.0f, 1.0f);
+            Vector4 vIn = new((2.0f * uv.X) - 1.0f, 1.0f - (2.0f * uv.Y), 2.0f * depth - 1.0f, 1.0f);
+#if USE_NUMERICS
+            Matrix4x4.Invert(viewproj_matrix, out Matrix4x4 inv);
+            Vector4 pos = Vector4.Transform(vIn, inv);
+#else
+            Matrix4 inv = viewproj_matrix.Inverted();
             Vector4 pos = vIn * inv;
+#endif // USE_NUMERICS
 
             pos.W = 1.0f / pos.W;
 
             pos.X *= pos.W;
             pos.Y *= pos.W;
             pos.Z *= pos.W;
-
+#if USE_NUMERICS
+            return new(pos.X, pos.Y, pos.Z);
+#else
             return pos.Xyz;
+#endif // USE_NUMERICS
         }
 
         // pos: coordinate in 3d world space
         // result: coordinate in the window (top-left: (0, 0), bottom-right: (1, 1))
         public Vector2 WorldToScreen(Vector3 pos)
         {
+#if USE_NUMERICS
+            Vector4 clip_space_vec = Vector4.Transform(new Vector4(pos, 1.0f), viewproj_matrix);
+#else
             Vector4 clip_space_vec = new Vector4(pos, 1.0f) * viewproj_matrix;
+#endif // USE_NUMERICS
 
             if (clip_space_vec.W == 0)
             {
                 return Vector2.Zero;
             }
 
+#if USE_NUMERICS
+            Vector3 NDC_space_vec = new Vector3(clip_space_vec.X, clip_space_vec.Y, clip_space_vec.Z) / clip_space_vec.W;
+#else
             Vector3 NDC_space_vec = clip_space_vec.Xyz / clip_space_vec.W;
+#endif // USE_NUMERICS
 
             return new Vector2(((NDC_space_vec.X + 1.0f) / 2.0f), ((1.0f - NDC_space_vec.Y) / 2.0f));
         }

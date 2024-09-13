@@ -1,4 +1,8 @@
-﻿using OpenTK.Mathematics;
+﻿#if USE_NUMERICS
+using System.Numerics;
+#else
+using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using OpenTK.Graphics.OpenGL;
 using System;
 
@@ -68,7 +72,11 @@ namespace SFEngine.SFMap
         public void CreateOceanObject()
         {
             ocean_obj = SF3D.SFRender.SFRenderEngine.scene.AddSceneNodeSimple(SF3D.SFRender.SFRenderEngine.scene.root, "_OCEAN_", "_OCEAN_");
-            ocean_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
+#if USE_NUMERICS
+            ocean_obj.Rotation = Quaternion.CreateFromYawPitchRoll((float)Math.PI / 2, 0, 0);  // yaw, pitch, roll
+#else
+            ocean_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);  // pitch, yaw, roll
+#endif // USE_NUMERICS
         }
 
         public void SetPosition(Vector3 center_pos)

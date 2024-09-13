@@ -5,7 +5,11 @@
  * */
 
 using OpenTK.Graphics.OpenGL;
+#if USE_NUMERICS
+using System.Numerics;
+#else
 using OpenTK.Mathematics;
+#endif // USE_NUMERICS
 using SFEngine.SFResources;
 using System;
 using System.Collections.Generic;
