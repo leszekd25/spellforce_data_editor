@@ -17,7 +17,6 @@ using OpenTK.Core.Utility;
 using OpenTK.Graphics;
 using System.Diagnostics;
 using System.Collections.Generic;
-using NAudio.Gui;
 
 namespace MapViewerNetNative
 {
@@ -71,7 +70,7 @@ namespace MapViewerNetNative
 
             // Show window
             Toolkit.Window.SetTitle(window, "OpenTK window");
-            Toolkit.Window.SetSize(window, 400, 400);
+            Toolkit.Window.SetSize(window, 1024, 768);
             Toolkit.Window.SetMode(window, WindowMode.Normal);
 
             // The the current opengl context and load the bindings.
@@ -81,7 +80,7 @@ namespace MapViewerNetNative
 
             // on window load
             OnWindowLoad();
-            SFRenderEngine.ResizeView(new(400, 400));
+            SFRenderEngine.ResizeView(new(1024, 768));
         }
 
         public void Run()

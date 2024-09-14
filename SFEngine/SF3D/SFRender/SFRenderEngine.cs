@@ -416,7 +416,7 @@ namespace SFEngine.SF3D.SFRender
             }
             if (Settings.TerrainTextureLOD != 2)
             {
-                shader_heightmap.AddParameter("myTextureSampler");
+                shader_heightmap.AddParameter("GroundDetailMap");
             }
             if ((Settings.EnableShadows) || (Settings.ShadingQuality >= 1))
             {
@@ -622,7 +622,7 @@ namespace SFEngine.SF3D.SFRender
             GL.UseProgram(shader_heightmap.ProgramID);
             if (Settings.TerrainTextureLOD != 2)
             {
-                GL.Uniform1i(shader_heightmap["myTextureSampler"], 0);
+                GL.Uniform1i(shader_heightmap["GroundDetailMap"], 0);
             }
             if (Settings.EnableShadows)
             {

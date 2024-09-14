@@ -141,7 +141,7 @@ namespace SFEngine.SF3D
         }
     }
 #else
-public struct BoneAnimationState(in Matrix4 transform)
+    public struct BoneAnimationState(in Matrix4 transform)
     {
         public Quaternion rotation = transform.ExtractRotation(false);
         public Vector3 position = transform.Row3.Xyz;
@@ -254,10 +254,18 @@ public struct BoneAnimationState(in Matrix4 transform)
             qr = tmp;
         }
 
+        public readonly void FastMatrix4Invert(in Matrix4 m, out Matrix4 inv)
+        {
+            Matrix3 rot = new(m.M11, m.M21, m.M31, m.M12, m.M22, m.M32, m.M13, m.M23, m.M33);
+            Vector3 trl = m.Row3.Xyz;
+            Vector3 new_trl = -trl * rot;
+            inv = new(rot.M11, rot.M12, rot.M13, 0, rot.M21, rot.M22, rot.M23, 0, rot.M31, rot.M32, rot.M33, 0, new_trl.X, new_trl.Y, new_trl.Z, 1);
+        }
+
         public readonly BoneAnimationState Inverse()
         {
             ToMatrix(out Matrix4 inv);
-            Matrix4.Invert(in inv, out inv);
+            FastMatrix4Invert(in inv, out inv);
             return new BoneAnimationState(in inv);
         }
 

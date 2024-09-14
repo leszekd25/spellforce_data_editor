@@ -26,14 +26,12 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <DebugType>full</DebugType>
-    <DefineConstants>$(DefineConstants);USE_NUMERICS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <DocumentationFile>
     </DocumentationFile>
     <DebugType>full</DebugType>
-    <DefineConstants>$(DefineConstants);USE_NUMERICS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>382940043477778432.ico</ApplicationIcon>

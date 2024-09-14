@@ -479,7 +479,7 @@ uniform vec4 AmbientColor;
 #endif //defined SHADING || defined SHADOWS
 
 #ifndef NO_TEXTURE
-uniform sampler2DArray myTextureSampler;
+uniform sampler2DArray GroundDetailMap;
 uniform usampler2D TileMap;
 #endif //NO_TEXTURE
 #ifdef SHADOWS
@@ -679,10 +679,10 @@ vec3 Detail()
   map_uv.y = GridSize-map_uv.y-1;
 	
   uvec4 t = texture(TileMap, map_uv/GridSize);
-  vec3 tex1 = texture(myTextureSampler, vec3(fixed_uv, t.x)).rgb;
-  vec3 tex2 = texture(myTextureSampler, vec3(fixed_uv, t.y)).rgb;
-  vec3 tex3 = texture(myTextureSampler, vec3(fixed_uv, t.z)).rgb;
-  vec3 tex4 = texture(myTextureSampler, vec3(fixed_uv, t.w)).rgb;
+  vec3 tex1 = texture(GroundDetailMap, vec3(fixed_uv, t.x)).rgb;
+  vec3 tex2 = texture(GroundDetailMap, vec3(fixed_uv, t.y)).rgb;
+  vec3 tex3 = texture(GroundDetailMap, vec3(fixed_uv, t.z)).rgb;
+  vec3 tex4 = texture(GroundDetailMap, vec3(fixed_uv, t.w)).rgb;
 	
   // linear interpolation
   vec3 col1 = mix(tex1, tex2, vt.x);
