@@ -3,11 +3,7 @@
  * It also contains mesh vertex indices it affects
  * */
 
-#if USE_NUMERICS
-using System.Numerics;
-#else
 using OpenTK.Mathematics;
-#endif // USE_NUMERICS
 
 //expand!
 namespace SFEngine.SF3D

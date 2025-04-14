@@ -3,144 +3,13 @@
  * SFAnimation is a set of SFBoneAnimation objects corresponding to a supplied skeleton
  */
 
-#if USE_NUMERICS
-using System.Numerics;
-#else
 using OpenTK.Mathematics;
-#endif // USE_NUMERICS
 using SFEngine.SFResources;
 using System;
 using System.IO;
 
 namespace SFEngine.SF3D
 {
-#if USE_NUMERICS
-    public struct BoneAnimationState
-    {
-        public Quaternion rotation;
-        public Vector3 position;
-
-        public BoneAnimationState(in Matrix4x4 mat)
-        {
-            Matrix4x4.Decompose(mat, out Vector3 scale, out rotation, out position);
-        }
-
-        public readonly void ToMatrix(out Matrix4x4 transform)
-        {
-            Vector3 xyz = new(rotation.X, rotation.Y, rotation.Z);
-            float sqx = xyz.X * xyz.X;
-            float sqy = xyz.Y * xyz.Y;
-            float sqz = xyz.Z * xyz.Z;
-            float sqw = rotation.W * rotation.W;
-
-            float xy = xyz.X * xyz.Y;
-            float xz = xyz.X * xyz.Z;
-            float xw = xyz.X * rotation.W;
-
-            float yz = xyz.Y * xyz.Z;
-            float yw = xyz.Y * rotation.W;
-
-            float zw = xyz.Z * rotation.W;
-
-            float s2 = 2f / (sqx + sqy + sqz + sqw);
-
-            transform.M11 = 1f - (s2 * (sqy + sqz));
-            transform.M22 = 1f - (s2 * (sqx + sqz));
-            transform.M33 = 1f - (s2 * (sqx + sqy));
-
-            transform.M12 = s2 * (xy + zw);
-            transform.M21 = s2 * (xy - zw);
-
-            transform.M31 = s2 * (xz + yw);
-            transform.M13 = s2 * (xz - yw);
-
-            transform.M32 = s2 * (yz - xw);
-            transform.M23 = s2 * (yz + xw);
-
-            transform.M14 = 0;
-            transform.M24 = 0;
-            transform.M34 = 0;
-
-            transform.M41 = position.X;
-            transform.M42 = position.Y;
-            transform.M43 = position.Z;
-            transform.M44 = 1;
-        }
-
-        public static void FastQSlerp(in Quaternion q1, in Quaternion q2, float blend, out Quaternion qr)
-        {
-            Quaternion q2_copy = q2;
-
-            float cosHalfAngle = q1.W * q2_copy.W + Vector3.Dot(new(q1.X, q1.Y, q1.Z), new(q2_copy.X, q2_copy.Y, q2_copy.Z));
-
-            if (cosHalfAngle >= 1.0f || cosHalfAngle <= -1.0f)
-            {
-                // angle = 0.0f, so just return one input.
-                qr = q1;
-                return;
-            }
-            else if (cosHalfAngle < 0.0f)
-            {
-                q2_copy = -q2_copy;
-                cosHalfAngle = -cosHalfAngle;
-            }
-
-            float blendA;
-            float blendB;
-            if (cosHalfAngle < 0.99f)
-            {
-                // do proper slerp for big angles
-                float halfAngle = MathF.Acos(cosHalfAngle);
-                float sinHalfAngle = MathF.Sin(halfAngle);
-                float oneOverSinHalfAngle = 1.0f / sinHalfAngle;
-                blendA = MathF.Sin(halfAngle * (1.0f - blend)) * oneOverSinHalfAngle;
-                blendB = MathF.Sin(halfAngle * blend) * oneOverSinHalfAngle;
-            }
-            else
-            {
-                // do lerp if angle is really small.
-                blendA = 1.0f - blend;
-                blendB = blend;
-            }
-
-            Quaternion tmp = new(blendA * q1.X + blendB * q2_copy.X, blendA * q1.Y + blendB * q2_copy.Y, blendA * q1.Z + blendB * q2_copy.Z, blendA * q1.W + blendB * q2_copy.W);
-            qr = tmp;
-        }
-
-        public void FromMatrix(in Matrix4x4 mat)
-        {
-            position = new(mat.M41, mat.M42, mat.M43);
-            rotation = Quaternion.CreateFromRotationMatrix(mat);
-        }
-
-        public static void Multiply(in BoneAnimationState bas1, in BoneAnimationState bas2, out BoneAnimationState result)
-        {
-            Quaternion qtmp = bas2.rotation;
-
-            result.rotation = Quaternion.Multiply(bas2.rotation, bas1.rotation);
-            Vector3 tmp = Vector3.Transform(bas1.position, qtmp);
-            result.position = Vector3.Add(tmp, bas2.position);
-        }
-
-        public static void FastLerp(in BoneAnimationState bas1, in BoneAnimationState bas2, float blend, out BoneAnimationState result)
-        {
-            FastQSlerp(in bas1.rotation, in bas2.rotation, blend, out result.rotation);
-            result.position = Vector3.Lerp(bas1.position, bas2.position, blend);
-        }
-
-        public readonly BoneAnimationState Inverse()
-        {
-            ToMatrix(out Matrix4x4 inv);
-            Matrix4x4.Invert(inv, out inv);
-            return new BoneAnimationState(in inv);
-        }
-
-        public override readonly string ToString()
-        {
-            return $"{position}, {rotation}";
-        }
-    }
-#else
     public struct BoneAnimationState(in Matrix4 transform)
     {
         public Quaternion rotation = transform.ExtractRotation(false);
@@ -274,7 +143,6 @@ namespace SFEngine.SF3D
             return $"{position}, {rotation}";
         }
     }
-#endif // USE_NUMERICS
 
     public class SFAnimation : SFResource
     {

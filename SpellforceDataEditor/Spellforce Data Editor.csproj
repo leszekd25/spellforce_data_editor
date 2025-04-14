@@ -71,9 +71,7 @@
     <Compile Update="SFCFF\category forms\Control16.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="SFCFF\category forms\Control17.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="SFCFF\category forms\Control17.cs" />
     <Compile Update="SFCFF\category forms\Control18.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -112,7 +112,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
             button_repr(ButtonGoto23, 2001);
         }
 
-        private int calculate_total_xp(UInt32 xp_gain, UInt16 xp_falloff)
+        static public int calculate_total_xp(UInt32 xp_gain, UInt16 xp_falloff)
         {
             if ((xp_gain == 0) || (xp_falloff == 0))
             {

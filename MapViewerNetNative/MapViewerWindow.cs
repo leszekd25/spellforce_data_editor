@@ -1,9 +1,5 @@
 ﻿using OpenTK.Platform;
-#if USE_NUMERICS
-using System.Numerics;
-#else
 using OpenTK.Mathematics;
-#endif // USE_NUMERICS
 using SFEngine.SF3D.Physics;
 using SFEngine.SF3D.SceneSynchro;
 using SFEngine.SF3D.SFRender;
@@ -17,12 +13,15 @@ using OpenTK.Core.Utility;
 using OpenTK.Graphics;
 using System.Diagnostics;
 using System.Collections.Generic;
+using SFEngine;
+using ImGuiNET;
 
 namespace MapViewerNetNative
 {
     public class MapViewerWindow
     {
         WindowHandle window;
+        ImGuiController imgui_controller;
         OpenGLContextHandle glContext;
 
         Lua L;
@@ -71,6 +70,7 @@ namespace MapViewerNetNative
             // Show window
             Toolkit.Window.SetTitle(window, "OpenTK window");
             Toolkit.Window.SetSize(window, 1024, 768);
+            Toolkit.Window.GetClientSize(window, out int w, out int h);
             Toolkit.Window.SetMode(window, WindowMode.Normal);
 
             // The the current opengl context and load the bindings.
@@ -80,7 +80,10 @@ namespace MapViewerNetNative
 
             // on window load
             OnWindowLoad();
-            SFRenderEngine.ResizeView(new(1024, 768));
+            SFRenderEngine.ResizeView(new(w, h));
+
+            // imgui init
+            imgui_controller = new(new(w, h));
         }
 
         public void Run()
@@ -133,7 +136,6 @@ namespace MapViewerNetNative
             // create scene and initialize rendering engine
             SFRenderEngine.scene.Init();
             SFRenderEngine.Initialize(new Vector2(800, 600));
-            SFRenderEngine.ResetTextures();
             SFRenderEngine.scene.GenerateMissingMesh();
             SFRenderEngine.scene.atmosphere.SetSunLocation(135, 60);
             SFRenderEngine.SetObjectFadeRange(SFEngine.Settings.ObjectFadeMin, SFEngine.Settings.ObjectFadeMax);
@@ -223,11 +225,7 @@ namespace MapViewerNetNative
             {
                 SFEngine.MathUtils.RotateVec2Mirrored(in movement_vector, SFRenderEngine.scene.camera.Direction.X + (float)(Math.PI / 2), out movement_vector);
                 movement_vector *= 60.0f * camera_speed_factor * (float)cur_dt;
-#if USE_NUMERICS
-                MoveCameraWorldMapPos(new Vector2(SFRenderEngine.scene.camera.position.X, SFRenderEngine.scene.camera.position.Z) + movement_vector);
-#else
                 MoveCameraWorldMapPos(SFRenderEngine.scene.camera.position.Xz + movement_vector);
-#endif // USE_NUMERICS
             }
 
             // rotating view by home/end/pageup/pagedown
@@ -258,6 +256,10 @@ namespace MapViewerNetNative
                 SetCameraAzimuthAltitude(SFRenderEngine.scene.camera.Direction.X - movement_vector.X, SFRenderEngine.scene.camera.Direction.Y - movement_vector.Y);
             }
 
+            // imgui test
+            imgui_controller.UpdateDeltaTime((float)cur_dt);
+            ImGui.ShowDemoWindow();
+
             SFRenderEngine.scene.camera.Update(0);
 
             // heavy tasks
@@ -269,6 +271,9 @@ namespace MapViewerNetNative
 
             // pure render stuff
             SFRenderEngine.RenderScene();
+
+            // imgui
+            imgui_controller?.Render();
 
             updates_this_second += 1;
         }
@@ -321,11 +326,7 @@ namespace MapViewerNetNative
             foreach (SceneNodeMapChunk chunk_node in map.heightmap.visible_chunks)
             {
                 Vector3 pos = chunk_node.position;
-#if USE_NUMERICS
-                if (max_dist < (p - new Vector2(pos.X + 8, pos.Z + 8)).Length())
-#else
                 if (max_dist < (p - new Vector2(pos.X + 8, pos.Z + 8)).Length)
-#endif // USE_NUMERICS
                 {
                     continue;
                 }
@@ -369,17 +370,10 @@ namespace MapViewerNetNative
             // preserve lookat
             Vector3 cur_lookat = SFRenderEngine.scene.camera.Lookat - SFRenderEngine.scene.camera.position;
 
-#if USE_NUMERICS
-            SFRenderEngine.scene.camera.Position = new Vector3(
-                SFRenderEngine.scene.camera.position.X,
-                h + map.heightmap.GetRealZ(new Vector2(SFRenderEngine.scene.camera.position.X, SFRenderEngine.scene.camera.position.Z)),
-                SFRenderEngine.scene.camera.position.Z);
-#else
             SFRenderEngine.scene.camera.Position = new Vector3(
                 SFRenderEngine.scene.camera.position.X,
                 h + map.heightmap.GetRealZ(SFRenderEngine.scene.camera.position.Xz),
                 SFRenderEngine.scene.camera.position.Z);
-#endif // USE_NUMERICS
 
             SFRenderEngine.scene.camera.SetLookat(SFRenderEngine.scene.camera.position + cur_lookat);
         }
@@ -498,39 +492,44 @@ namespace MapViewerNetNative
                 Toolkit.Window.Destroy(closeArgs.Window);
             }
             // resize window
-            if(args is WindowResizeEventArgs windowResizeArgs)
+            else if(args is WindowResizeEventArgs windowResizeArgs)
             {
                 OnWindowResize(windowResizeArgs);
             }
             // window mouse down
-            if(args is MouseButtonDownEventArgs mouseButtonDownArgs)
+            else if (args is MouseButtonDownEventArgs mouseButtonDownArgs)
             {
                 OnWindowMouseDown(mouseButtonDownArgs);
             }
             // window mouse move
-            if(args is MouseMoveEventArgs mouseMoveArgs)
+            else if (args is MouseMoveEventArgs mouseMoveArgs)
             {
                 OnWindowMouseMove(mouseMoveArgs);
             }
             // window mouse up
-            if(args is MouseButtonUpEventArgs mouseButtonUpArgs)
+            else if (args is MouseButtonUpEventArgs mouseButtonUpArgs)
             {
                 OnWindowMouseUp(mouseButtonUpArgs);
             }
             // window mouse scroll
-            if (args is ScrollEventArgs scrollArgs)
+            else if (args is ScrollEventArgs scrollArgs)
             {
                 OnWindowMouseScroll(scrollArgs);
             }
             // window key press
-            if(args is KeyDownEventArgs keyDownArgs)
+            else if (args is KeyDownEventArgs keyDownArgs)
             {
                 OnWindowKeyPress(keyDownArgs);
             }
             // window key release
-            if(args is KeyUpEventArgs keyUpArgs)
+            else if (args is KeyUpEventArgs keyUpArgs)
             {
                 OnWindowKeyRelease(keyUpArgs);
+            }
+            // char press
+            else if(args is TextInputEventArgs textInputArgs)
+            {
+                OnWindowTextInput(textInputArgs);
             }
         }
 
@@ -539,6 +538,8 @@ namespace MapViewerNetNative
         void OnWindowResize(WindowResizeEventArgs e)
         {
             SFRenderEngine.ResizeView(new Vector2(e.NewClientSize.X, e.NewClientSize.Y));
+
+            imgui_controller?.OnResize(new Vector2(e.NewClientSize.X, e.NewClientSize.Y));
         }
 
         void OnWindowMouseDown(MouseButtonDownEventArgs e)
@@ -550,13 +551,15 @@ namespace MapViewerNetNative
                 scroll_mouse_start.X -= x;
                 scroll_mouse_start.Y -= y;
                 mouse_scroll = true;
-                return;
             }
+
+            imgui_controller?.UpdateMouseState(e.Button, true);
         }
 
         void OnWindowMouseMove(MouseMoveEventArgs e)
         {
             mouse_current_pos = new OpenTK.Mathematics.Vector2i((int)e.Position.X, (int)e.Position.Y);
+            imgui_controller?.UpdateMousePos(e.Position);
         }
 
         void OnWindowMouseUp(MouseButtonUpEventArgs e)
@@ -565,13 +568,16 @@ namespace MapViewerNetNative
             {
                 scroll_mouse_start = new OpenTK.Mathematics.Vector2i(0, 0);
                 mouse_scroll = false;
-                return;
             }
+
+            imgui_controller?.UpdateMouseState(e.Button, false);
         }
 
         void OnWindowMouseScroll(ScrollEventArgs e)
         {
             AddCameraZoom(e.Delta.Y);
+
+            imgui_controller?.UpdateMouseWheel(e.Delta);
         }
 
         void OnWindowKeyPress(KeyDownEventArgs e)
@@ -611,6 +617,8 @@ namespace MapViewerNetNative
                 default:
                     break;
             }
+
+            imgui_controller?.UpdateKeyState(e.Key, true);
         }
 
         void OnWindowKeyRelease(KeyUpEventArgs e)
@@ -644,6 +652,13 @@ namespace MapViewerNetNative
                 default:
                     break;
             }
+
+            imgui_controller?.UpdateKeyState(e.Key, false);
+        }
+
+        void OnWindowTextInput(TextInputEventArgs e)
+        {
+            imgui_controller?.AddCharPress(e.Text[0]);
         }
     }
 }

@@ -142,7 +142,7 @@
             undoCtrlZToolStripMenuItem.Enabled = false;
             undoCtrlZToolStripMenuItem.Name = "undoCtrlZToolStripMenuItem";
             undoCtrlZToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z;
-            undoCtrlZToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            undoCtrlZToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             undoCtrlZToolStripMenuItem.Text = "Undo";
             undoCtrlZToolStripMenuItem.Click += undoCtrlZToolStripMenuItem_Click;
             // 
@@ -151,14 +151,14 @@
             redoCtrlYToolStripMenuItem.Enabled = false;
             redoCtrlYToolStripMenuItem.Name = "redoCtrlYToolStripMenuItem";
             redoCtrlYToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y;
-            redoCtrlYToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            redoCtrlYToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             redoCtrlYToolStripMenuItem.Text = "Redo";
             redoCtrlYToolStripMenuItem.Click += redoCtrlYToolStripMenuItem_Click;
             // 
             // operationHistoryToolStripMenuItem
             // 
             operationHistoryToolStripMenuItem.Name = "operationHistoryToolStripMenuItem";
-            operationHistoryToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            operationHistoryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             operationHistoryToolStripMenuItem.Text = "Operation history...";
             operationHistoryToolStripMenuItem.Click += operationHistoryToolStripMenuItem_Click;
             // 

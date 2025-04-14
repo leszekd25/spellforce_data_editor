@@ -1,5 +1,7 @@
 ﻿using OpenTK.Windowing.Common.Input;
+using SFEngine;
 using SFEngine.SFCFF;
+using SFEngine.SFCFF.CTG;
 using SFEngine.SFUnPak;
 using SpellforceDataEditor.SFCFF;
 using SpellforceDataEditor.SFCFF.category_forms;
@@ -12,6 +14,7 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Windows.Forms;
+using Windows.Data.Html;
 using Windows.Security.ExchangeActiveSyncProvisioning;
 
 
@@ -122,6 +125,8 @@ namespace SpellforceDataEditor.special_forms
 
                 CategorySelect.SelectedIndex = 0;
 
+                RunCustomScript();
+
                 GC.Collect();
             }
         }
@@ -181,7 +186,7 @@ namespace SpellforceDataEditor.special_forms
                 return false;
             }
             SFGameDataNew gamedata3 = new SFGameDataNew();
-            if(gamedata3.Merge(gamedata, gamedata2) != 0)
+            if (gamedata3.Merge(gamedata, gamedata2) != 0)
             {
                 labelStatus.Text = "Failed to merge selected gamedata files";
                 return false;
@@ -715,7 +720,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 search_form.Close();
             }
-            if(ref_form != null)
+            if (ref_form != null)
             {
                 ref_form.Close();
             }
@@ -860,12 +865,12 @@ namespace SpellforceDataEditor.special_forms
             }
 
             // update category name in combobox
-            for(int i = 0; i < CategorySelect.Items.Count; i++)
+            for (int i = 0; i < CategorySelect.Items.Count; i++)
             {
                 var item = (Tuple<short, string>)(CategorySelect.Items[i]);
-                if(item.Item1 == cat_id)
+                if (item.Item1 == cat_id)
                 {
-                    
+
                     CategorySelect.SelectedIndexChanged -= CategorySelect_SelectedIndexChanged;
                     CategorySelect.Items[i] = new Tuple<short, string>((short)cat_id,
                         $"{CachedElementDisplays[cat_id].category.GetName()} ({CachedElementDisplays[cat_id].category.GetNumOfItems()} items)");
@@ -1384,7 +1389,7 @@ namespace SpellforceDataEditor.special_forms
         // references
         private void findAllReferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(ref_form != null)
+            if (ref_form != null)
             {
                 ref_form.Focus();
                 ref_form.FindElementReferences(ElementDisplay.category.GetCategoryID(), ElementDisplay.current_element);
@@ -1403,13 +1408,342 @@ namespace SpellforceDataEditor.special_forms
 
         void ref_form_FormClosed(object sender, EventArgs e)
         {
-            if(ref_form == null)
+            if (ref_form == null)
             {
                 return;
             }
 
             ref_form.FormClosed -= ref_form_FormClosed;
             ref_form = null;
+        }
+
+        void RunCustomScript()
+        {
+            /*StringBuilder csv_hero_stats = new();
+            csv_hero_stats.AppendLine("ID,Name,Gender,Level,Health,Mana,Strength,Stamina,Dexterity,Agility,Wisdom,Intelligence,Charisma,Fire resistance,Ice resistance,Black resistance,Mind resistance,Walk speed (%), Fight speed (%),Size (%),Skill 1,Skill 2,Skill 3,Skill 4,Skill 5,Skill 6,Skill 7,Skill 8,Skill 9,Skill 10,Spell 1,Spell 2,Spell 3");
+            for(int i = 0; i < SFCategoryManager.hero_cache.Items.Count; i++)
+            {
+                CategoryHeroCacheItem it = SFCategoryManager.hero_cache.Items[i];
+                SFCategoryManager.gamedata.c2005.GetItemIndex(it.UnitStatsID, out int ind_stats);
+                Category2005Item it2 = SFCategoryManager.gamedata.c2005.Items[ind_stats];
+                Category2048Item it3 = SFCategoryManager.gamedata.c2048.Items[it2.UnitLevel - 1];
+
+                string[] skills = ["-", "-", "-", "-", "-", "-", "-", "-", "-", "-"];
+                bool found_skills = SFCategoryManager.gamedata.c2006.GetItemIndex(it.UnitStatsID, out int ind_hero_skills);
+                if (found_skills)
+                {
+                    int skill_num = SFCategoryManager.gamedata.c2006.GetItemSubItemNum(ind_hero_skills);
+                    for(int k = 0; k < skill_num; k++)
+                    {
+                        int index = SFCategoryManager.gamedata.c2006.GetSubItemIndex(ind_hero_skills, k);
+                        Category2006Item it_skill = SFCategoryManager.gamedata.c2006.Items[index];
+                        skills[k] = SFCategoryManager.GetSkillName(it_skill.SkillMajorID, it_skill.SkillMinorID, it_skill.SkillLevel);
+                    }
+                }
+
+                string spell1 = "-", spell2 = "-", spell3 = "-";
+                bool found_spell1 = SFCategoryManager.gamedata.c2067.GetItemSubItemIndex(it.UnitStatsID, 1, out int ind1);
+                if (found_spell1)
+                {
+                    spell1 = SFCategoryManager.GetEffectName(SFCategoryManager.gamedata.c2067.Items[ind1].SpellID, true);
+                    bool found_spell2 = SFCategoryManager.gamedata.c2067.GetItemSubItemIndex(it.UnitStatsID, 2, out int ind22);
+                    if (found_spell2)
+                    {
+                        spell2 = SFCategoryManager.GetEffectName(SFCategoryManager.gamedata.c2067.Items[ind22].SpellID, true);
+                        bool found_spell3 = SFCategoryManager.gamedata.c2067.GetItemSubItemIndex(it.UnitStatsID, 3, out int ind3);
+                        if (found_spell3)
+                        {
+                            spell3 = SFCategoryManager.GetEffectName(SFCategoryManager.gamedata.c2067.Items[ind3].SpellID, true);
+                        }
+                    }
+                }
+
+                int hp = (it2.Stamina * it3.HealthFactor) / 100;
+                int mana = (it2.Wisdom * it3.ManaFactor) / 100;
+                csv_hero_stats.AppendLine($"{it.UnitStatsID},{SFCategoryManager.GetRuneheroName(it.UnitStatsID)},{((it2.UnitFlags & 0b1) == 0b1 ? "Female" : "Male")},{it2.UnitLevel},{hp},{mana},{it2.Strength},{it2.Stamina},{it2.Dexterity},{it2.Agility},{it2.Wisdom},{it2.Intelligence},{it2.Charisma},{it2.ResistanceFire},{it2.ResistanceIce},{it2.ResistanceBlack},{it2.ResistanceMind},{it2.SpeedWalk},{it2.SpeedFight},{it2.SpeedCast},{it2.UnitSize},{skills[0]},{skills[1]},{skills[2]},{skills[3]},{skills[4]},{skills[5]},{skills[6]},{skills[7]},{skills[8]},{skills[9]},{spell1},{spell2},{spell3}");
+
+            }
+            System.IO.File.WriteAllText("hero_stats.csv", csv_hero_stats.ToString());*/
+
+            // this is pretty important calculation...
+            /*
+            // create CSV files
+            StringBuilder csv_unit_stats = new();
+            csv_unit_stats.AppendLine("ID,Name,Race,Gender,Level,Health,Mana,Armor,Strength,Stamina,Dexterity,Agility,Wisdom,Intelligence,Charisma,Fire resistance,Ice resistance,Black resistance,Mind resistance,Walk speed (%),Fight speed (%),Cast speed (%),Size (%),Can be killed,Copper gained per kill,Experience gained per kill,Total available experience,Meat available from corpse,Damage 1,Attack speed 1,Range 1,Damage 2,Attack speed 2,Range 2,DPS (melee),DPS (ranged),Spell 1,Spell 2,Spell 3");
+            for (int i = 0; i < SFCategoryManager.gamedata.c2024.Items.Count; i++)
+            {
+                //System.Diagnostics.Debug.WriteLine($"{i}");
+                Category2024Item it = SFCategoryManager.gamedata.c2024.Items[i];
+                //System.Diagnostics.Debug.WriteLine($"{it.UnitID}");
+                if(it.StatsID == 0) 
+                { 
+                    continue;
+                }
+                SFCategoryManager.gamedata.c2005.GetItemIndex(it.StatsID, out int ind2);
+                Category2005Item it2 = SFCategoryManager.gamedata.c2005.Items[ind2];
+                Category2048Item it3 = SFCategoryManager.gamedata.c2048.Items[it2.UnitLevel - 1];
+                SFCategoryManager.gamedata.c2022.GetItemIndex(it2.UnitRace, out int ind_race);
+                Category2022Item it_race = SFCategoryManager.gamedata.c2022.Items[ind_race];
+                bool found_item_left = SFCategoryManager.gamedata.c2025.GetItemSubItemIndex(it.UnitID, 1, out int ind_item_left);
+                bool found_item_right = SFCategoryManager.gamedata.c2025.GetItemSubItemIndex(it.UnitID, 3, out int ind_item_right);
+                int id_item_left = Utility.NO_INDEX;
+                if (found_item_left)
+                {
+                    id_item_left = SFCategoryManager.gamedata.c2025.Items[ind_item_left].ItemID;
+                }
+                int id_item_right = Utility.NO_INDEX;
+                if (found_item_right)
+                {
+                    id_item_right = SFCategoryManager.gamedata.c2025.Items[ind_item_right].ItemID;
+                }
+                SFCategoryManager.gamedata.c2003.GetItemIndex(id_item_left, out int ind_item_left2);
+                SFCategoryManager.gamedata.c2003.GetItemIndex(id_item_right, out int ind_item_right2);
+                int atkmin1 = 0, atkmin2 = 0, atkspd1 = 0, atkrngmin1 = 0, atkrngmax1 = 0, atkmax1 = 0, atkmax2 = 0, atkspd2 = 0, atkrngmin2 = 0, atkrngmax2 = 0;
+                bool is_2h = false;
+                bool is_dualwield = false;
+                bool is_melee1 = false;
+                bool is_melee2 = false;
+                float str_factor = (it2.Strength*(it2.UnitLevel + 9) * 3) / 1000.0f;
+                // no items in hand
+                if ((ind_item_left2 == Utility.NO_INDEX) && (ind_item_right2 == Utility.NO_INDEX))
+                {
+                    // fists?
+                    atkmin1 = 1;
+                    atkmax1 = 4;
+                    atkspd1 = 100;
+                    atkrngmin1 = 1;
+                    atkrngmax1 = 1;
+                    is_melee1 = true;
+                    is_melee2 = false;
+                    is_2h = false;
+                    is_dualwield = false;
+                }
+                // items in both hands
+                else if ((ind_item_left2 != Utility.NO_INDEX) && (ind_item_right2 != Utility.NO_INDEX))
+                {
+                    // two items, check weapon types
+                    int wpn_left_type = SFCategoryManager.gamedata.c2003.Items[ind_item_left2].ItemType2;
+                    int wpn_right_type = SFCategoryManager.gamedata.c2003.Items[ind_item_right2].ItemType2;
+                    // both items are weapons
+                    if (((wpn_left_type == 7) || (wpn_left_type == 8) || (wpn_left_type == 12)) && ((wpn_right_type == 7) || (wpn_right_type == 8) || (wpn_right_type == 12)))
+                    {
+                        // get damage and atkspd of both
+                        SFCategoryManager.gamedata.c2015.GetItemIndex(id_item_left, out int ind_weapon_left);
+                        SFCategoryManager.gamedata.c2015.GetItemIndex(id_item_right, out int ind_weapon_right);
+                        if(ind_weapon_left != Utility.NO_INDEX)
+                        {
+                            Category2015Item wpn_left = SFCategoryManager.gamedata.c2015.Items[ind_weapon_left];
+                            atkmin2 = wpn_left.MinDamage;
+                            atkmax2 = wpn_left.MaxDamage;
+                            atkspd2 = wpn_left.WeaponSpeed;
+                            atkrngmin2 = wpn_left.MinRange;
+                            atkrngmax2 = wpn_left.MaxRange;
+                        }
+                        if (ind_weapon_right != Utility.NO_INDEX)
+                        {
+                            Category2015Item wpn_right = SFCategoryManager.gamedata.c2015.Items[ind_weapon_right];
+                            atkmin1 = wpn_right.MinDamage;
+                            atkmax1 = wpn_right.MaxDamage;
+                            atkspd1 = wpn_right.WeaponSpeed;
+                            atkrngmin1 = wpn_right.MinRange;
+                            atkrngmax1 = wpn_right.MaxRange;
+                        }
+                        is_melee1 = (wpn_right_type != 12);
+                        is_melee2 = (wpn_left_type != 12);
+                        is_2h = false;
+                        is_dualwield = true;
+                    }
+                    // one of the items is a weapon
+                    else if (((wpn_left_type == 7) || (wpn_left_type == 8) || (wpn_left_type == 12)) || ((wpn_right_type == 7) || (wpn_right_type == 8) || (wpn_right_type == 12)))
+                    {
+                        // get damage and atkspd of the weapon
+                        SFCategoryManager.gamedata.c2015.GetItemIndex(id_item_left, out int ind_weapon_left);
+                        SFCategoryManager.gamedata.c2015.GetItemIndex(id_item_right, out int ind_weapon_right);
+                        Category2015Item wpn;
+                        if(ind_weapon_left != Utility.NO_INDEX)
+                        {
+                            wpn = SFCategoryManager.gamedata.c2015.Items[ind_weapon_left];
+                            atkmin1 = wpn.MinDamage;
+                            atkmax1 = wpn.MaxDamage;
+                            atkspd1 = wpn.WeaponSpeed;
+                            atkrngmin1 = wpn.MinRange;
+                            atkrngmax1 = wpn.MaxRange;
+                        }
+                        else if(ind_weapon_right != Utility.NO_INDEX)
+                        {
+                            wpn = SFCategoryManager.gamedata.c2015.Items[ind_weapon_right];
+                            atkmin1 = wpn.MinDamage;
+                            atkmax1 = wpn.MaxDamage;
+                            atkspd1 = wpn.WeaponSpeed;
+                            atkrngmin1 = wpn.MinRange;
+                            atkrngmax1 = wpn.MaxRange;
+                        }
+                        is_melee1 = (wpn_left_type != 12) && (wpn_right_type != 12);
+                        is_melee2 = false;
+                        is_2h = false;
+                        is_dualwield = false;
+                    }
+                    // none of the items are weapons
+                    else
+                    {
+                        // fists?
+                        atkmin1 = 1;
+                        atkmax1 = 4;
+                        atkspd1 = 100;
+                        atkrngmin1 = 1;
+                        atkrngmax1 = 1;
+                        is_melee1 = true;
+                        is_melee2 = false;
+                        is_2h = false;
+                        is_dualwield = false;
+                    }
+                }
+                // item in one hand
+                else
+                {
+                    is_dualwield = false;
+
+                    int ind_item = (found_item_left ? ind_item_left2 : ind_item_right2);
+                    int id_item = (found_item_left ? id_item_left : id_item_right);
+                    int wpn_type = SFCategoryManager.gamedata.c2003.Items[ind_item].ItemType2;
+                    // check if this is a weapon
+                    if ((wpn_type == 7) || (wpn_type == 8) || (wpn_type == 12))
+                    {
+                        // weapon is 2h
+                        if (wpn_type == 8)
+                        {
+                            is_melee1 = true;
+                            is_melee2 = false;
+                            is_2h = true;
+                        }
+                        // weapon is 1h
+                        else if (wpn_type == 7)
+                        {
+                            is_melee1 = true;
+                            is_melee2 = false;
+                            is_2h = false;
+                        }
+                        // weapon is ranged
+                        else
+                        {
+                            is_melee1 = false;
+                            is_melee2 = false;
+                            is_2h = false;
+                        }
+                        SFCategoryManager.gamedata.c2015.GetItemIndex(id_item, out int ind_weapon);
+                        if (ind_weapon != Utility.NO_INDEX)
+                        {
+                            Category2015Item wpn = SFCategoryManager.gamedata.c2015.Items[ind_weapon];
+                            atkmin1 = wpn.MinDamage;
+                            atkmax1 = wpn.MaxDamage;
+                            atkspd1 = wpn.WeaponSpeed;
+                            atkrngmin1 = wpn.MinRange;
+                            atkrngmax1 = wpn.MaxRange;
+                        }
+                    }
+                    else
+                    {
+                        // fists?
+                        atkmin1 = 1;
+                        atkmax1 = 4;
+                        atkspd1 = 100;
+                        atkrngmin1 = 1;
+                        atkrngmax1 = 1;
+                        is_melee1 = true;
+                        is_melee2 = false;
+                        is_2h = false;
+                        is_dualwield = false;
+                    }
+                }
+
+                // calculate dps
+                // params: WPN_DMG = (dmg_min+dmg_max)/2, WPN_SPD = atk_spd, DMG_SCALE = dmg_factor(lvl), SPD_SCALE = atkspd_factor(race)
+                // for 2h or one 1h melee wpn, 
+                // for dual wield melee,
+                // for ranged, 
+                string dmg_str;
+                if(is_dualwield)
+                {
+                    float dps_melee = 0;
+                    float dps_ranged = 0;
+                    float dps1 = ((atkmin1 + atkmax1) * atkspd1) / 200.0f;
+                    float dps2 = ((atkmin2 + atkmax2) * atkspd2) / 200.0f;
+                    if (is_melee1)
+                    {
+                        dps_melee += dps1;
+                    }
+                    else
+                    {
+                        dps_ranged += dps1;
+                    }
+                    if(is_melee2)
+                    {
+                        dps_melee += dps2;
+                    }
+                    else
+                    {
+                        dps_ranged += dps2;
+                    }
+                    if ((is_melee1) && (is_melee2)) 
+                    {
+                       dps_melee = (dps_melee / 2.0f) * 1.3f;
+                    }
+                    dps_melee *= it3.DamageFactor / 100.0f;
+                    dps_melee /= it_race.AttackSpeedFactor / 100.0f;
+                    dps_melee *= str_factor;
+                    dps_melee /= 1.3f;
+                    dps_ranged *= it3.DamageFactor / 100.0f;
+                    dps_ranged /= it_race.AttackSpeedFactor / 100.0f;
+                    dps_ranged *= str_factor;
+                    dps_ranged /= 1.4f;
+                    dmg_str = $"{atkmin1}-{atkmax1},{atkspd1},{atkrngmin1}-{atkrngmax1},{atkmin2}-{atkmax2},{atkspd2},{atkrngmin2}-{atkrngmax2},{(dps_melee != 0 ? dps_melee.ToString("0.0") : "-")},{(dps_ranged != 0 ? dps_ranged.ToString("0.0") : "-")}";
+                }
+                else
+                {
+                    float dps_total = ((atkmin1 + atkmax1) * atkspd1) / 200.0f;
+                    dps_total *= it3.DamageFactor / 100.0f;
+                    dps_total /= it_race.AttackSpeedFactor / 100.0f;
+                    dps_total *= str_factor;
+                    dps_total /= (is_melee1 ? 1.3f : 1.4f);
+                    float dps_auxilliary = 0.0f;
+                    if(!is_melee1)
+                    {
+                        dps_auxilliary = ((1 + 4) * 100) / 200.0f;
+                        dps_auxilliary *= it3.DamageFactor / 100.0f;
+                        dps_auxilliary /= it_race.AttackSpeedFactor / 100.0f;
+                        dps_auxilliary *= str_factor;
+                        dps_auxilliary /= 1.3f;
+                    }
+                    dmg_str = $"{atkmin1}-{atkmax1},{atkspd1},{atkrngmin1}-{atkrngmax1},-,-,-,{(is_melee1 ? dps_total.ToString("0.0") : dps_auxilliary.ToString("0.0"))},{(!is_melee1 ? dps_total.ToString("0.0") : "-")}";
+                }
+                string spell1 = "-", spell2 = "-", spell3 = "-";
+                bool found_spell1 = SFCategoryManager.gamedata.c2026.GetItemSubItemIndex(it.UnitID, 1, out int ind1);
+                if (found_spell1)
+                {
+                    spell1 = SFCategoryManager.GetEffectName(SFCategoryManager.gamedata.c2026.Items[ind1].SpellID, true);
+                    bool found_spell2 = SFCategoryManager.gamedata.c2026.GetItemSubItemIndex(it.UnitID, 2, out int ind22);
+                    if (found_spell2)
+                    {
+                        spell2 = SFCategoryManager.GetEffectName(SFCategoryManager.gamedata.c2026.Items[ind22].SpellID, true);
+                        bool found_spell3 = SFCategoryManager.gamedata.c2026.GetItemSubItemIndex(it.UnitID, 3, out int ind3);
+                        if (found_spell3)
+                        {
+                            spell3 = SFCategoryManager.GetEffectName(SFCategoryManager.gamedata.c2026.Items[ind3].SpellID, true);
+                        }
+                    }
+                }
+
+                
+                int hp = (it2.Stamina * it3.HealthFactor) / 100;
+                int mana = (it2.Wisdom * it3.ManaFactor) / 100;
+                int xp = Control18.calculate_total_xp(it.ExperienceGain, it.ExperienceFalloff);
+                int variance = (int)((it.CopperLoot * it.CopperVariance) / 100);
+                int cop_min = (int)(it.CopperLoot - variance);
+                int cop_max = (int)(it.CopperLoot);
+                csv_unit_stats.AppendLine($"{it.UnitID},{SFCategoryManager.GetUnitName(it.UnitID)},{SFCategoryManager.GetRaceName(it2.UnitRace)},{((it2.UnitFlags & 0b1) == 0b1 ? "Female" : "Male")},{it2.UnitLevel},{hp},{mana},{it.Armor},{it2.Strength},{it2.Stamina},{it2.Dexterity},{it2.Agility},{it2.Wisdom},{it2.Intelligence},{it2.Charisma},{it2.ResistanceFire},{it2.ResistanceIce},{it2.ResistanceBlack},{it2.ResistanceMind},{it2.SpeedWalk},{it2.SpeedFight},{it2.SpeedCast},{it2.UnitSize},{((it2.UnitFlags & 0b10) == 0b10 ? "No" : "Yes")},{cop_min}-{cop_max},{it.ExperienceGain},{xp},{it.MeatValue},{dmg_str},{spell1},{spell2},{spell3}");
+            }
+            System.IO.File.WriteAllText("unit_stats.csv", csv_unit_stats.ToString());
+            */
         }
     }
 }

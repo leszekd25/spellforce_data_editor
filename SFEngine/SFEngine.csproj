@@ -33,6 +33,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="ImGui.NET" Version="1.91.0.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="OpenTK" Version="5.0.0-pre.11" />

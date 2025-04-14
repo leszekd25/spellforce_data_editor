@@ -1,8 +1,4 @@
-﻿#if USE_NUMERICS
-using System.Numerics;
-#else
-using OpenTK.Mathematics;
-#endif // USE_NUMERICS
+﻿using OpenTK.Mathematics;
 using System.Threading.Tasks;
 
 namespace SFEngine.SFMap.MapGen

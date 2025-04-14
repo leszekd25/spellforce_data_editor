@@ -5,11 +5,7 @@
  * are provided
  * */
 
-#if USE_NUMERICS
-using System.Numerics;
-#else
 using OpenTK.Mathematics;
-#endif // USE_NUMERICS
 
 namespace SFEngine.SF3D.Physics
 {

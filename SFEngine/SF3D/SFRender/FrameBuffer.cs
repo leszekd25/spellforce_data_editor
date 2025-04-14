@@ -5,11 +5,7 @@
  * FrameBuffer provides simple interface for creating and destroying framebuffers of various types
  * */
 
-#if USE_NUMERICS
-using System.Numerics;
-#else
 using OpenTK.Mathematics;
-#endif // USE_NUMERICS
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
@@ -19,7 +15,7 @@ namespace SFEngine.SF3D.SFRender
     public struct FramebufferAttachmentInfo
     {
         public FramebufferAttachment attachment_type;
-        public InternalFormat internal_format;
+        public SizedInternalFormat internal_format;
         public PixelFormat format;
         public PixelType pixel_type;
         public int sample_count;
@@ -99,10 +95,9 @@ namespace SFEngine.SF3D.SFRender
                 textures = new SFTexture[attachments.Length];
             }
 
-            fbo = GL.GenFramebuffer();
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
+            fbo = GL.CreateFramebuffer();
 
-            List<DrawBufferMode> col_attachments = new List<DrawBufferMode>();
+            List<ColorBuffer> col_attachments = new List<ColorBuffer>();
 
             if (attachments != null)
             {
@@ -122,35 +117,33 @@ namespace SFEngine.SF3D.SFRender
                     }
 
                     textures[i] = SFTexture.FrameBufferAttachment((ushort)width, (ushort)height, (uint)attachments[i].sample_count, 0, (uint)mipcount, 
-                        (InternalFormat)attachments[i].internal_format, attachments[i].format, attachments[i].pixel_type,
+                        attachments[i].internal_format, attachments[i].format, attachments[i].pixel_type,
                         attachments[i].min_filter, attachments[i].mag_filter, attachments[i].wrap_s, attachments[i].wrap_t, attachments[i].wrap_border_col, attachments[i].anisotropy);
                     SFResources.SFResourceManager.Textures.AddManually(textures[i], "_FRAMEBUFFER_" + fbo.ToString() + "_ATTACHMENT_" + i.ToString());
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, attachments[i].attachment_type, textures[i].texture_target, textures[i].tex_id, 0);
+                    GL.NamedFramebufferTexture(fbo, attachments[i].attachment_type, textures[i].tex_id, 0);
 
                     if ((attachments[i].attachment_type >= FramebufferAttachment.ColorAttachment0) && (attachments[i].attachment_type <= FramebufferAttachment.ColorAttachment31))
                     {
-                        col_attachments.Add((DrawBufferMode)attachments[i].attachment_type);
+                        col_attachments.Add((ColorBuffer)attachments[i].attachment_type);
                     }
                 }
             }
 
             if (col_attachments.Count == 0)
             {
-                GL.DrawBuffer(DrawBufferMode.None);
-                GL.ReadBuffer(ReadBufferMode.None);
+                GL.NamedFramebufferReadBuffer(fbo, ColorBuffer.None);
+                GL.NamedFramebufferDrawBuffer(fbo, ColorBuffer.None);
             }
             else
             {
-                GL.DrawBuffers(col_attachments.Count, col_attachments.ToArray());
+                GL.NamedFramebufferDrawBuffers(fbo, col_attachments.Count, col_attachments.ToArray());
             }
 
-            FramebufferStatus e = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
+            FramebufferStatus e = GL.CheckNamedFramebufferStatus(fbo, FramebufferTarget.Framebuffer);
             if (e != FramebufferStatus.FramebufferComplete)
             {
                 LogUtils.Log.Error(LogUtils.LogSource.SF3D, "Framebuffer.Resize(): Error generating framebuffer! Error type " + e.ToString());
             }
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
         public void Dispose()

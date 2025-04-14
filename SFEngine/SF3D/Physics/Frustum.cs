@@ -1,9 +1,5 @@
 ﻿
-#if USE_NUMERICS
-using System.Numerics;
-#else
 using OpenTK.Mathematics;
-#endif // USE_NUMERICS
 using System;
 using System.Collections.Generic;
 

@@ -4,11 +4,7 @@
  * Ray has maximum length provided, if the intersection happens further than the length, it will not be registered
  * */
 
-#if USE_NUMERICS
-using System.Numerics;
-#else
 using OpenTK.Mathematics;
-#endif // USE_NUMERICS
 using System;
 
 namespace SFEngine.SF3D.Physics
@@ -28,11 +24,7 @@ namespace SFEngine.SF3D.Physics
         {
             start = s;
             vector = v;
-#if USE_NUMERICS
-            Length = v.Length();
-#else
             Length = v.Length;
-#endif // USE_NUMERICS
             nvector = v / length;
         }
 
@@ -127,21 +119,12 @@ namespace SFEngine.SF3D.Physics
             Vector2 ray_grad_xz = new(nvector.X, nvector.Z);
 
 
-#if USE_NUMERICS
-            if (ray_grad_xz.Length() == 0)
-            {
-                return false;
-            }
-
-            float projection_coefficient = 1 / ray_grad_xz.Length();
-#else
             if (ray_grad_xz.Length == 0)
             {
                 return false;
             }
 
             float projection_coefficient = 1 / ray_grad_xz.Length;
-#endif // USE_NUMERICS
 
             ray_grad_xz = Vector2.Normalize(ray_grad_xz);
             Vector2 ray_grad_abs_xz = new(Math.Abs(ray_grad_xz.X), Math.Abs(ray_grad_xz.Y));
@@ -274,11 +257,7 @@ namespace SFEngine.SF3D.Physics
 
                 ray_xz += ray_grad_xz * (float)tmin;
 
-#if USE_NUMERICS
-                if ((ray_xz - ray_start_xz).Length() * projection_coefficient > Length)
-#else
                 if ((ray_xz - ray_start_xz).Length * projection_coefficient > Length)
-#endif // USE_NUMERICS
                 {
                     break;
                 }

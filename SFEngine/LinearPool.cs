@@ -13,14 +13,22 @@ namespace SFEngine
 
         public int Add(T elem)
         {
-            int elem_index = Utility.NO_INDEX;
-            if (first_unused == elements.Count)
+            int elem_index;
+            if (first_unused == used_count)
             {
-                elements.Add(elem);
-                elem_active.Add(true);
+                if(first_unused == elements.Count)
+                {
+                    elements.Add(elem);
+                    elem_active.Add(true);
+                }
+                else
+                {
+                    elements[first_unused] = elem;
+                    elem_active[first_unused] = true;
+                }
+                elem_index = first_unused;
+                last_used = first_unused;
                 first_unused += 1;
-                last_used = elements.Count - 1;
-                elem_index = last_used;
             }
             else
             {
@@ -29,7 +37,7 @@ namespace SFEngine
                 elem_index = first_unused;
 
                 bool found = false;
-                for (int i = first_unused + 1; i < elements.Count; i++)
+                for (int i = first_unused + 1; i <= last_used; i++)
                 {
                     if (!elem_active[i])
                     {
@@ -41,7 +49,7 @@ namespace SFEngine
 
                 if (!found)
                 {
-                    first_unused = elements.Count;
+                    first_unused = used_count + 1;
                 }
             }
             used_count += 1;
@@ -50,20 +58,24 @@ namespace SFEngine
 
         public void RemoveAt(int index)
         {
+            // only remove if index is used
             if (elem_active[index])
             {
                 elem_active[index] = false;
                 used_count -= 1;
+
+                // first unused is this index, if this index is smaller than any other unused index
                 if (index < first_unused)
                 {
                     first_unused = index;
                 }
 
+                // if this index is last used, find the largest used index smaller than this
                 if (index == last_used)
                 {
                     for (int i = last_used - 1; i >= 0; i--)
                     {
-                        if (elem_active[index])
+                        if (elem_active[i])
                         {
                             last_used = i;
                             break;
@@ -71,19 +83,11 @@ namespace SFEngine
                     }
                 }
 
+                // if there are no used indices, set last used to -1
                 if (used_count == 0)
                 {
                     last_used = -1;
                 }
-            }
-        }
-
-        public void Remove(T elem)
-        {
-            int index = elements.IndexOf(elem);
-            if (index != Utility.NO_INDEX)
-            {
-                RemoveAt(index);
             }
         }
 

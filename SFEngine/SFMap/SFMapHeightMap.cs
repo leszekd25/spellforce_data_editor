@@ -1,8 +1,4 @@
-﻿#if USE_NUMERICS
-using System.Numerics;
-#else
-using OpenTK.Mathematics;
-#endif // USE_NUMERICS
+﻿using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
 using SFEngine.SF3D;
 using System;
@@ -464,14 +460,11 @@ namespace SFEngine.SFMap
             flag_data = new ushort[w * h]; flag_data.Initialize();
             temporary_mask = new byte[w * h];
 
-            tile_data_texture = SFTexture.DynamicTexture((ushort)w, (ushort)h, 1, TextureTarget.Texture2d, InternalFormat.Rgba8ui, PixelFormat.RgbaInteger, PixelType.UnsignedByte, (int)All.Nearest, (int)All.Nearest, (int)All.ClampToBorder, (int)All.ClampToBorder, Vector4.Zero, 0, false, false);
+            tile_data_texture = SFTexture.DynamicTexture((ushort)w, (ushort)h, 1, TextureTarget.Texture2d, SizedInternalFormat.Rgba8ui, PixelFormat.RgbaInteger, PixelType.UnsignedByte, (int)All.Nearest, (int)All.Nearest, (int)All.ClampToBorder, (int)All.ClampToBorder, Vector4.Zero, 0, false, false);
             SFResources.SFResourceManager.Textures.AddManually(tile_data_texture, "_TILES_TEXTURE_");
-            tile_data_texture.UpdateImage(tile_data, 0, 0, 0);
 
-            height_data_texture = SFTexture.DynamicTexture((ushort)w, (ushort)h, 1, TextureTarget.Texture2d, InternalFormat.R16, PixelFormat.Red, PixelType.UnsignedShort, (int)All.Nearest, (int)All.Nearest, (int)All.ClampToBorder, (int)All.ClampToBorder, Vector4.Zero, 0, false, false);
+            height_data_texture = SFTexture.DynamicTexture((ushort)w, (ushort)h, 1, TextureTarget.Texture2d, SizedInternalFormat.R16, PixelFormat.Red, PixelType.UnsignedShort, (int)All.Nearest, (int)All.Nearest, (int)All.ClampToBorder, (int)All.ClampToBorder, Vector4.Zero, 0, false, false);
             SFResources.SFResourceManager.Textures.AddManually(height_data_texture, "_HEIGHTMAP_TEXTURE_");
-            height_data_texture.UpdateImage(height_data, 0, 0, 0);
-
 
             // overlay data
             if (Settings.EditorMode)
@@ -484,7 +477,7 @@ namespace SFEngine.SFMap
                 GL.BindBufferRange(BufferTarget.UniformBuffer, 1, uniformOverlays_buffer, new IntPtr(0), 16 * 4 * 4);
                 SetOverlayColors();
 
-                overlay_texture = SFTexture.DynamicTexture((ushort)w, (ushort)h, 1, TextureTarget.Texture2d, InternalFormat.R16ui, PixelFormat.RedInteger, PixelType.UnsignedShort, (int)All.Nearest, (int)All.Nearest, (int)All.ClampToEdge, (int)All.ClampToEdge, Vector4.Zero, 0, false, false);
+                overlay_texture = SFTexture.DynamicTexture((ushort)w, (ushort)h, 1, TextureTarget.Texture2d, SizedInternalFormat.R16ui, PixelFormat.RedInteger, PixelType.UnsignedShort, (int)All.Nearest, (int)All.Nearest, (int)All.ClampToEdge, (int)All.ClampToEdge, Vector4.Zero, 0, false, false);
                 SFResources.SFResourceManager.Textures.AddManually(overlay_texture, "_OVERLAY_TEXTURE_"); 
                 overlay_texture.UpdateImage(flag_data, 0, 0, 0);
             }
@@ -492,13 +485,11 @@ namespace SFEngine.SFMap
 
         public void UpdateTileMap()
         {
-            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2d, tile_data_texture.tex_id);
             tile_data_texture.UpdateImage(tile_data, 0, 0, 0);
         }
 
         public void UpdateHeightMap()
         {
-            SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2d, height_data_texture.tex_id);
             height_data_texture.UpdateImage(height_data, 0, 0, 0);
         }
 
@@ -544,10 +535,7 @@ namespace SFEngine.SFMap
                 return;
             }
 
-            SF3D.SFRender.SFRenderEngine.SetTexture(3, TextureTarget.Texture2d, 0);
-            SF3D.SFRender.SFRenderEngine.SetTexture(3, TextureTarget.Texture2d, overlay_texture.tex_id);
             overlay_texture.UpdateImage(flag_data, 0, 0, 0);
-            //GL.TexSubImage2D(TextureTarget.Texture2d, 0, 0, 0, width, height, PixelFormat.RedInteger, PixelType.UnsignedShort, flag_data);
         }
 
         public SFMapHeightMapChunk GetChunk(SFCoord pos)
@@ -655,9 +643,8 @@ namespace SFEngine.SFMap
             }
             else
             {
-                SF3D.SFRender.SFRenderEngine.SetTexture(5, TextureTarget.Texture2d, terrain_texture_lod_bump.tex_id);
-                GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, (int)All.Repeat);
-                GL.TexParameteri(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, (int)All.Repeat);
+                GL.TextureParameteri(terrain_texture_lod_bump.tex_id, TextureParameterName.TextureWrapS, (int)All.Repeat);
+                GL.TextureParameteri(terrain_texture_lod_bump.tex_id, TextureParameterName.TextureWrapT, (int)All.Repeat);
             }
 
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMapHeightMap.Generate(): Chunks generated: " + chunk_nodes.Length.ToString());
@@ -1277,11 +1264,7 @@ namespace SFEngine.SFMap
             {
                 for (int i = 0; i < 16; i++)
                 {
-#if USE_NUMERICS
-                    uniformOverlays[i] = new Vector4(new Vector3(uniformOverlays[i].X, uniformOverlays[i].Y, uniformOverlays[i].Z) * 2.0f, uniformOverlays[i].W);
-#else
                     uniformOverlays[i] = new Vector4(uniformOverlays[i].Xyz * 2.0f, uniformOverlays[i].W);
-#endif // USE_NUMERICS
                 }
             }
             GL.BindBuffer(BufferTarget.UniformBuffer, uniformOverlays_buffer);

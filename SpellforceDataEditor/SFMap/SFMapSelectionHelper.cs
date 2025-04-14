@@ -1,8 +1,4 @@
-﻿#if USE_NUMERICS
-using System.Numerics;
-#else
-using OpenTK.Mathematics;
-#endif // USE_NUMERICS
+﻿using OpenTK.Mathematics;
 using System;
 using SFEngine;
 using SFEngine.SF3D;
@@ -154,15 +150,9 @@ namespace SpellforceDataEditor.SFMap
             cur_obj = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "_CURSOR_", "_CURSOR_");
             fld_obj = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "_FLOOD_MESH_", "_FLOOD_MESH_");
 
-#if USE_NUMERICS
-            sel_obj.Rotation = Quaternion.CreateFromYawPitchRoll((float)Math.PI / 2, 0, 0);
-            cur_obj.Rotation = Quaternion.CreateFromYawPitchRoll((float)Math.PI / 2, 0, 0);
-            fld_obj.Rotation = Quaternion.CreateFromYawPitchRoll((float)Math.PI / 2, 0, 0);
-#else
             sel_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
             cur_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
             fld_obj.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);
-#endif // USE_NUMERICS
         }
 
         public void SetFloodVisible(bool visible)
@@ -430,11 +420,7 @@ namespace SpellforceDataEditor.SFMap
         {
             ClearPreview();
             preview_entity = SFRenderEngine.scene.AddSceneNodeEmpty(SFRenderEngine.scene.root, "_PREVIEW_");
-#if USE_NUMERICS
-            preview_entity.Rotation = Quaternion.CreateFromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
-#else
             preview_entity.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
-#endif // USE_NUMERICS
 
             preview_entity_offset = Vector2.Zero;
         }

@@ -1,8 +1,4 @@
-﻿#if USE_NUMERICS
-using System.Numerics;
-#else
-using OpenTK.Mathematics;
-#endif // USE_NUMERICS
+﻿using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 
@@ -168,7 +164,6 @@ namespace SFEngine.SFMap
                 {
                     Vector2 v1 = s.vertices[i];
                     Vector2 v2 = s.vertices[(i + 1) % s.vertices.Length];
-                    // perpendicular left doesnt exist in system.numerics (:
                     Vector2 n_help = Vector2.Normalize(v2 - v1);
                     Vector2 n = new Vector2(-n_help.Y, n_help.X) * line_width;
 

@@ -1,8 +1,4 @@
-﻿#if USE_NUMERICS
-using System.Numerics;
-#else
-using OpenTK.Mathematics;
-#endif // USE_NUMERICS
+﻿using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
@@ -189,11 +185,7 @@ namespace SFEngine.SF3D
         List<VertexAttribDescription> VertexAttributes = new List<VertexAttribDescription>();
 
         public bool EnableInstancing { get; }
-#if USE_NUMERICS
-        public Matrix4x4[] MatrixBufferData;
-#else
         public Matrix4[] MatrixBufferData;
-#endif // USE_NUMERICS
         public int CurrentMatrix;
 
         // this function moves all ranges and shifts data so that all holes are removed
@@ -238,11 +230,7 @@ namespace SFEngine.SF3D
 
         private void InitMatrix(int count)
         {
-#if USE_NUMERICS
-            MatrixBufferData = new Matrix4x4[count];
-#else
             MatrixBufferData = new Matrix4[count];
-#endif // USE_NUMERICS
         }
 
     // definitions of vertex attribute sizes
@@ -291,7 +279,7 @@ namespace SFEngine.SF3D
         // initializes the cache, using given vertex attributes, and sets up the minimum vertices and elements in the batch
         public void Init(int vertex_count, int element_count)
         {
-            SFRender.SFRenderEngine.SetVertexArrayObject(VertexArrayObjectID);
+            GL.BindVertexArray(VertexArrayObjectID);
 
             // compute total bytes per vertex
             if (!UseCustomBytesPerVertex)
@@ -309,7 +297,6 @@ namespace SFEngine.SF3D
 
             FullVertexUpload();
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObjectID);
             int current_offset = 0;
             for (int i = 0; i < VertexAttributes.Count; i++)
             {
@@ -335,6 +322,9 @@ namespace SFEngine.SF3D
             }
 
             FullElementUpload();
+            GL.VertexArrayElementBuffer(VertexArrayObjectID, ElementBufferObjectID);
+
+            GL.BindVertexArray(0);
         }
 
         // clears cache (deletes all meshes, does not update or free buffers)
@@ -380,20 +370,20 @@ namespace SFEngine.SF3D
                 in ElementBufferObjectData[ElementRanges[element_range_indexx].Start]);
         }
 
-        public void MatrixUpload(int matrix_start, int matrix_count)
+        public void MatrixUpload()
         {
             if (!EnableInstancing)
             {
                 return;
             }
 
-            if(matrix_count == 0)
+            if(CurrentMatrix == 0)
             {
                 return;
             }    
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, MatrixBufferID);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(matrix_start * 64), 64 * matrix_count, MatrixBufferData);
+            GL.BufferData(BufferTarget.ArrayBuffer, 64 * CurrentMatrix, MatrixBufferData, BufferUsage.DynamicDraw);
         }
 
         public void ResizeInstanceMatrixBuffer(int m_count)
@@ -404,11 +394,7 @@ namespace SFEngine.SF3D
             }
 
             int current_mbo_size = MatrixBufferData.Length;
-#if USE_NUMERICS
-            MatrixBufferData = new Matrix4x4[current_mbo_size * 2];
-#else
             MatrixBufferData = new Matrix4[current_mbo_size * 2];
-#endif // USE_NUMERICS
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, MatrixBufferID);
             GL.BufferData(BufferTarget.ArrayBuffer, MatrixBufferData.Length * 64, MatrixBufferData, BufferUsage.DynamicDraw);

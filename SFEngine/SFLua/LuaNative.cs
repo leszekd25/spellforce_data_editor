@@ -1,10 +1,9 @@
-﻿using SFEngine.SFLua.LuaDecompiler;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿/*
+ * LuaNative module provides wrappers for Lua 4.0.1 functions
+ * See Lua 4.0.1 documentation for description of these functions
+ * */
+
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 using lua_State = System.IntPtr;
 using charptr_t = System.IntPtr;

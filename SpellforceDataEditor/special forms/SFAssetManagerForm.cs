@@ -2,11 +2,7 @@
  * This form serves as a 3D model/animation viewer
  */
 
-#if USE_NUMERICS
-using System.Numerics;
-#else
 using OpenTK.Mathematics;
-#endif // USE_NUMERICS
 using OpenTK;
 using SFEngine.SF3D;
 using SFEngine.SF3D.SceneSynchro;
@@ -177,13 +173,8 @@ namespace SpellforceDataEditor.special_forms
                         k2 = k;
                     }
                 }
-#if USE_NUMERICS
-                Quaternion q = Quaternion.CreateFromAxisAngle(Vector3.UnitX, -MathF.PI / 2);
-                Matrix4x4 BoneTransform;
-#else
                 Quaternion q = Quaternion.FromAxisAngle(Vector3.UnitX, -MathF.PI / 2);
                 Matrix4 BoneTransform;
-#endif // USE_NUMERICS
 
                 Vector2 quad_size = new(4, 4);
                 int j = 0;
@@ -200,11 +191,7 @@ namespace SpellforceDataEditor.special_forms
                         BoneAnimationState.FastLerp(in ba[k], in ba[k2], t, out BoneAnimationState bas);
                         bas.ToMatrix(out BoneTransform);
                     }
-#if USE_NUMERICS
-                    Vector3 bone_pos_global = new(BoneTransform.M31, BoneTransform.M32, BoneTransform.M33);
-#else
                     Vector3 bone_pos_global = BoneTransform.Row3.Xyz;
-#endif // USE_NUMERICS
                     bone_pos_global = Vector3.Transform(bone_pos_global, q);
 
                     float dot = Vector3.Dot(bone_pos_global - camera.position, camera.Lookat - camera.position);
@@ -285,7 +272,6 @@ namespace SpellforceDataEditor.special_forms
 
             SFRenderEngine.scene.Init();
             SFRenderEngine.Initialize(new Vector2(glControl1.ClientSize.Width, glControl1.ClientSize.Height));
-            SFRenderEngine.ResetTextures();
 
             glControl1.MouseWheel += new MouseEventHandler(glControl1_MouseWheel);
             glControl1.MakeCurrent();
@@ -325,11 +311,7 @@ namespace SpellforceDataEditor.special_forms
 
             grid_node = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "_GRID_", "_GRID_");
             grid_node.Position = new Vector3(0, -0.01f, 0);
-#if USE_NUMERICS
-            grid_node.Rotation = Quaternion.CreateFromYawPitchRoll((float)Math.PI / 2, 0, 0);   // yaw, pitch, roll
-#else
             grid_node.Rotation = Quaternion.FromEulerAngles(0, (float)Math.PI / 2, 0);   // pitch, yaw, roll
-#endif // USE_NUMERICS
             grid_node.Scale = new Vector3(8, 8, 8);
 
             // set up ui
@@ -438,11 +420,7 @@ namespace SpellforceDataEditor.special_forms
                 //generate scene
                 SceneNodeSimple simple_node = SFRenderEngine.scene.AddSceneNodeSimple(SFRenderEngine.scene.root, "", "simple_mesh");
 
-#if USE_NUMERICS
-                simple_node.Rotation = Quaternion.CreateFromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
-#else
                 simple_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
-#endif // USE_NUMERICS
 
 
                 foreach (string mesh_name in SFResourceManager.mesh_names)
@@ -460,11 +438,7 @@ namespace SpellforceDataEditor.special_forms
                 button2Extract.Show();
                 //generate scene
                 SceneNodeAnimated animated_node = SFRenderEngine.scene.AddSceneNodeAnimated(SFRenderEngine.scene.root, "", "dynamic_mesh", true);
-#if USE_NUMERICS
-                animated_node.Rotation = Quaternion.CreateFromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
-#else
                 animated_node.Rotation = Quaternion.FromAxisAngle(new Vector3(1f, 0f, 0f), (float)-Math.PI / 2);
-#endif // USE_NUMERICS
 
                 foreach (string skel_name in SFResourceManager.skeleton_names)
                 {

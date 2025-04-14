@@ -1,8 +1,4 @@
-﻿#if USE_NUMERICS
-using System.Numerics;
-#else
-using OpenTK.Mathematics;
-#endif // USE_NUMERICS
+﻿using OpenTK.Mathematics;
 using System;
 
 namespace SFEngine.SF3D
@@ -25,17 +21,10 @@ namespace SFEngine.SF3D
         public float ZFar;
         public float ShadowDepth;
 
-#if USE_NUMERICS
-        public Matrix4x4 LightProjection = Matrix4x4.CreateOrthographic(20, 20, 1, 100.0f);
-        public Matrix4x4 LightMatrix { get; private set; }
-        public Matrix4x4[] ShadowCascadeLightProjection;
-        public Matrix4x4[] ShadowCascadeLightMatrix;
-#else
         public Matrix4 LightProjection = Matrix4.CreateOrthographic(20, 20, 1, 100.0f);
         public Matrix4 LightMatrix { get; private set; }
         public Matrix4[] ShadowCascadeLightProjection;
         public Matrix4[] ShadowCascadeLightMatrix;
-#endif // USE_NUMERICS
 
         public Physics.Frustum[] ShadowCascadeFrustum;
 
@@ -69,18 +58,6 @@ namespace SFEngine.SF3D
             Physics.BoundingBox rotated_aabb = aabb.RotatedByAzimuthAltitude(Azimuth, Altitude);
             ZNear = 0.1f;
 
-#if USE_NUMERICS
-
-            ZFar = (rotated_aabb.a - rotated_aabb.b).Length();
-
-            LightProjection = Matrix4x4.CreateOrthographic(rotated_aabb.b.X - rotated_aabb.a.X, rotated_aabb.b.Z - rotated_aabb.a.Z, ZNear, ZFar);
-
-            Vector3 camera_pos = rotated_aabb.center;
-            camera_pos += Direction * (ZFar / 2);
-
-            LightMatrix = Matrix4x4.CreateLookAt(camera_pos, camera_pos - Direction, new Vector3(0, 1, 0)) * LightProjection; //camera_pos-Direction+new Vector3(0, 0, 0.05f)
-#else
-
             ZFar = (rotated_aabb.a - rotated_aabb.b).Length;
 
             LightProjection = Matrix4.CreateOrthographic(rotated_aabb.b.X - rotated_aabb.a.X, rotated_aabb.b.Z - rotated_aabb.a.Z, ZNear, ZFar);
@@ -89,7 +66,6 @@ namespace SFEngine.SF3D
             camera_pos += Direction * (ZFar / 2);
 
             LightMatrix = Matrix4.LookAt(camera_pos, camera_pos - Direction, new Vector3(0, 1, 0)) * LightProjection; //camera_pos-Direction+new Vector3(0, 0, 0.05f)
-#endif // USE_NUMERICS
         }
     }
 

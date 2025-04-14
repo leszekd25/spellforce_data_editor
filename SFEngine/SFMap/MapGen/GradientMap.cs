@@ -1,8 +1,4 @@
-﻿#if USE_NUMERICS
-using System.Numerics;
-#else
-using OpenTK.Mathematics;
-#endif // USE_NUMERICS
+﻿using OpenTK.Mathematics;
 using System;
 using System.Threading.Tasks;
 
@@ -77,17 +73,10 @@ namespace SFEngine.SFMap.MapGen
             int _x = (int)x;
             int _y = (int)y;
             Vector2 d = new Vector2(x - _x, y - _y);
-#if USE_NUMERICS
-            Matrix4x4 bicubic_matrix = new Matrix4x4(Get(_x - 1, _y - 1), Get(_x, _y - 1), Get(_x + 1, _y - 1), Get(_x + 2, _y - 1),
-                                                 Get(_x - 1, _y), Get(_x, _y), Get(_x + 1, _y), Get(_x + 2, _y),
-                                                 Get(_x - 1, _y + 1), Get(_x, _y + 1), Get(_x + 1, _y + 1), Get(_x + 2, _y + 1),
-                                                 Get(_x - 1, _y + 2), Get(_x, _y + 2), Get(_x + 1, _y + 2), Get(_x + 2, _y + 2));
-#else
             Matrix4 bicubic_matrix = new Matrix4(new Vector4(Get(_x - 1, _y - 1), Get(_x, _y - 1), Get(_x + 1, _y - 1), Get(_x + 2, _y - 1)),
                                                  new Vector4(Get(_x - 1, _y), Get(_x, _y), Get(_x + 1, _y), Get(_x + 2, _y)),
                                                  new Vector4(Get(_x - 1, _y + 1), Get(_x, _y + 1), Get(_x + 1, _y + 1), Get(_x + 2, _y + 1)),
                                                  new Vector4(Get(_x - 1, _y + 2), Get(_x, _y + 2), Get(_x + 1, _y + 2), Get(_x + 2, _y + 2)));
-#endif // USE_NUMERICS
 
             return MathUtils.Bicubic(bicubic_matrix, d);
         }

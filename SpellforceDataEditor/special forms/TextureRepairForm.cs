@@ -122,11 +122,10 @@ namespace SpellforceDataEditor.special_forms
                         tex.Init();
 
                         // generate mipmaps
-                        SFEngine.SF3D.SFRender.SFRenderEngine.SetTexture(0, TextureTarget.Texture2d, tex.tex_id);
-                        GL.GenerateMipmap(TextureTarget.Texture2d);
+                        GL.GenerateTextureMipmap(tex.tex_id);
 
                         int mipcount = 1 + (int)Math.Floor(Math.Log(Math.Max(header[3], header[4]), 2));
-                        int block_size = (tex.internal_format == InternalFormat.CompressedRgbaS3tcDxt1Ext ? 8 : 16); // only dxt1, dxt3 or dxt5; 
+                        int block_size = (tex.internal_format == SizedInternalFormat.CompressedRgbaS3tcDxt1Ext ? 8 : 16); // only dxt1, dxt3 or dxt5; 
                         int size = 0;
                         int w = (int)header[3];
                         int h = (int)header[4];
@@ -145,7 +144,8 @@ namespace SpellforceDataEditor.special_forms
                         int offset = 0;
                         for (int i = 0; i < mipcount; i++)
                         {
-                            GL.GetCompressedTexImage(TextureTarget.Texture2d, i, out mipmap_data[offset]);
+                            size = ((w + 3) / 4) * ((h + 3) / 4) * block_size;
+                            GL.GetCompressedTextureImage(tex.tex_id, i, size, ref mipmap_data[offset]);
                             offset += ((w + 3) / 4) * ((h + 3) / 4) * block_size;
                             w /= 2;
                             h /= 2;

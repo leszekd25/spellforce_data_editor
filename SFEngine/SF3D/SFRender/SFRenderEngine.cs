@@ -3,11 +3,7 @@
  * It takes data from SFScene and renders it using predefined shaders
  */
 
-#if USE_NUMERICS
-using System.Numerics;
-#else
 using OpenTK.Mathematics;
-#endif // USE_NUMERICS
 using OpenTK.Graphics.OpenGL;
 using SFEngine.SF3D.SceneSynchro;
 using SFEngine.SF3D.UI;
@@ -16,12 +12,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using OpenTK.Windowing.Common.Input;
 
 namespace SFEngine.SF3D.SFRender
 {
+
     public static class SFRenderEngine
     {
-        public enum RenderPass { NONE = -1, SHADOWMAP = 0, SCENE = 1, SCREENSPACE = 2, UI = 3 }
+        public enum RenderPass { NONE = -1, SHADOWMAP = 0, SCENE = 1, SCREENSPACE = 2, UI = 3, DEBUG = 4 }
         public static SFScene scene { get; } = new SFScene();
         public static UIManager ui { get; } = new UIManager();
 
@@ -38,9 +36,14 @@ namespace SFEngine.SF3D.SFRender
         static Vector4 CurrentEmissionColor = new(-1.0f);
         static bool CurrentApplyShading = true;
         static int[] CurrentTexture = new int[16];
-        static int CurrentActiveTexture = Utility.NO_INDEX;
         static int CurrentVertexArrayObject = Utility.NO_INDEX;
         static int CurrentFramebuffer = 0;
+
+        // animation ssbo
+        static MeshCacheRangeCollection bone_ranges = new();
+        static LinearPool<int> bone_pool = new();
+        static Matrix4[] bone_matrices = null;
+        static int bone_matrix_ssbo = -1;
 
         public static SFTexture opaque_tex { get; private set; } = null;
 
@@ -82,16 +85,10 @@ namespace SFEngine.SF3D.SFRender
 
         public static Vector2 render_size = Vector2.Zero;
 
-        public static bool is_debug = false;
-
         public static bool is_rendering = false;
         public static bool initialized = false;
 
 #if DEBUG
-        public static int[] queries;
-        public static int current_query = 0;
-        public static Dictionary<int, int> query_results = [];
-
         private static void DebugCallback(DebugSource source,
                                     DebugType type,
                                     uint id,
@@ -159,7 +156,14 @@ namespace SFEngine.SF3D.SFRender
             // opaque texture is a 1x1 white pixel that's used for blending operations on models that would otherwise have no texture assigned
             if (opaque_tex != null)
             {
-                ResetTexture(opaque_tex.tex_id);
+                for (int i = 0; i < 16; i++)
+                {
+                    if (CurrentTexture[i] == opaque_tex.tex_id)
+                    {
+                        CurrentTexture[i] = 0;
+                        break;
+                    }
+                }
                 opaque_tex.Dispose();
             }
 
@@ -191,16 +195,21 @@ namespace SFEngine.SF3D.SFRender
 
             InitFramebuffers();
 
-
-#if DEBUG
-            if (queries != null)
+            // animation ssbo
+            if(bone_matrix_ssbo != -1)
             {
-                GL.DeleteQueries(4000, queries);
-                queries = null;
+                GL.DeleteBuffer(bone_matrix_ssbo);
             }
-            queries = new int[4000];
-            GL.GenQueries(4000, queries);
-#endif //DEBUG
+            else
+            {
+                bone_matrices = new Matrix4[1 << 15];
+            }
+            bone_ranges.Clear();
+            bone_pool.Clear();
+            bone_matrix_ssbo = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, bone_matrix_ssbo);
+            //GL.BufferData(BufferTarget.ShaderStorageBuffer, Marshal.SizeOf<Matrix4>() * bone_matrices.Length, new IntPtr(0), BufferUsage.DynamicDraw);
+            GL.BindBufferBase(BufferTarget.ShaderStorageBuffer, 3, bone_matrix_ssbo);
 
             initialized = true;
 
@@ -341,7 +350,7 @@ namespace SFEngine.SF3D.SFRender
             shader_animated.AddParameter("V");
             shader_animated.AddParameter("M");
             shader_animated.AddParameter("DiffuseTex");
-            shader_animated.AddParameter("boneTransforms");
+            shader_animated.AddParameter("boneStart");
             shader_animated.AddParameter("SunColor");
             shader_animated.AddParameter("AlphaCutout");
             shader_animated.AddParameter("DepthBias");
@@ -481,13 +490,8 @@ namespace SFEngine.SF3D.SFRender
                 return;
             }
             render_size = view_size;
-#if USE_NUMERICS
-            scene.camera.ProjMatrix = Matrix4x4.CreatePerspectiveFieldOfView(
-                (float)Math.PI / 4, view_size.X / view_size.Y, min_render_distance, max_render_distance);
-#else
             scene.camera.ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(
                 (float)Math.PI / 4, view_size.X / view_size.Y, min_render_distance, max_render_distance);
-#endif // USE_NUMERICS
             scene.camera.AspectRatio = (float)(view_size.X) / view_size.Y;
             GL.Viewport(0, 0, (int)view_size.X, (int)view_size.Y);
             if (screenspace_intermediate != null)
@@ -848,7 +852,8 @@ namespace SFEngine.SF3D.SFRender
                     GL.BlendFunc(BlendingFactor.One, BlendingFactor.One);
                     break;
                 case RenderMode.ONE_ZERO:
-                    GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+                    GL.BlendFunc(BlendingFactor.One, BlendingFactor.Zero);
+                    //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
                     break;
                 case RenderMode.SRCALPHA_INVSRCALPHA:
                     GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -884,53 +889,26 @@ namespace SFEngine.SF3D.SFRender
             CurrentVertexArrayObject = vao;
         }
 
-        public static void SetTexture(int slot, TextureTarget target, int texture)
+        static void SetTexture(uint slot, int texture)
         {
             if (texture <= 0)
             {
                 texture = opaque_tex.tex_id;
             }
 
-            if (CurrentActiveTexture != slot)
+            if (CurrentTexture[slot] != texture)
             {
-                CurrentActiveTexture = slot;
-                if (CurrentTexture[slot] != texture)
-                {
-                    GL.ActiveTexture((TextureUnit)((int)TextureUnit.Texture0 + slot));
-                    GL.BindTexture(target, texture);
-                    CurrentTexture[slot] = texture;
-                }
-            }
-            else
-            {
-                if (CurrentTexture[slot] != texture)
-                {
-                    GL.BindTexture(target, texture);
-                    CurrentTexture[slot] = texture;
-                }
+                GL.BindTextureUnit(slot, texture);
+                CurrentTexture[slot] = texture;
             }
         }
 
-        public static void ResetTextures()
+        static public void ResetTextures()
         {
-            for (int i = 0; i < 16; i++)
+            for(uint i = 0; i < 16; i++)
             {
-                GL.ActiveTexture((TextureUnit)((int)TextureUnit.Texture0 + i));
-                GL.BindTexture(TextureTarget.Texture2d, 0);
+                GL.BindTextureUnit(i, 0);
                 CurrentTexture[i] = 0;
-            }
-            CurrentActiveTexture = 15;
-        }
-
-        public static void ResetTexture(int id)
-        {
-            for (int i = 0; i < 16; i++)
-            {
-                if (CurrentTexture[i] == id)
-                {
-                    CurrentTexture[i] = 0;
-                    break;
-                }
             }
         }
 
@@ -974,7 +952,7 @@ namespace SFEngine.SF3D.SFRender
                 shader_shadowmap_animated.AddParameter("P");
                 shader_shadowmap_animated.AddParameter("V");
                 shader_shadowmap_animated.AddParameter("M");
-                shader_shadowmap_animated.AddParameter("boneTransforms");
+                shader_shadowmap_animated.AddParameter("boneStart");
                 shader_shadowmap_animated.AddParameter("DiffuseTexture");
 
                 if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
@@ -1086,7 +1064,7 @@ namespace SFEngine.SF3D.SFRender
             shader_selection_animated.AddParameter("M");
             shader_selection_animated.AddParameter("V");
             shader_selection_animated.AddParameter("P");
-            shader_selection_animated.AddParameter("boneTransforms");
+            shader_selection_animated.AddParameter("boneStart");
             shader_selection_animated.AddParameter("DiffuseTex");
             shader_selection_animated.AddParameter("Time");
             shader_selection_animated.AddParameter("Color");
@@ -1153,7 +1131,7 @@ namespace SFEngine.SF3D.SFRender
                         [
                             new()
                             {
-                                format = PixelFormat.DepthComponent, internal_format = InternalFormat.DepthComponent16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.DepthAttachment,
+                                format = PixelFormat.DepthComponent, internal_format = SizedInternalFormat.DepthComponent16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.DepthAttachment,
                                 sample_count = 4, min_filter = (int)All.Linear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToEdge, wrap_t = (int)All.ClampToEdge, anisotropy = 0
                             }
                         ]);
@@ -1163,7 +1141,7 @@ namespace SFEngine.SF3D.SFRender
                         [
                             new()
                             {
-                                format = PixelFormat.Rg, internal_format = InternalFormat.Rg16f, pixel_type = PixelType.Float, attachment_type = FramebufferAttachment.ColorAttachment0,
+                                format = PixelFormat.Rg, internal_format = SizedInternalFormat.Rg16f, pixel_type = PixelType.Float, attachment_type = FramebufferAttachment.ColorAttachment0,
                                 sample_count = 0, min_filter = (int)All.LinearMipmapLinear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToBorder, wrap_t = (int)All.ClampToBorder,
                                 wrap_border_col = new Vector4(1.0f), anisotropy = Settings.MaxAnisotropy
                             }
@@ -1174,7 +1152,7 @@ namespace SFEngine.SF3D.SFRender
                         [
                             new()
                             {
-                                format = PixelFormat.Rg, internal_format = InternalFormat.Rg16f, pixel_type = PixelType.Float, attachment_type = FramebufferAttachment.ColorAttachment0,
+                                format = PixelFormat.Rg, internal_format = SizedInternalFormat.Rg16f, pixel_type = PixelType.Float, attachment_type = FramebufferAttachment.ColorAttachment0,
                                 sample_count = 0, min_filter = (int)All.LinearMipmapLinear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToBorder, wrap_t = (int)All.ClampToBorder,
                                 wrap_border_col = new Vector4(1.0f), anisotropy = Settings.MaxAnisotropy
                             }
@@ -1195,7 +1173,7 @@ namespace SFEngine.SF3D.SFRender
                         [
                             new()
                             {
-                                format = PixelFormat.DepthComponent, internal_format = InternalFormat.DepthComponent16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.DepthAttachment,
+                                format = PixelFormat.DepthComponent, internal_format = SizedInternalFormat.DepthComponent16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.DepthAttachment,
                                 sample_count = 4, min_filter = (int)All.Linear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToEdge, wrap_t = (int)All.ClampToEdge, anisotropy = 0
                             }
                         ]);
@@ -1205,7 +1183,7 @@ namespace SFEngine.SF3D.SFRender
                         [
                             new()
                             {
-                                format = PixelFormat.Rgba, internal_format = InternalFormat.Rgba16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.ColorAttachment0,
+                                format = PixelFormat.Rgba, internal_format = SizedInternalFormat.Rgba16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.ColorAttachment0,
                                 sample_count = 0, min_filter = (int)All.LinearMipmapLinear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToBorder, wrap_t = (int)All.ClampToBorder,
                                 wrap_border_col = new Vector4(1.0f), anisotropy = Settings.MaxAnisotropy
                             }
@@ -1216,7 +1194,7 @@ namespace SFEngine.SF3D.SFRender
                         [
                             new()
                             {
-                                format = PixelFormat.Rgba, internal_format = InternalFormat.Rgba16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.ColorAttachment0,
+                                format = PixelFormat.Rgba, internal_format = SizedInternalFormat.Rgba16, pixel_type = PixelType.UnsignedInt, attachment_type = FramebufferAttachment.ColorAttachment0,
                                 sample_count = 0, min_filter = (int)All.LinearMipmapLinear, mag_filter = (int)All.Linear, wrap_s = (int)All.ClampToBorder, wrap_t = (int)All.ClampToBorder,
                                 wrap_border_col = new Vector4(1.0f), anisotropy = Settings.MaxAnisotropy
                             }
@@ -1233,14 +1211,14 @@ namespace SFEngine.SF3D.SFRender
                     [
                         new()
                         {
-                            format = PixelFormat.Rgb, internal_format = (Settings.ToneMapping ? InternalFormat.Rgb16f : InternalFormat.Rgb),
+                            format = PixelFormat.Rgb, internal_format = (Settings.ToneMapping ? SizedInternalFormat.Rgb16f : SizedInternalFormat.Rgb8),
                             pixel_type = (Settings.ToneMapping ? PixelType.Float : PixelType.UnsignedByte), attachment_type = FramebufferAttachment.ColorAttachment0,
                             sample_count = Settings.AntiAliasingSamples, min_filter = (int)All.Nearest, mag_filter = (int)All.Nearest, wrap_s = (int)All.ClampToEdge,
                             wrap_t = (int)All.ClampToEdge, anisotropy = 0
                         },
                         new()
                         {
-                            format = PixelFormat.DepthComponent, internal_format = InternalFormat.DepthComponent32, pixel_type = PixelType.Float,
+                            format = PixelFormat.DepthComponent, internal_format = SizedInternalFormat.DepthComponent32, pixel_type = PixelType.Float,
                             attachment_type = FramebufferAttachment.DepthAttachment, min_filter = (int)All.Nearest, mag_filter = (int)All.Nearest,
                             wrap_s = (int)All.ClampToEdge, wrap_t = (int)All.ClampToEdge, sample_count = Settings.AntiAliasingSamples, anisotropy = 0
                         }
@@ -1254,46 +1232,116 @@ namespace SFEngine.SF3D.SFRender
                 [
                     new()
                     {
-                        format = PixelFormat.Rgb, internal_format = (Settings.ToneMapping ? InternalFormat.Rgb16f : InternalFormat.Rgb),
+                        format = PixelFormat.Rgb, internal_format = (Settings.ToneMapping ? SizedInternalFormat.Rgb16f : SizedInternalFormat.Rgb8),
                         pixel_type = (Settings.ToneMapping ? PixelType.Float : PixelType.UnsignedByte), attachment_type = FramebufferAttachment.ColorAttachment0,
                         sample_count = 0, min_filter = (int)All.Nearest, mag_filter = (int)All.Nearest, wrap_s = (int)All.ClampToEdge,
                         wrap_t = (int)All.ClampToEdge, anisotropy = 0
                     },
                     new()
                     {
-                        format = PixelFormat.DepthComponent, internal_format = InternalFormat.DepthComponent32, pixel_type = PixelType.Float,
+                        format = PixelFormat.DepthComponent, internal_format = SizedInternalFormat.DepthComponent32, pixel_type = PixelType.Float,
                         attachment_type = FramebufferAttachment.DepthAttachment, min_filter = (int)All.Nearest, mag_filter = (int)All.Nearest,
                         wrap_s = (int)All.ClampToEdge, wrap_t = (int)All.ClampToEdge, sample_count = 0, anisotropy = 0
                     }
                 ]);
         }
 
+        static public int BonesAdd(int num)
+        {
+            // double size if we're overfilling the array
+            if (bone_ranges.LastUsed + num + 1 > bone_matrices.Length)
+            {
+                int new_size = bone_matrices.Length * 2;
+                while (bone_ranges.LastUsed + 1 > new_size)
+                {
+                    new_size = bone_matrices.Length * 2;
+                }
+                Matrix4[] new_mat = new Matrix4[new_size];
+                Array.Copy(bone_matrices, new_mat, bone_matrices.Length);
+                bone_matrices = new_mat;
+
+                GL.BufferData(BufferTarget.ShaderStorageBuffer, Marshal.SizeOf<Matrix4>() * bone_matrices.Length, new IntPtr(0), BufferUsage.DynamicDraw);
+            }
+
+            int bone_range_index = bone_ranges.Add(num, out int first);
+
+            for (int i = 0; i <= bone_pool.last_used; i++)
+            {
+                if (!bone_pool.elem_active[i])
+                {
+                    continue;
+                }
+
+                if (bone_pool.elements[i] >= bone_range_index)
+                {
+                    bone_pool.elements[i]++;
+                }
+            }
+
+            int bone_index = bone_pool.Add(bone_range_index);
+            return bone_index;
+        }
+
+        static public void BonesRemove(int index)
+        {
+            if (index == Utility.NO_INDEX)
+            {
+                return;
+            }
 #if DEBUG
-        static void StartQuery()
-        {
-            if (is_debug)
+            if (!bone_pool.elem_active[index])
             {
-                GL.BeginQuery(QueryTarget.TimeElapsed, queries[current_query]);
+                throw new Exception();
+                return;
             }
-        }
-
-        static void EndQuery()
-        {
-            if (is_debug)
-            {
-                GL.EndQuery(QueryTarget.TimeElapsed);
-                current_query++;
-            }
-        }
-#else
-        static void StartQuery()
-        {
-        }
-
-        static void EndQuery()
-        {
-        }
 #endif //DEBUG
+            int bone_index = bone_pool.elements[index];
+
+            bone_ranges.RemoveAt(bone_index);
+            for (int i = 0; i <= bone_pool.last_used; i++)
+            {
+                if (!bone_pool.elem_active[i])
+                {
+                    continue;
+                }
+
+                if (bone_pool.elements[i] > bone_index)
+                {
+                    bone_pool.elements[i]--;
+                }
+            }
+            bone_pool.RemoveAt(index);
+        }
+
+
+        static public Span<Matrix4> BonesGetArray(int index)
+        {
+            return bone_matrices.AsSpan(bone_ranges[bone_pool.elements[index]].Start, bone_ranges[bone_pool.elements[index]].Count);
+        }
+
+        static public void BonesReset(int index)
+        {
+            Span<Matrix4> bones = BonesGetArray(index);
+            for(int i = 0; i < bones.Length; i++)
+            {
+                bones[i] = Matrix4.Identity;
+            }
+        }
+
+        static public void BonesSubmit()
+        {
+            if (bone_ranges.LastUsed >= 0)
+            {
+                GL.BindBuffer(BufferTarget.ShaderStorageBuffer, bone_matrix_ssbo);
+                GL.BufferData(BufferTarget.ShaderStorageBuffer, Marshal.SizeOf<Matrix4>() * (bone_ranges.LastUsed + 1), bone_matrices, BufferUsage.DynamicDraw);
+            }
+        }
+
+        static public void BonesClear()
+        {
+            bone_ranges.Clear();
+            bone_pool.Clear();
+        }
 
         static void RenderHeightmapDepthPrePass()
         {
@@ -1310,16 +1358,11 @@ namespace SFEngine.SF3D.SFRender
                 GL.Uniform3f(active_shader["cameraPos"], 1, scene.camera.position);
             }
 
-            SetTexture(4, TextureTarget.Texture2d, heightmap.height_data_texture.tex_id);
+            SetTexture(4, heightmap.height_data_texture.tex_id);
 
-#if USE_NUMERICS
-            Matrix4x4 vp_mat = scene.camera.ViewProjMatrix;
-#else
             Matrix4 vp_mat = scene.camera.ViewProjMatrix;
-#endif // USE_NUMERICS
             GL.UniformMatrix4f(active_shader["VP"], 1, false, in vp_mat);
 
-            StartQuery();
             if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
             {
                 GL.DrawElements(PrimitiveType.TriangleStrip, 2 * (heightmap.width + 1) * heightmap.height, DrawElementsType.UnsignedInt, 0);
@@ -1328,18 +1371,13 @@ namespace SFEngine.SF3D.SFRender
             {
                 GL.DrawArrays(PrimitiveType.Patches, 0, 4 * heightmap.mesh_tesselated.patch_count);
             }
-            EndQuery();
         }
 
         static void RenderHeightmap()
         {
             SFMapHeightMap heightmap = scene.map.heightmap;
 
-#if USE_NUMERICS
-            Matrix4x4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
-#else
             Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
-#endif // USE_NUMERICS
 
             GL.Uniform1i(active_shader["GridSize"], heightmap.width);
             if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
@@ -1352,23 +1390,19 @@ namespace SFEngine.SF3D.SFRender
                 GL.Uniform3f(active_shader["cameraPos"], 1, scene.camera.position);
             }
 
-            SetTexture(4, TextureTarget.Texture2d, heightmap.height_data_texture.tex_id);
+            SetTexture(4, heightmap.height_data_texture.tex_id);
 
             if (current_pass == RenderPass.SCENE)
             {
                 if (Settings.EditorMode)
                 {
-                    SetTexture(3, TextureTarget.Texture2d, (heightmap.overlay_texture == null ? opaque_tex.tex_id : heightmap.overlay_texture.tex_id));
+                    SetTexture(3, (heightmap.overlay_texture == null ? opaque_tex.tex_id : heightmap.overlay_texture.tex_id));
                 }
 
-                SetTexture(5, TextureTarget.Texture2d, heightmap.terrain_texture_lod_bump.tex_id);
-                SetTexture(2, TextureTarget.Texture2d, heightmap.tile_data_texture.tex_id);
-                SetTexture(0, TextureTarget.Texture2dArray, heightmap.texture_manager.terrain_texture);
-#if USE_NUMERICS
-                Matrix4x4 vp_mat = scene.camera.ViewProjMatrix;
-#else
+                SetTexture(5, heightmap.terrain_texture_lod_bump.tex_id);
+                SetTexture(2, heightmap.tile_data_texture.tex_id);
+                SetTexture(0, heightmap.texture_manager.terrain_texture);
                 Matrix4 vp_mat = scene.camera.ViewProjMatrix;
-#endif // USE_NUMERICS
                 if (Settings.EnableShadows)
                 {
                     GL.UniformMatrix4f(active_shader["LSM"], 1, false, in lsm_mat);
@@ -1388,10 +1422,9 @@ namespace SFEngine.SF3D.SFRender
             else if (current_pass == RenderPass.SHADOWMAP)
             {
                 GL.UniformMatrix4f(active_shader["VP"], 1, false, in lsm_mat);
-                SetTexture(0, TextureTarget.Texture2d, 0);
+                SetTexture(0, 0);
             }
 
-            StartQuery();
             if (Settings.TerrainLOD == SFMapHeightMapLOD.NONE)
             {
                 GL.DrawElements(PrimitiveType.TriangleStrip, 2 * (heightmap.width + 1) * heightmap.height, DrawElementsType.UnsignedInt, 0);
@@ -1400,7 +1433,6 @@ namespace SFEngine.SF3D.SFRender
             {
                 GL.DrawArrays(PrimitiveType.Patches, 0, 4 * heightmap.mesh_tesselated.patch_count);
             }
-            EndQuery();
         }
 
         static void ApplyMaterial(SFMaterial mat)
@@ -1415,14 +1447,8 @@ namespace SFEngine.SF3D.SFRender
                 }
             }
 
-            SetRenderMode(mat.texRenderMode);
             SetDepthBias(mat.matDepthBias);
-            SetTexture(0, TextureTarget.Texture2d, mat.texture.tex_id);
-            SetCullEnabled((mat.matFlags & 4) != 0);
-            if(CurrentCullEnabled)
-            {
-                SetCullMode(TriangleFace.Front);
-            }
+            SetTexture(0, mat.texture.tex_id);
         }
 
         static void RenderStaticObject(SFSubModel3D sbm, int instance_start, int instance_count)
@@ -1432,7 +1458,6 @@ namespace SFEngine.SF3D.SFRender
             int vri = SFSubModel3D.Cache.Meshes.elements[mii].VertexRangeIndex;
             int eri = SFSubModel3D.Cache.Meshes.elements[mii].ElementRangeIndex;
 
-            StartQuery();
             GL.DrawElementsInstancedBaseVertexBaseInstance(PrimitiveType.Triangles,
                 SFSubModel3D.Cache.ElementRanges[eri].Count,
                 DrawElementsType.UnsignedInt,
@@ -1440,7 +1465,6 @@ namespace SFEngine.SF3D.SFRender
                 instance_count,
                 SFSubModel3D.Cache.VertexRanges[vri].Start,
                 (uint)instance_start);
-            EndQuery();
         }
 
         static void RenderAnimatedObject(SFModelSkinChunk msc)
@@ -1448,13 +1472,11 @@ namespace SFEngine.SF3D.SFRender
             int vri = SFModelSkinChunk.Cache.Meshes.elements[msc.cache_index].VertexRangeIndex;
             int eri = SFModelSkinChunk.Cache.Meshes.elements[msc.cache_index].ElementRangeIndex;
 
-            StartQuery();
             GL.DrawElementsBaseVertex(PrimitiveType.Triangles,
                 SFModelSkinChunk.Cache.ElementRanges[eri].Count,
                 DrawElementsType.UnsignedInt,
                 new IntPtr(SFModelSkinChunk.Cache.ElementRanges[eri].Start * 4),
                 SFModelSkinChunk.Cache.VertexRanges[vri].Start);
-            EndQuery();
         }
 
         // framebuffer = null -> do not change framebuffer
@@ -1468,20 +1490,14 @@ namespace SFEngine.SF3D.SFRender
             }
             if (source != null)
             {
-                SetTexture(0, source.texture_target, source.tex_id);
+                SetTexture(0, source.tex_id);
             }
-            StartQuery();
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-            EndQuery();
         }
 
         static void RenderStaticObjectsShadowmap(IEnumerable<SFSubModel3D> models)
         {
-#if USE_NUMERICS
-            Matrix4x4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
-#else
             Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
-#endif // USE_NUMERICS
             GL.UniformMatrix4f(active_shader["VP"], 1, false, in lsm_mat);
 
             SetVertexArrayObject(SFSubModel3D.Cache.VertexArrayObjectID);
@@ -1493,7 +1509,7 @@ namespace SFEngine.SF3D.SFRender
                     continue;
                 }
 
-                SetTexture(0, TextureTarget.Texture2d, (mat.matFlags & 4) == 0 ? mat.texture.tex_id : opaque_tex.tex_id);
+                SetTexture(0, (mat.matFlags & 4) == 0 ? mat.texture.tex_id : opaque_tex.tex_id);
 
                 RenderStaticObject(submodel, submodel.owner.MatrixOffset, submodel.owner.MatrixCount);
             }
@@ -1503,21 +1519,12 @@ namespace SFEngine.SF3D.SFRender
         {
             SetVertexArrayObject(SFSubModel3D.Cache.VertexArrayObjectID);
             SetDepthBias(0);
-            SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
 
-#if USE_NUMERICS
-            Matrix4x4 vp_mat = scene.camera.ViewProjMatrix;
-#else
             Matrix4 vp_mat = scene.camera.ViewProjMatrix;
-#endif // USE_NUMERICS
             GL.UniformMatrix4f(active_shader["VP"], 1, false, in vp_mat);
             if (Settings.EnableShadows)
             {
-#if USE_NUMERICS
-                Matrix4x4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
-#else
                 Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
-#endif // USE_NUMERICS
                 GL.UniformMatrix4f(active_shader["LSM"], 1, false, in lsm_mat);
             }
 
@@ -1525,7 +1532,7 @@ namespace SFEngine.SF3D.SFRender
             {
                 GL.Uniform1i(active_shader["GridSize"], scene.map.heightmap.width);
                 GL.Uniform3f(active_shader["ViewPos"], 1, scene.camera.position);
-                SetTexture(3, TextureTarget.Texture2d, scene.map.heightmap.tile_data_texture.tex_id);
+                SetTexture(3, scene.map.heightmap.tile_data_texture.tex_id);
             }
             GL.Uniform1f(active_shader["AlphaCutout"], alpha_cutout);
 
@@ -1542,22 +1549,13 @@ namespace SFEngine.SF3D.SFRender
         // this is very slow, dunno
         static void RenderAnimatedObjects()
         {
-#if USE_NUMERICS
-            Matrix4x4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
-#else
             Matrix4 lsm_mat = scene.atmosphere.sun_light.LightMatrix;
-#endif // USE_NUMERICS
 
             SetVertexArrayObject(SFModelSkinChunk.Cache.VertexArrayObjectID);
             if (current_pass == RenderPass.SCENE)
             {
-#if USE_NUMERICS
-                Matrix4x4 p_mat = scene.camera.ProjMatrix;
-                Matrix4x4 v_mat = scene.camera.ViewMatrix;
-#else
                 Matrix4 p_mat = scene.camera.ProjMatrix;
                 Matrix4 v_mat = scene.camera.ViewMatrix;
-#endif // USE_NUMERICS
                 GL.UniformMatrix4f(active_shader["P"], 1, false, in p_mat);
                 GL.UniformMatrix4f(active_shader["V"], 1, false, in v_mat);
                 if (Settings.EnableShadows)
@@ -1568,18 +1566,14 @@ namespace SFEngine.SF3D.SFRender
                 if (Settings.ShadingQuality >= 2)
                 {
                     GL.Uniform1i(active_shader["GridSize"], scene.map.heightmap.width);
-                    SetTexture(2, TextureTarget.Texture2d, scene.map.heightmap.tile_data_texture.tex_id);
+                    SetTexture(2, scene.map.heightmap.tile_data_texture.tex_id);
                     GL.Uniform3f(active_shader["ViewPos"], 1, scene.camera.position);
                 }
                 GL.Uniform1f(active_shader["AlphaCutout"], 0.01f);
             }
             else if (current_pass == RenderPass.SHADOWMAP)
             {
-#if USE_NUMERICS
-                Matrix4x4 p_mat = Matrix4x4.Identity;
-#else
                 Matrix4 p_mat = Matrix4.Identity;
-#endif // USE_NUMERICS
                 GL.UniformMatrix4f(active_shader["P"], 1, false, in p_mat);
                 GL.UniformMatrix4f(active_shader["V"], 1, false, in lsm_mat);
             }
@@ -1587,7 +1581,8 @@ namespace SFEngine.SF3D.SFRender
             foreach (SceneNodeAnimated an in scene.an_primary_nodes)
             {
                 GL.UniformMatrix4f(active_shader["M"], 1, false, in an.result_transform);
-                GL.UniformMatrix4f(active_shader["boneTransforms"], an.BoneTransforms.Length, false, an.BoneTransforms);
+                GL.Uniform1i(active_shader["boneStart"], bone_ranges[bone_pool.elements[an.BoneIndex]].Start);
+                //GL.UniformMatrix4f(active_shader["boneTransforms"], an.BoneTransforms.Length, false, an.BoneTransforms);
 
                 // if an is in an_nodes, it must have skin
                 for (int n = 0; n < an.DrivenNodes.Count; n++)
@@ -1605,16 +1600,17 @@ namespace SFEngine.SF3D.SFRender
                         {
                             if ((msc.material.matFlags & 4) == 0)
                             {
-                                SetTexture(0, TextureTarget.Texture2d, msc.material.texture.tex_id);
+                                SetTexture(0, msc.material.texture.tex_id);
                             }
                             else
                             {
-                                SetTexture(0, TextureTarget.Texture2d, opaque_tex.tex_id);
+                                SetTexture(0, opaque_tex.tex_id);
                             }
                         }
                         else
                         {
                             ApplyMaterial(msc.material);
+                            SetRenderMode(msc.material.texRenderMode);
                         }
 
                         RenderAnimatedObject(msc);
@@ -1629,7 +1625,7 @@ namespace SFEngine.SF3D.SFRender
 
             foreach (SFTexture tex in ui.storages.Keys)
             {
-                SetTexture(0, TextureTarget.Texture2d, tex.tex_id);
+                SetTexture(0, tex.tex_id);
 
                 UIQuadStorage storage = ui.storages[tex];
                 SetVertexArrayObject(storage.vertex_array);
@@ -1647,9 +1643,7 @@ namespace SFEngine.SF3D.SFRender
                     }
 
                     GL.Uniform2f(active_shader["offset"], 1, storage.spans[i].position);
-                    StartQuery();
                     GL.DrawArrays(PrimitiveType.Triangles, storage.spans[i].start * 6, storage.spans[i].used * 6);
-                    EndQuery();
                 }
             }
         }
@@ -1665,11 +1659,7 @@ namespace SFEngine.SF3D.SFRender
                     SetVertexArrayObject(SFSubModel3D.Cache.VertexArrayObjectID);
                     UseShader(shader_selection);
 
-#if USE_NUMERICS
-                    Matrix4x4 vp_mat = scene.camera.ViewProjMatrix;
-#else
                     Matrix4 vp_mat = scene.camera.ViewProjMatrix;
-#endif // USE_NUMERICS
                     GL.UniformMatrix4f(active_shader["VP"], 1, false, in vp_mat);
 
                     GL.Uniform1f(active_shader["Time"], scene.current_time * 2.0f);
@@ -1677,7 +1667,7 @@ namespace SFEngine.SF3D.SFRender
 
                     foreach (var submodel in n.Mesh.submodels)
                     {
-                        SetTexture(0, TextureTarget.Texture2d, submodel.material.texture.tex_id);
+                        SetTexture(0, submodel.material.texture.tex_id);
 
                         RenderStaticObject(submodel, n.Mesh.MatrixOffset + n.CurrentMeshMatrixIndex, 1);
                     }
@@ -1693,17 +1683,13 @@ namespace SFEngine.SF3D.SFRender
                     UseShader(shader_selection_animated);
 
                     GL.UniformMatrix4f(active_shader["M"], 1, false, in an.result_transform);
-#if USE_NUMERICS
-                    Matrix4x4 p_mat = scene.camera.ProjMatrix;
-                    Matrix4x4 v_mat = scene.camera.ViewMatrix;
-#else
                     Matrix4 p_mat = scene.camera.ProjMatrix;
                     Matrix4 v_mat = scene.camera.ViewMatrix;
-#endif // USE_NUMERICS
                     GL.UniformMatrix4f(active_shader["V"], 1, false, in v_mat);
                     GL.UniformMatrix4f(active_shader["P"], 1, false, in p_mat);
 
-                    GL.UniformMatrix4f(active_shader["boneTransforms"], an.BoneTransforms.Length, false, an.BoneTransforms);
+                    GL.Uniform1i(active_shader["boneStart"], bone_ranges[bone_pool.elements[an.BoneIndex]].Start);
+                    //GL.UniformMatrix4f(active_shader["boneTransforms"], an.BoneTransforms.Length, false, an.BoneTransforms);
 
                     GL.Uniform1f(active_shader["Time"], scene.current_time * 2.0f);
                     GL.Uniform4f(active_shader["Color"], 1, new Vector4(0.1f, 0.1f, 0.1f, 0.8f));
@@ -1720,7 +1706,7 @@ namespace SFEngine.SF3D.SFRender
                         for (int i = 0; i < skin.submodels.Length; i++)
                         {
                             var msc = skin.submodels[i];
-                            SetTexture(0, TextureTarget.Texture2d, msc.material.texture.tex_id);
+                            SetTexture(0, msc.material.texture.tex_id);
 
                             RenderAnimatedObject(msc);
                         }
@@ -1734,47 +1720,16 @@ namespace SFEngine.SF3D.SFRender
             }
         }
 
-        public static void RenderShadowmap()
-        {
-            // depth testing enabled for shadowmap rendering, cull front faces (helps with variance/moment shadow mapping technique)
-            GL.Enable(EnableCap.DepthTest);
-
-            // draw heightmap shadows
-            if (scene.map != null)
-            {
-                UseShader(shader_shadowmap_heightmap);
-                RenderHeightmap();
-            }
-
-            SetCullEnabled(true);
-            SetCullMode(TriangleFace.Front);
-
-            // draw animated object shadows
-            UseShader(shader_shadowmap_animated);
-            RenderAnimatedObjects();
-
-            // draw simple (and additive!) object shadows
-            UseShader(shader_shadowmap);
-            RenderStaticObjectsShadowmap(scene.opaque_pass_models);
-            RenderStaticObjectsShadowmap(scene.additive_pass_models);
-        }
-
         public static void RenderScene()
         {
             is_rendering = true;
-#if DEBUG
-            if (is_debug)
-            {
-                current_query = 0;
-                query_results.Clear();
-            }
-#endif //DEBUG
 
             // generate shadowmap
             current_pass = RenderPass.SHADOWMAP;
             GL.Disable(EnableCap.Blend);
+            SetRenderMode(RenderMode.ONE_ZERO);
 
-            if(Settings.EnableShadows)
+            if (Settings.EnableShadows)
             {
                 // both shadow techniques are very similar
                 FrameBuffer fb_sm_multisample = null;
@@ -1801,7 +1756,28 @@ namespace SFEngine.SF3D.SFRender
                 SetFramebuffer(fb_sm_multisample);
                 GL.Clear(ClearBufferMask.DepthBufferBit);
 
-                RenderShadowmap();
+                // depth testing enabled for shadowmap rendering, cull front faces (helps with variance/moment shadow mapping technique)
+                GL.Enable(EnableCap.DepthTest);
+
+                // draw heightmap shadows
+                if (scene.map != null)
+                {
+                    UseShader(shader_shadowmap_heightmap);
+                    RenderHeightmap();
+                }
+
+                SetCullEnabled(true);
+                SetCullMode(TriangleFace.Front);
+
+                // draw animated object shadows
+                UseShader(shader_shadowmap_animated);
+                RenderAnimatedObjects();
+
+                // draw simple (and additive!) object shadows
+                UseShader(shader_shadowmap);
+                RenderStaticObjectsShadowmap(scene.opaque_pass_models);
+                RenderStaticObjectsShadowmap(scene.transparent_pass_models);
+                RenderStaticObjectsShadowmap(scene.additive_pass_models);
 
                 // revert cull mode, disable depth test
                 GL.Disable(EnableCap.DepthTest);
@@ -1823,12 +1799,10 @@ namespace SFEngine.SF3D.SFRender
                     GL.Uniform1i(active_shader["horizontal"], 0);
                     RenderFullscreen(fb_sm_base, fb_sm_hpass.textures[0]);
                 }
-
-                SetTexture(0, TextureTarget.Texture2d, fb_sm_base.textures[0].tex_id);
-                GL.GenerateMipmap(TextureTarget.Texture2d);
+                GL.GenerateTextureMipmap(fb_sm_base.textures[0].tex_id);
 
                 // bind generated shadowmap
-                SetTexture(1, TextureTarget.Texture2d, fb_sm_base.textures[0].tex_id);
+                SetTexture(1, fb_sm_base.textures[0].tex_id);
             }
 
             // render actual view
@@ -1836,7 +1810,6 @@ namespace SFEngine.SF3D.SFRender
 
             // setup blend mode, render to screenspace framebuffer
             GL.Enable(EnableCap.Blend);
-            SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
             SetFramebuffer(Settings.AntiAliasingSamples > 1 ? screenspace_framebuffer : (Settings.ToneMapping ? screenspace_intermediate: null));
 
             // clear contents of framebuffer
@@ -1858,7 +1831,6 @@ namespace SFEngine.SF3D.SFRender
 
             // enable depth test
             GL.Enable(EnableCap.DepthTest);
-            SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
 
             // depth function set to less or equal, for heightmap pre-pass
             // first draw just heightmap, without anything fancy, only then draw details of the heightmap
@@ -1878,32 +1850,29 @@ namespace SFEngine.SF3D.SFRender
                 RenderHeightmap();
             }
 
-            SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
-
-            // simple opaque objects
-            UseShader(shader_simple);
-            RenderStaticObjectsScene(scene.opaque_pass_models, 0.9f);
+            SetCullMode(TriangleFace.Front);
 
             // animated objects
             UseShader(shader_animated);
             RenderAnimatedObjects();
 
+            // simple opaque objects
+            UseShader(shader_simple);
             SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
-
+            RenderStaticObjectsScene(scene.opaque_pass_models, 0.9f);
+            // simple transparent objects, opaque pass
+            SetCullEnabled(false);
+            RenderStaticObjectsScene(scene.transparent_pass_models, 0.9f);
 
             // disable depth write
             // note that this is done *after* water is drawn, to improve performance and reduce artifacts involved with drawing transparent things underwater
             GL.DepthMask(false);
-            SetCullEnabled(false);
+            SetRenderMode(RenderMode.ONE_ZERO);
             // render sky
             if (Settings.ToneMapping)
             {
                 UseShader(shader_sky);
-#if USE_NUMERICS
-                Matrix4x4 v_mat = scene.camera.ViewMatrix;
-#else
                 Matrix4 v_mat = scene.camera.ViewMatrix;
-#endif // USE_NUMERICS
                 GL.UniformMatrix4f(active_shader["V"], 1, true, in v_mat);
                 GL.Uniform1f(active_shader["AspectRatio"], 1.0f);
                 RenderFullscreen(null, null);
@@ -1912,17 +1881,22 @@ namespace SFEngine.SF3D.SFRender
             // water
             GL.DepthMask(true);
             UseShader(shader_simple_transparency);
+            SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
             RenderStaticObjectsScene(scene.water_pass_models, 0.01f);
             GL.DepthMask(false);
 
             // simple transparent objects
-            UseShader(shader_simple_transparency);
-            GL.DepthFunc(DepthFunction.Less);
-            RenderStaticObjectsScene(scene.transparent_pass_models, 0.01f);
-            GL.DepthFunc(DepthFunction.Lequal);
+            if (Settings.ShadingQuality > 0)
+            {
+                GL.DepthFunc(DepthFunction.Less);
+                RenderStaticObjectsScene(scene.transparent_pass_models, 0.01f);
+                GL.DepthFunc(DepthFunction.Lequal);
+            }
 
             // simple additive objects
             UseShader(shader_simple);
+            SetCullEnabled(true);
+            SetRenderMode(RenderMode.ONE_ONE);
             RenderStaticObjectsScene(scene.additive_pass_models, 0.9f);
 
             // selection last
@@ -1930,7 +1904,6 @@ namespace SFEngine.SF3D.SFRender
             if ((scene.selected_node != null) && (scene.selected_node.parent != null))
             {
                 GL.Disable(EnableCap.DepthTest);
-                SetRenderMode(RenderMode.ONE_ONE);
                 // shader is set in this function
                 RenderSelection(scene.selected_node);
             }
@@ -1938,8 +1911,7 @@ namespace SFEngine.SF3D.SFRender
 
             // re-enable depth write
             GL.DepthMask(true);
-
-            SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
+            SetRenderMode(RenderMode.ONE_ZERO);
 
             // what is below doesnt depend on whats above
 
@@ -1966,26 +1938,12 @@ namespace SFEngine.SF3D.SFRender
 
             // UI
             UseShader(shader_ui);
+            SetRenderMode(RenderMode.SRCALPHA_INVSRCALPHA);
             RenderUI();
 
-            UseShader(null);
-            SetVertexArrayObject(0);
             current_pass = RenderPass.NONE;
 
             is_rendering = false;
-#if DEBUG
-            if (is_debug)
-            {
-                for (int i = 0; i < current_query; i++)
-                {
-                    int result = 0;
-                    GL.GetQueryObjecti(queries[i], QueryObjectParameterName.QueryResult, out result);
-                    query_results.Add(i, result);
-                }
-
-                is_debug = false;
-            }
-#endif //DEBUG
             scene.frame_counter++;
         }
     }

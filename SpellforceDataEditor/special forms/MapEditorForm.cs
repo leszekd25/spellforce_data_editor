@@ -1,10 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.WinForms;
-#if USE_NUMERICS
-using System.Numerics;
-#else
 using OpenTK.Mathematics;
-#endif // USE_NUMERICS
 using SFEngine;
 using SFEngine.SF3D;
 using SFEngine.SF3D.Physics;
@@ -84,7 +80,7 @@ namespace SpellforceDataEditor.special_forms
 
             public void InitMinimap(int m_width, int m_height)
             {
-                minimap_tex = SFTexture.DynamicTexture((ushort)m_width, (ushort)m_height, 1, TextureTarget.Texture2d, InternalFormat.Rgba, PixelFormat.Rgba, PixelType.UnsignedByte, (int)All.LinearMipmapLinear, (int)All.Linear, (int)All.ClampToEdge, (int)All.ClampToEdge, Vector4.One, Settings.MaxAnisotropy, true, true);
+                minimap_tex = SFTexture.DynamicTexture((ushort)m_width, (ushort)m_height, 1, TextureTarget.Texture2d, SizedInternalFormat.Rgba8, PixelFormat.Rgba, PixelType.UnsignedByte, (int)All.LinearMipmapLinear, (int)All.Linear, (int)All.ClampToEdge, (int)All.ClampToEdge, Vector4.One, Settings.MaxAnisotropy, true, true);
                 SFResourceManager.Textures.AddManually(minimap_tex, "minimap");
 
                 SFRenderEngine.ui.AddStorage(minimap_tex, 1);
@@ -1198,7 +1194,6 @@ namespace SpellforceDataEditor.special_forms
                 SFResourceManager.ListAllPakAnimations();
             }
 
-            SFRenderEngine.ResetTextures();
             SFRenderEngine.scene.root.Visible = true;
             SFRenderEngine.scene.GenerateMissingMesh();
 
@@ -1341,7 +1336,6 @@ namespace SpellforceDataEditor.special_forms
                     SFResourceManager.ListAllPakAnimations();
                 }
 
-                SFRenderEngine.ResetTextures();
                 SFRenderEngine.scene.root.Visible = true;
                 SFRenderEngine.scene.GenerateMissingMesh();
 
@@ -1534,6 +1528,8 @@ namespace SpellforceDataEditor.special_forms
                 ui = null;
             }
             SFRenderEngine.ui.Dispose();
+            SFRenderEngine.BonesClear();
+            SFRenderEngine.ResetTextures();
 
             op_queue.map = null;
             op_queue = null;
@@ -1788,11 +1784,7 @@ namespace SpellforceDataEditor.special_forms
             {
                 MathUtils.RotateVec2Mirrored(in movement_vector, SFRenderEngine.scene.camera.Direction.X + (float)(Math.PI / 2), out movement_vector);
                 movement_vector *= 60.0f * camera_speed_factor * SFRenderEngine.scene.DeltaTime;
-#if USE_NUMERICS
-                MoveCameraWorldMapPos(new Vector2(SFRenderEngine.scene.camera.position.X, SFRenderEngine.scene.camera.position.Z) + movement_vector);
-#else
                 MoveCameraWorldMapPos(SFRenderEngine.scene.camera.position.Xz + movement_vector);
-#endif // USE_NUMERICS
                 update_render = true;
                 update_ui = true;
             }
@@ -1995,11 +1987,7 @@ namespace SpellforceDataEditor.special_forms
             foreach (SceneNodeMapChunk chunk_node in map.heightmap.visible_chunks)
             {
                 Vector3 pos = chunk_node.position;
-#if USE_NUMERICS
-                if (max_dist < (p - new Vector2(pos.X + 8, pos.Z + 8)).Length())
-#else
                 if (max_dist < (p - new Vector2(pos.X + 8, pos.Z + 8)).Length)
-#endif // USE_NUMERICS
                 {
                     continue;
                 }
@@ -2043,17 +2031,10 @@ namespace SpellforceDataEditor.special_forms
         {
             // preserve lookat
             Vector3 cur_lookat = SFRenderEngine.scene.camera.Lookat - SFRenderEngine.scene.camera.position;
-#if USE_NUMERICS
-            SFRenderEngine.scene.camera.Position = new Vector3(
-                    SFRenderEngine.scene.camera.position.X,
-                    h + map.heightmap.GetRealZ(new Vector2(SFRenderEngine.scene.camera.position.X, SFRenderEngine.scene.camera.position.Z)),
-                    SFRenderEngine.scene.camera.position.Z);
-#else
             SFRenderEngine.scene.camera.Position = new Vector3(
                     SFRenderEngine.scene.camera.position.X,
                     h + map.heightmap.GetRealZ(SFRenderEngine.scene.camera.position.Xz),
                     SFRenderEngine.scene.camera.position.Z);
-#endif // USE_NUMERICS
 
             SFRenderEngine.scene.camera.SetLookat(SFRenderEngine.scene.camera.position + cur_lookat);
         }

@@ -1646,7 +1646,14 @@ out vec2 UV;
 uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
-uniform mat4 boneTransforms[224];
+
+layout(std430, binding = 3) readonly restrict buffer layoutBones
+{
+	mat4 boneTransforms[];
+};
+
+uniform int boneStart;
+//uniform mat4 boneTransforms[224];
   
 void main(){
   vec4 Vertex;
@@ -1656,22 +1663,22 @@ void main(){
   Vertex = vec4(vertexPosition_modelspace, 1.0);
   newVertex = vec4(0.0, 0.0, 0.0, 1.0);
 
-  index = int(vertexBoneIndex.x);
+  index = int(vertexBoneIndex.x) + boneStart;
   if(index != -1)
   {
     newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.x;
   }
-  index = int(vertexBoneIndex.y);
+  index = int(vertexBoneIndex.y) + boneStart;
   if(index != -1)
   {
     newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.y + newVertex;
   }
-  index = int(vertexBoneIndex.z);
+  index = int(vertexBoneIndex.z) + boneStart;
   if(index != -1)
   {
     newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.z + newVertex;
   }
-  index = int(vertexBoneIndex.w);
+  index = int(vertexBoneIndex.w) + boneStart;
   if(index != -1)
   {
     newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.w + newVertex;
@@ -1754,8 +1761,14 @@ layout(std140) uniform TileColors
 #endif //QUALITY_SHADING
 #endif //SHADING
 
+layout(std430, binding = 3) readonly restrict buffer layoutBones
+{
+	mat4 boneTransforms[];
+};
+
 uniform mat4 M;
-uniform mat4 boneTransforms[224];
+uniform int boneStart;
+//uniform mat4 boneTransforms[224];
   
 void main(){
   vec4 Vertex;
@@ -1773,25 +1786,25 @@ void main(){
   newNormal = vec4(0.0, 0.0, 0.0, 0.0);
   #endif //SHADING
 
-  index = int(vertexBoneIndex.x);
+  index = int(vertexBoneIndex.x) + boneStart;
   newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.x;
   #ifdef SHADING
   newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.x;
   #endif //SHADING
 
-  index = int(vertexBoneIndex.y);
+  index = int(vertexBoneIndex.y) + boneStart;
   newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.y + newVertex;
   #ifdef SHADING
   newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.y + newNormal;
   #endif //SHADING
 
-  index = int(vertexBoneIndex.z);
+  index = int(vertexBoneIndex.z) + boneStart;
   newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.z + newVertex;
   #ifdef SHADING
   newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.z + newNormal;
   #endif //SHADING
 
-  index = int(vertexBoneIndex.w);
+  index = int(vertexBoneIndex.w) + boneStart;
   newVertex = (boneTransforms[index] * Vertex) * vertexBoneWeight.w + newVertex;
   #ifdef SHADING
   newNormal = (boneTransforms[index] * Normal) * vertexBoneWeight.w + newNormal;

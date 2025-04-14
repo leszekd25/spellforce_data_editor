@@ -3,11 +3,7 @@
  * It also binds this info to a GPU buffer, and as such, it has to be disposed of manually
  * */
 
-#if USE_NUMERICS
-using System.Numerics;
-#else
 using OpenTK.Mathematics;
-#endif // USE_NUMERICS
 using SFEngine.SFResources;
 using System;
 using System.Collections.Generic;

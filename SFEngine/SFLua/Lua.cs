@@ -1,21 +1,13 @@
-﻿using NAudio.Utils;
-using SFEngine.SFLua.LuaDecompiler;
+﻿/*
+ * Lua module provides an interface to communicate with Lua virtual machine
+ * */
 using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Security;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using System.Windows.Forms;
 using System.IO;
-using System.Diagnostics.Eventing.Reader;
-using System.Runtime.InteropServices.ObjectiveC;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace SFEngine.SFLua
 {
@@ -77,6 +69,7 @@ namespace SFEngine.SFLua
         public bool Set = true;
     }
 
+    // 
     public class CLuaRefCounter
     {
         public Type t;
@@ -84,6 +77,7 @@ namespace SFEngine.SFLua
         public int idx;
     }
 
+    // each registered usertype contains getters, setters and functions that can be called from Lua VM
     public class CLuaUserdata
     {
         public int tag;
@@ -117,10 +111,7 @@ namespace SFEngine.SFLua
         HashSet<LuaFunction> registered_functions = new();
 
         // generating code
-        AssemblyName assembly_name;
-        AssemblyBuilder assembly_builder;
-        ModuleBuilder module_builder;
-        TypeBuilder parent_type;
+        // each Lua object creates its own assembly used for generating special code
 
         // globals table
         public readonly LuaTable globals;
@@ -145,7 +136,7 @@ namespace SFEngine.SFLua
             "function"
             ];
 
-        static int LUAGEN_ID = 0;
+        // all Lua objects are tracked in this dictionary
         static Dictionary<nint, Lua> luastate_to_lua = new();
 
         public Lua(int stacksize = 0)
@@ -155,19 +146,13 @@ namespace SFEngine.SFLua
             L = LuaNative.lua_open(stacksize);
             LuaNative.lua_baselibopen(L);
 
-            assembly_name = new();
-            assembly_name.Name = $"LUAGEN{LUAGEN_ID}";
-            assembly_builder = AssemblyBuilder.DefineDynamicAssembly(assembly_name, AssemblyBuilderAccess.RunAndCollect);
-            module_builder = assembly_builder.DefineDynamicModule(assembly_name.Name);
-            parent_type = module_builder.DefineType(assembly_name.Name);
-
             int old_top = LuaNative.lua_gettop(L);
+            // retrieve globals table for use from C# level
             LuaNative.lua_getglobals(L);
             globals = (LuaTable)PopObject();
 
-            LUAGEN_ID++;
-
             luastate_to_lua[L] = this;
+            // register certain types for use from Lua VM level
             RegisterType<GCHandle>();     // actually necessary
             RegisterType<Type>();         // very helpful
             RegisterType<FieldInfo>();    // necessary to be able to put FieldInfo into the table
@@ -229,18 +214,21 @@ namespace SFEngine.SFLua
             return PopObject();
         }
 
+        // remove global from Lua VM
         public void ClearGlobal(string k)
         {
             LuaNative.lua_pushnil(L);
             LuaNative.lua_setglobal(L, k);
         }
 
+        // set global in Lua VM (double)
         public void SetGlobal(string k, double num)
         {
             LuaNative.lua_pushnumber(L, num);
             LuaNative.lua_setglobal(L, k);
         }
 
+        // set global in Lua VM (string)
         public void SetGlobal(string k, string str)
         {
             byte[] buffer = Encoding.ASCII.GetBytes(str);
@@ -248,12 +236,14 @@ namespace SFEngine.SFLua
             LuaNative.lua_setglobal(L, k);
         }
 
+        // set global in Lua VM (Lua reference (table, userdata))
         public void SetGlobal(string k, LuaRef r)
         {
             LuaNative.lua_getref(L, r.reference);
             LuaNative.lua_setglobal(L, k);
         }
 
+        // set global in Lua VM (arbitrary object)
         public void SetGlobal(string k, object o)
         {
             // registered userdata
@@ -285,6 +275,7 @@ namespace SFEngine.SFLua
             LuaNative.lua_setglobal(L, k);
         }
 
+        // push an arbitrary object onto stack
         public void PushObject(object o)
         {
             if (o == null)
@@ -398,6 +389,7 @@ namespace SFEngine.SFLua
             LuaNative.lua_pushusertag(L, cref.idx, ud.tag);
         }
 
+        // pop arbitrary object from stack
         public object PopObject()
         {
             int top = LuaNative.lua_gettop(L);
@@ -478,7 +470,7 @@ namespace SFEngine.SFLua
         }
 
         // lua table stuff
-
+        // get table value under field X (think table["X"])
         public object GetTableField(LuaTable t, string field)
         {
             int old_top = LuaNative.lua_gettop(L);
@@ -490,6 +482,7 @@ namespace SFEngine.SFLua
             LuaNative.lua_settop(L, old_top);
             return ret;
         }
+        // get table value at index X (think table[X])
         public object GetTableField(LuaTable t, double field)
         {
             int old_top = LuaNative.lua_gettop(L);
@@ -500,6 +493,7 @@ namespace SFEngine.SFLua
             LuaNative.lua_settop(L, old_top);
             return ret;
         }
+        // get table value under specified object (think table[obj])
         public object GetTableField(LuaTable t, object field)
         {
             int old_top = LuaNative.lua_gettop(L);
@@ -511,6 +505,7 @@ namespace SFEngine.SFLua
             return ret;
         }
 
+        // table["X"] = o
         public void SetTableField(LuaTable t, string field, object o)
         {
             int old_top = LuaNative.lua_gettop(L);
@@ -521,6 +516,7 @@ namespace SFEngine.SFLua
             LuaNative.lua_settable(L, -3);
             LuaNative.lua_settop(L, old_top);
         }
+        // table[X} = o
         public void SetTableField(LuaTable t, double field, object o)
         {
             int old_top = LuaNative.lua_gettop(L);
@@ -530,6 +526,7 @@ namespace SFEngine.SFLua
             LuaNative.lua_settable(L, -3);
             LuaNative.lua_settop(L, old_top);
         }
+        // table[obj] = o
         public void SetTableField(LuaTable t, object field, object o)
         {
             int old_top = LuaNative.lua_gettop(L);
@@ -540,6 +537,8 @@ namespace SFEngine.SFLua
             LuaNative.lua_settop(L, old_top);
         }
 
+        // call specified lua function with given parameters
+        // returns a table of objects or null if there are no returned values
         public object[] CallFunction(LuaFunction f, params object[] args)
         {
             int old_top = LuaNative.lua_gettop(L);
@@ -568,6 +567,7 @@ namespace SFEngine.SFLua
             return ret;
         }
 
+        // register type for interop
         public void RegisterType<T>()
         {
             Type t = typeof(T);
@@ -659,7 +659,8 @@ namespace SFEngine.SFLua
             RegisterTagMethod<T>(LuaTagMethod.TM_GC, LUAOVERRIDE_TM_gc);
         }
 
-
+        // register C# function for interop
+        // the function must be static
         public void RegisterGlobalFunction(string name, MethodInfo func)
         {
             if (!func.IsStatic)
@@ -670,6 +671,9 @@ namespace SFEngine.SFLua
             SetGlobal(name, func);
         }
 
+        // register C Lua function for interop
+        // C Lua function is a delegate that takes a lua_State pointer and returns an integer (relative stack position) that indicates how many values were returned
+        // see Lua 4.01 documentation
         public LuaFunction RegisterGlobalFunction(string name, CLuaFunction func)
         {
             nint cfunc_ptr = Marshal.GetFunctionPointerForDelegate(func);
@@ -680,6 +684,7 @@ namespace SFEngine.SFLua
             return luafunc;
         }
 
+        // register C Lua function as tag method for type T for interop
         public LuaFunction RegisterTagMethod<T>(LuaTagMethod tm, CLuaFunction func)
         {
             Type t = typeof(T);
@@ -699,6 +704,7 @@ namespace SFEngine.SFLua
             return luafunc;
         }
 
+        // register C# method of type T for interop
         void RegisterMethod<T>(string name, MethodInfo func)
         {
             if (func.IsStatic)
@@ -719,6 +725,7 @@ namespace SFEngine.SFLua
             ud.registered_functions[name] = func;
         }
 
+        // register C# constructor for type T for interop
         void RegisterTypeConstructor<T>(MethodInfo func)
         {
             if (!func.IsConstructor)
@@ -772,6 +779,9 @@ namespace SFEngine.SFLua
             return (LuaError)LuaNative.lua_dobuffer(L, b, (nuint)b.Length, "buffer");
         }
 
+        // regular dofile can only execute files from filesystem
+        // this override also allows executing files from PAK archives
+        // only files from game directory (and subdirectories) can be executed this way
         public LuaError DoFile(string fpath)
         {
             LogUtils.Log.Info(LogUtils.LogSource.SFLua, $"Lua.DoFile(\"{fpath}\") called");
@@ -805,7 +815,7 @@ namespace SFEngine.SFLua
             return luastate_to_lua[_L];
         }
 
-        // dofile override
+        // dofile override that allows executing files from PAK archives
         public static int LUAOVERRIDE_dofile(IntPtr _L)
         {
             Lua env = GetEnv(_L);
@@ -895,6 +905,7 @@ namespace SFEngine.SFLua
             return 0;
         }
 
+        // override for Lua garbage collector that also takes care of unregistering these objects from C# level
         public static int LUAOVERRIDE_TM_gc(IntPtr _L)
         {
             Lua env = GetEnv(_L);
@@ -914,6 +925,7 @@ namespace SFEngine.SFLua
             return 0;
         }
 
+        // this allows calling C# functions from Lua using MethodInfo, as long as none of the arguments are MethodInfo themselves
         public static int LUAOVERRIDE_TM_function_methodwrapper(IntPtr _L)
         {
             Lua env = GetEnv(_L);

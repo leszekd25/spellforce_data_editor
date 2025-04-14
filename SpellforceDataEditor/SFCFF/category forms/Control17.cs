@@ -8,7 +8,7 @@ namespace SpellforceDataEditor.SFCFF.category_forms
 {
     public partial class Control17 : SpellforceDataEditor.SFCFF.category_forms.SFControl
     {
-        static string[] clan_names = new string[] {
+        static public string[] clan_names = new string[] {
             "Neutral", "Friendly neutral [Humans]", "Friendly neutral [Elves]", "Neutral [animals for meat production]",
             "Friendly neutral [Dwarves]", "Hostile [Grargs]", "Hostile [Imperial]", "Hostile [Uroks]",
             "Hostile [Undead]", "Hostile [monsters/demons]", "Player", "Player Elves",
