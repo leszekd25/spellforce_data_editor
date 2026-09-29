@@ -411,6 +411,7 @@ namespace SFEngine.SFCFF
             IUndoRedo iur = new UndoRedoElementSetIDSingle<T>()
             {
                 cat = this,
+                index = index,
                 new_id = id
             };
             iur.Commit(urq);

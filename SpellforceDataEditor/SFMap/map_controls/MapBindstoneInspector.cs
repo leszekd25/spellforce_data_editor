@@ -62,6 +62,8 @@ namespace SpellforceDataEditor.SFMap.map_controls
                 return "Bindstone at " + io.grid_position.ToString();
             }
 
+            return $"{SFCategoryManager.GetTextByLanguage(map.metadata.spawns[player].text_id, SFEngine.Settings.LanguageID)} {io.grid_position}";
+
             if (!SFCategoryManager.gamedata.c2016.GetItemIndex(map.metadata.spawns[player].text_id, out int text_index))
             {
                 return "Bindstone at " + io.grid_position.ToString();

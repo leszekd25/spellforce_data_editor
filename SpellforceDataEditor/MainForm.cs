@@ -29,9 +29,6 @@ namespace SpellforceDataEditor
 
         public MainForm()
         {
-            SFEngine.SFLua.LuaTokenizer.Parser parser = new(
-                File.ReadAllText("C:\\Users\\lesze\\Documents\\Visual Studio 2015\\Projects\\SpellForce1\\main\\redist\\script\\P63\\n0.lua"));
-
             SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.Main, "MainForm() called");
             InitializeComponent();
             linkEditor.Links.Add(0, linkEditor.Text.Length, "https://github.com/leszekd25/spellforce_data_editor/tree/with_viewer/bin");
@@ -289,6 +286,11 @@ namespace SpellforceDataEditor
         }
 
         private void labelVersion_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void labelVersion_Click_1(object sender, EventArgs e)
         {
 
         }

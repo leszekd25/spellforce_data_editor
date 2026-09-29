@@ -573,6 +573,31 @@ namespace SFEngine.SFMap
             {
                 LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Player spawn data not found!");
             }
+            // FIX: if there are bindstones not associated with any spawn, create new spawns
+            for(int i = 0; i < int_object_manager.bindstones_index.Count; i++)
+            {
+                SFMapInteractiveObject bindstone = int_object_manager.int_objects[int_object_manager.bindstones_index[i]];
+                bool found = false;
+                for (int j = 0; j < metadata.spawns.Count; j++)
+                {
+                    if (metadata.spawns[j].pos == bindstone.grid_position)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found)
+                {
+                    LogUtils.Log.Warning(LogUtils.LogSource.SFMap, "SFMap.Load(): Bindstone not associated with any spawn data, adding (position: " + bindstone.grid_position.ToString() + ")");
+                    int new_index = metadata.spawns.Count;
+                    metadata.spawns.Add(new SFMapSpawn());
+                    metadata.spawns[new_index].pos = bindstone.grid_position;
+                    metadata.spawns[new_index].text_id = 1;
+                    metadata.spawns[new_index].unknown = 0;
+                    metadata.spawns[new_index].bindstone_index = i;
+                }
+            }
+
 
             LogUtils.Log.Info(LogUtils.LogSource.SFMap, "SFMap.Load(): Loading team compositions");
             metadata.multi_teams = new List<SFMapMultiplayerTeamComposition>();

@@ -44,6 +44,11 @@ namespace SpellforceDataEditor
 
 #if DEBUG
             Application.Run(new MainForm());
+
+            SFEngine.SFLua.SFLuaEnvironment.UnloadSQL();
+            SFEngine.SFUnPak.SFUnPak.CloseAllPaks();
+            SFEngine.LogUtils.Log.Info(SFEngine.LogUtils.LogSource.Main, "Program.Main(): session finish time: " + DateTime.Now.ToLongTimeString());
+            SFEngine.LogUtils.Log.SaveLog("UserLog.txt");
 #else
             try
             {
